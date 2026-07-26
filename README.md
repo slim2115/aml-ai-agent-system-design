@@ -29,3 +29,23 @@ evaluation-наборы, метрики faithfulness/relevance, guardrails и re
 Следующие шаги: evaluation-plan, risks-and-security, ADR, реализация прототипа.
 
 > **Дисклеймер:** Все данные в проекте синтетические. Схема учебная и не содержит реальных банковских данных или ПДн.
+
+# Architecture Decision Records (ADR)
+## PoC: AML / Anti-Fraud Copilot
+
+Индекс архитектурных решений проекта. Формат записей — по шаблону Майкла Найгарда
+(Context → Decision → Alternatives → Consequences).
+
+## Реестр решений
+
+- [ADR-0001](0001-langgraph-orchestration.md) — Оркестрация агента на LangGraph. Статус: Accepted.
+- [ADR-0002](0002-read-only-mode.md) — Режим Read-Only как архитектурное ограничение. Статус: Accepted.
+- [ADR-0003](0003-structured-output.md) — Structured Output (JSON Schema) вместо свободного текста. Статус: Accepted.
+- [ADR-0004](0004-retrieval-first-rag.md) — Retrieval-first (RAG) как основа генерации правил. Статус: Accepted.
+- [ADR-0005](0005-on-premise-llm.md) — Локальная (on-premise) LLM и векторная БД. Статус: Accepted.
+
+## Правила ведения
+
+- Каждое решение имеет уникальный номер и статус (Proposed / Accepted / Deprecated / Superseded).
+- Решение не удаляется; при замене создаётся новый ADR со ссылкой на заменённый (Superseded by).
+- Изменение принятого решения требует новой записи и обновления связей в SRS.
