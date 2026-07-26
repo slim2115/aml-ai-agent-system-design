@@ -1,0 +1,94 @@
+```plantuml
+@startuml AML_Data_Model
+title AML / Anti-Fraud Copilot — Логическая модель данных (синтетический контур)
+
+skinparam linetype ortho
+hide circle
+
+entity "Client" as client {
+  * client_id : string <<PK>>
+  --
+  full_name : string <<PII>>
+  risk_category : enum
+  kyc_status : enum
+  client_since : date
+  inn : string <<PII>>
+}
+
+entity "Card" as card {
+  * card_id : string <<PK>>
+  --
+  * client_id : string <<FK>>
+  pan_masked : string
+  card_status : enum
+  issue_date : date
+}
+
+entity "Transaction" as tx {
+  * tx_id : string <<PK>>
+  --
+  * client_id : string <<FK>>
+  card_id : string <<FK>>
+  amount : decimal
+  currency : string
+  counterparty : string
+  purpose : string <<injection-risk>>
+  channel : enum
+  status : enum
+  timestamp : datetime
+}
+
+entity "Case" as case {
+  * case_id : string <<PK>>
+  --
+  incident_id : string <<UNIQUE>>
+  * client_id : string <<FK>>
+  alert_type : enum
+  status : enum
+  created_at : datetime
+  closed_at : datetime
+  assigned_operator : string
+}
+
+entity "Rule" as rule {
+  * rule_id : string <<PK>>
+  --
+  title : string
+  regulation_ref : string
+  category : enum
+  text : text
+  effective_from : date
+  version : string
+}
+
+entity "Report" as report {
+  * report_id : string <<PK>>
+  --
+  * case_id : string <<FK>>
+  status : enum
+  generated_at : datetime
+  approved_by : string
+  confidence : decimal
+  reasoning_trace : json
+}
+
+entity "Evidence" as evidence {
+  * evidence_id : string <<PK>>
+  --
+  * report_id : string <<FK>>
+  * tx_id : string <<FK>>
+  * field : enum
+  fact_text : string
+  source_ref : string
+}
+
+client ||--o{ card : "владеет"
+client ||--o{ tx : "совершает"
+card ||--o{ tx : "используется в"
+client ||--o{ case : "фигурирует в"
+case ||--o| report : "имеет"
+report ||--o{ evidence : "содержит"
+tx ||--o{ evidence : "подтверждает"
+rule }o--o{ report : "цитируется через source_ref"
+
+@enduml
