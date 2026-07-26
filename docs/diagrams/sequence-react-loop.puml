@@ -1,0 +1,137 @@
+@startuml AML_Copilot_ReAct_Sequence
+title AML / Anti-Fraud Copilot — Цикл ReAct (SR-01…SR-22)
+
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam maxMessageSize 220
+autonumber
+
+actor "AML Operator\n(1st Line)" as Op
+participant "Core / Alert\nSystem" as Core
+participant "Orchestrator\n(LangGraph Agent)" as Orch
+participant "SQL Tool\n(Read-Only)" as SQL
+participant "RAG Retrieval\n(База знаний)" as RAG
+participant "LLM\n(On-Premise)" as LLM
+participant "Guardrail\nLayer" as Guard
+participant "Case Management\nSystem" as CMS
+
+== Фаза 1. Инициация и агрегация данных [BR-01] ==
+
+Core -> Orch : Отправить incident_id + данные (JSON)
+note right of Orch : **SR-01** Валидация формата incident_id
+activate Orch
+Orch -> Orch : Десериализовать и валидировать входную схему
+
+group Read-Only агрегация [BR-07]
+    Orch -> SQL : Запросить профиль клиента (SELECT)
+    note right of SQL : **SR-02, SR-17** Только read-only учётные записи
+    SQL --> Orch : Профиль клиента (client_id, risk_category, kyc_status)
+
+    Orch -> SQL : Запросить историю транзакций (SELECT)
+    note right of SQL : **SR-03** Только читающие операции
+    SQL --> Orch : Массив транзакций (tx_id, amount, purpose, ...)
+end
+
+Orch -> Orch : Консолидировать investigation_context
+note right of Orch : **SR-04** Единый контекст для LLM
+
+== Фаза 2. Проверка полноты данных [BRULE-03] ==
+
+Orch -> Orch : Оценить полноту и непротиворечивость данных
+note right of Orch : **SR-20** data_completeness / data_consistency
+
+alt Данные недостаточны или противоречивы
+    Orch -> Orch : Сформировать явный отказ (без гипотез)
+    note right of Orch : **SR-21** status=refusal + refusal_reason
+    Orch -> Core : Передать кейс в очередь ручной обработки
+    Orch --> Op : Уведомить об отказе
+else Данные полные и однозначные
+end
+
+== Фаза 3. ReAct-цикл: Reason → Act → Observe [BR-02, BR-04] ==
+
+loop ReAct (до формирования черновика)
+    Orch -> LLM : Reason — анализ контекста, выбор действия
+    activate LLM
+    LLM --> Orch : Решение: вызвать инструмент / сформировать ответ
+    deactivate LLM
+
+    alt Требуется обогащение данными
+        Orch -> SQL : Act — уточняющий запрос (SELECT, read-only)
+        note right of SQL : **SR-18** Write-инструменты отсутствуют
+        SQL --> Orch : Observe — результат запроса
+    else Требуется нормативный контекст
+        Orch -> RAG : Act — семантический поиск правил
+        note right of RAG : **SR-07** Только утверждённая база знаний
+        RAG --> Orch : Observe — фрагменты правил + source_ref
+    else Достаточно контекста
+        Orch -> LLM : Сгенерировать черновик (found_facts, patterns, rules)
+        note right of LLM : **SR-05, SR-06, SR-07**
+        LLM --> Orch : JSON-черновик
+    end
+end
+
+== Фаза 4. Grounding и защитные проверки [BR-05, BR-07] ==
+
+Orch -> Orch : Сформировать evidence_ref (tx_id + field) для каждого утверждения
+note right of Orch : **SR-13, SR-14** Структура доказательств
+
+Orch -> Guard : Передать черновик на проверку
+activate Guard
+Guard -> Guard : Read-only guard (запрет write-операций)
+note right of Guard : **SR-17, SR-18, SR-19**
+Guard -> RAG : Сверить source_ref с базой знаний
+note right of Guard : **SR-11, SR-12** Запрет несуществующих ссылок
+Guard -> Guard : Проверка prompt injection в полях ввода
+Guard --> Orch : Результат валидации
+deactivate Guard
+
+alt Guardrail не пройден
+    Orch -> Orch : Повторная генерация (retry) или явный отказ
+    note right of Orch : **SR-21** При повторном провале — refusal
+else Guardrail пройден
+end
+
+== Фаза 5. Валидация структуры и терминологии [BR-02, BR-03] ==
+
+Orch -> Orch : Валидировать черновик по JSON Schema
+note right of Orch : **SR-08** Schema Match = 100%
+Orch -> Orch : Контроль терминологии по глоссарию AML
+note right of Orch : **SR-09, SR-10** Шаблоны + глоссарий SME
+
+== Фаза 6. Human-in-the-Loop [BR-06, BRULE-01] ==
+
+Orch -> Op : Передать черновик + evidence_ref в рабочую область
+note right of Op : **SR-15** Передача идентификаторов доказательств
+activate Op
+Op -> Op : Подсветить фрагменты данных (tx_id + field)
+note right of Op : **SR-16** UI Highlighting
+Op -> Op : Валидировать факты и ссылки (HITL)
+note right of Op : **BRULE-01** Обязательная проверка оператором
+
+alt Требуется корректировка
+    Op -> Op : Скорректировать отчёт вручную
+    Op -> Orch : Вернуть скорректированный черновик
+    Orch -> Op : Обновить рабочую область
+else Отчёт корректен
+end
+
+Op -> Op : Одобрить и подписать отчёт
+note right of Op : Финальный статус выставляет исключительно человек
+Op -> Orch : Сигнал одобрения / подписания
+deactivate Op
+
+== Фаза 7. Автоматический экспорт [To-Be, Шаг 5] ==
+
+Orch -> CMS : Экспортировать подписанный отчёт
+note right of CMS : **SR-22** Только после HITL-одобрения
+activate CMS
+CMS --> Orch : Подтверждение экспорта, кейс закрыт
+deactivate CMS
+
+Orch -> Orch : Логировать reasoning chain (audit trail)
+note right of Orch : **NFR-11** Аудируемость
+Orch --> Core : Завершить обработку (кейс закрыт)
+deactivate Orch
+
+@enduml
