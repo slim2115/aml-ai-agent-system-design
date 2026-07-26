@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_AsIs" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js" exporterVersion="18.0.0">
+  <bpmn:process id="Process_AsIs" name="AML Investigation As-Is (Manual)" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_AsIs">
+      <bpmn:lane id="Lane_Operator_AsIs" name="AML Operator (1st Line)">
+        <bpmn:flowNodeRef>Start_AsIs</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Monitor</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CollectDossier</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SearchRules</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_WriteReport</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Escalate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_EscalateSME</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CloseCase</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Escalated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Closed</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_AsIs" name="Алерт поступил в очередь">
+      <bpmn:outgoing>F_AsIs_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_Monitor" name="Проверить очередь алертов">
+      <bpmn:incoming>F_AsIs_1</bpmn:incoming>
+      <bpmn:outgoing>F_AsIs_2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_CollectDossier" name="Собрать досье клиента вручную">
+      <bpmn:incoming>F_AsIs_2</bpmn:incoming>
+      <bpmn:outgoing>F_AsIs_3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_SearchRules" name="Найти применимый регламент">
+      <bpmn:incoming>F_AsIs_3</bpmn:incoming>
+      <bpmn:outgoing>F_AsIs_4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_WriteReport" name="Написать аналитический отчет">
+      <bpmn:incoming>F_AsIs_4</bpmn:incoming>
+      <bpmn:outgoing>F_AsIs_5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_Escalate" name="Требуется эскалация на SME 2 линии?">
+      <bpmn:incoming>F_AsIs_5</bpmn:incoming>
+      <bpmn:outgoing>F_AsIs_6</bpmn:outgoing>
+      <bpmn:outgoing>F_AsIs_7</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_EscalateSME" name="Эскалировать кейс на 2 линию">
+      <bpmn:incoming>F_AsIs_6</bpmn:incoming>
+      <bpmn:outgoing>F_AsIs_8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_CloseCase" name="Закрыть кейс в системе">
+      <bpmn:incoming>F_AsIs_7</bpmn:incoming>
+      <bpmn:outgoing>F_AsIs_9</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_Escalated" name="Кейс эскалирован">
+      <bpmn:incoming>F_AsIs_8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_Closed" name="Кейс закрыт">
+      <bpmn:incoming>F_AsIs_9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="F_AsIs_1" sourceRef="Start_AsIs" targetRef="Task_Monitor" />
+    <bpmn:sequenceFlow id="F_AsIs_2" sourceRef="Task_Monitor" targetRef="Task_CollectDossier" />
+    <bpmn:sequenceFlow id="F_AsIs_3" sourceRef="Task_CollectDossier" targetRef="Task_SearchRules" />
+    <bpmn:sequenceFlow id="F_AsIs_4" sourceRef="Task_SearchRules" targetRef="Task_WriteReport" />
+    <bpmn:sequenceFlow id="F_AsIs_5" sourceRef="Task_WriteReport" targetRef="Gateway_Escalate" />
+    <bpmn:sequenceFlow id="F_AsIs_6" name="Да" sourceRef="Gateway_Escalate" targetRef="Task_EscalateSME" />
+    <bpmn:sequenceFlow id="F_AsIs_7" name="Нет" sourceRef="Gateway_Escalate" targetRef="Task_CloseCase" />
+    <bpmn:sequenceFlow id="F_AsIs_8" sourceRef="Task_EscalateSME" targetRef="End_Escalated" />
+    <bpmn:sequenceFlow id="F_AsIs_9" sourceRef="Task_CloseCase" targetRef="End_Closed" />
+    <bpmn:textAnnotation id="PP_01">
+      <bpmn:text>PP-01 (СУБД / Очередь алертов): высокий объем шума и ложноположительных срабатываний</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="PP_02">
+      <bpmn:text>PP-02 (ABS, CRM, Транзакционный лог): переключение между 4+ окнами, ручной copy-paste</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="PP_03">
+      <bpmn:text>PP-03 (Confluence / PDF): нормативная база &gt;500 страниц, риск пропустить обновление</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="PP_04">
+      <bpmn:text>PP-04 (MS Word): отсутствие стандартизации, свободный стиль изложения</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="PP_05">
+      <bpmn:text>PP-05 (Система ведения кейсов): до 25% тривиальных кейсов уходят на SME 2 линии</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_1" sourceRef="Task_Monitor" targetRef="PP_01" />
+    <bpmn:association id="Assoc_2" sourceRef="Task_CollectDossier" targetRef="PP_02" />
+    <bpmn:association id="Assoc_3" sourceRef="Task_SearchRules" targetRef="PP_03" />
+    <bpmn:association id="Assoc_4" sourceRef="Task_WriteReport" targetRef="PP_04" />
+    <bpmn:association id="Assoc_5" sourceRef="Gateway_Escalate" targetRef="PP_05" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_AsIs">
+    <bpmndi:BPMNPlane id="BPMNPlane_AsIs" bpmnElement="Process_AsIs">
+      <bpmndi:BPMNShape id="Lane_Operator_AsIs_di" bpmnElement="Lane_Operator_AsIs" isHorizontal="true">
+        <dc:Bounds x="100" y="50" width="1510" height="420" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_AsIs_di" bpmnElement="Start_AsIs">
+        <dc:Bounds x="150" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="128" y="175" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Monitor_di" bpmnElement="Task_Monitor">
+        <dc:Bounds x="240" y="110" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CollectDossier_di" bpmnElement="Task_CollectDossier">
+        <dc:Bounds x="470" y="110" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SearchRules_di" bpmnElement="Task_SearchRules">
+        <dc:Bounds x="700" y="110" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_WriteReport_di" bpmnElement="Task_WriteReport">
+        <dc:Bounds x="930" y="110" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Escalate_di" bpmnElement="Gateway_Escalate" isMarkerVisible="true">
+        <dc:Bounds x="1160" y="125" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1113" y="70" width="74" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EscalateSME_di" bpmnElement="Task_EscalateSME">
+        <dc:Bounds x="1290" y="70" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CloseCase_di" bpmnElement="Task_CloseCase">
+        <dc:Bounds x="1290" y="210" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Escalated_di" bpmnElement="End_Escalated">
+        <dc:Bounds x="1530" y="92" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1505" y="135" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Closed_di" bpmnElement="End_Closed">
+        <dc:Bounds x="1530" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1505" y="275" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PP_01_di" bpmnElement="PP_01">
+        <dc:Bounds x="240" y="330" width="180" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PP_02_di" bpmnElement="PP_02">
+        <dc:Bounds x="470" y="330" width="180" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PP_03_di" bpmnElement="PP_03">
+        <dc:Bounds x="700" y="330" width="180" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PP_04_di" bpmnElement="PP_04">
+        <dc:Bounds x="930" y="330" width="180" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PP_05_di" bpmnElement="PP_05">
+        <dc:Bounds x="1160" y="330" width="180" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F_AsIs_1_di" bpmnElement="F_AsIs_1">
+        <di:waypoint x="186" y="150" />
+        <di:waypoint x="240" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AsIs_2_di" bpmnElement="F_AsIs_2">
+        <di:waypoint x="420" y="150" />
+        <di:waypoint x="470" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AsIs_3_di" bpmnElement="F_AsIs_3">
+        <di:waypoint x="650" y="150" />
+        <di:waypoint x="700" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AsIs_4_di" bpmnElement="F_AsIs_4">
+        <di:waypoint x="880" y="150" />
+        <di:waypoint x="930" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AsIs_5_di" bpmnElement="F_AsIs_5">
+        <di:waypoint x="1110" y="150" />
+        <di:waypoint x="1160" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AsIs_6_di" bpmnElement="F_AsIs_6">
+        <di:waypoint x="1185" y="125" />
+        <di:waypoint x="1185" y="110" />
+        <di:waypoint x="1290" y="110" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1195" y="95" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AsIs_7_di" bpmnElement="F_AsIs_7">
+        <di:waypoint x="1185" y="175" />
+        <di:waypoint x="1185" y="250" />
+        <di:waypoint x="1290" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1195" y="230" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AsIs_8_di" bpmnElement="F_AsIs_8">
+        <di:waypoint x="1470" y="110" />
+        <di:waypoint x="1530" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AsIs_9_di" bpmnElement="F_AsIs_9">
+        <di:waypoint x="1470" y="250" />
+        <di:waypoint x="1530" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_1_di" bpmnElement="Assoc_1">
+        <di:waypoint x="330" y="190" />
+        <di:waypoint x="330" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_2_di" bpmnElement="Assoc_2">
+        <di:waypoint x="560" y="190" />
+        <di:waypoint x="560" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_3_di" bpmnElement="Assoc_3">
+        <di:waypoint x="790" y="190" />
+        <di:waypoint x="790" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_4_di" bpmnElement="Assoc_4">
+        <di:waypoint x="1020" y="190" />
+        <di:waypoint x="1020" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_5_di" bpmnElement="Assoc_5">
+        <di:waypoint x="1210" y="150" />
+        <di:waypoint x="1250" y="330" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
