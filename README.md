@@ -18,10 +18,10 @@ evaluation-наборы, метрики faithfulness/relevance, guardrails и re
 
 ## Диаграммы
 
-- BPMN As-Is: [docs/diagrams/bpmn-asis.bpmn](docs/diagrams/bpmn-asis.bpmn)
-- BPMN To-Be: [docs/diagrams/bpmn-tobe.bpmn](docs/diagrams/bpmn-tobe.bpmn)
+- BPMN As-Is: [docs/diagrams/bpmn-as_is_process.bpmn](docs/diagrams/as_is_process.bpmn)
+- BPMN To-Be: [docs/diagrams/to_be_process.bpmn](docs/diagrams/to_be_process.bpmn)
 - UML Sequence (цикл ReAct): [docs/diagrams/sequence-react-loop.puml](docs/diagrams/sequence-react-loop.puml)
-- ER-диаграмма: [docs/diagrams/er-data-model.puml](docs/diagrams/er-data-model.puml)
+- ER-диаграмма: [docs/diagrams/ER-диаграммаER-диаграмма.puml](docs/diagrams/ER-диаграммаER-диаграмма.puml)
 
 ## Статус
 
