@@ -38,11 +38,11 @@ evaluation-наборы, метрики faithfulness/relevance, guardrails и re
 
 ## Реестр решений
 
-- [ADR-0001](0001-langgraph.md) — Оркестрация агента на LangGraph. Статус: Accepted.
-- [ADR-0002](0002-read-only.md) — Режим Read-Only как архитектурное ограничение. Статус: Accepted.
-- [ADR-0003](0003-structured-output.md) — Structured Output (JSON Schema) вместо свободного текста. Статус: Accepted.
-- [ADR-0004](0004-retrieval-first.md) — Retrieval-first (RAG) как основа генерации правил. Статус: Accepted.
-- [ADR-0005](0005-on-premise-llm.md) — Локальная (on-premise) LLM и векторная БД. Статус: Accepted.
+- [ADR-0001](docs/adr/0001-langgraph.md) — Оркестрация агента на LangGraph. Статус: Accepted.
+- [ADR-0002](docs/adr/0002-read-only.md) — Режим Read-Only как архитектурное ограничение. Статус: Accepted.
+- [ADR-0003](docs/adr/0003-structured-output.md) — Structured Output (JSON Schema) вместо свободного текста. Статус: Accepted.
+- [ADR-0004](docs/adr/0004-retrieval-first.md) — Retrieval-first (RAG) как основа генерации правил. Статус: Accepted.
+- [ADR-0005](docs/adr/0005-on-premise-llm.md) — Локальная (on-premise) LLM и векторная БД. Статус: Accepted.
 
 ## Правила ведения
 
