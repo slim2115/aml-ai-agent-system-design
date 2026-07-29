@@ -1,0 +1,12 @@
+langgraph
+langchain-core
+langchain-ollama
+chromadb
+pydantic
+jsonschema
+streamlit
+python-dotenv
+pytest
+pytest-cov
+ragas
+deepeval
