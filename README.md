@@ -1,14 +1,35 @@
 # AML / Anti-Fraud Copilot (PoC)
 
 Пет-проект для позиции **Системный аналитик AI-Native** (финтех, AML/anti-fraud).
-Интеллектуальный ассистент первичного расследования комплаенс-инцидентов на базе LLM + RAG,
-работающий строго в режиме **Read-Only** и на принципах **Human-in-the-Loop**.
-
-## Позиционирование
-
-Системный аналитик AI-решений в финтехе с инженерным бэкграундом QA-автоматизации.
 Проектирую требования к LLM-агентам так, чтобы их можно было проверить и измерить:
 evaluation-наборы, метрики faithfulness/relevance, guardrails и refusal-политика.
+Разрабатываю прототип интеллектуального ассистента первичного расследования комплаенс-инцидентов на базе LLM + RAG,
+работающий строго в режиме **Read-Only** и на принципах **Human-in-the-Loop**.
+
+# Данные PoC-контура
+
+> **ДИСКЛЕЙМЕР:** Все данные в этой директории являются **синтетическими** и сгенерированы
+> исключительно для демонстрации работы прототипа. Схема учебная и не содержит реальных
+> банковских данных или персональных данных клиентов. Совпадения с реальными лицами
+> и транзакциями случайны.
+
+## Состав
+
+- `synthetic/clients.json` — профили клиентов (сущность Client, Data Model).
+- `synthetic/transactions.json` — транзакции (сущность Transaction, Data Model).
+- `synthetic/cases.json` — кейсы/инциденты (сущность Case, Data Model).
+- `synthetic/rules.json` — база знаний комплаенса для RAG (сущность Rule, Data Model).
+
+## Генерация
+
+Данные генерируются скриптом `scripts/generate_synthetic_data.py` в соответствии
+ со схемой из `docs/data-model.md`.
+
+## PII
+
+Поля `full_name`, `inn`, `pan_masked` в синтетике являются вымышленными и дополнительно
+маскируются в логах и трейсах (NFR-09, 152-ФЗ).
+
 
 ## Аналитические артефакты
 
@@ -22,13 +43,6 @@ evaluation-наборы, метрики faithfulness/relevance, guardrails и re
 - BPMN To-Be: [docs/diagrams/to_be_process.bpmn](docs/diagrams/to_be_process.bpmn)
 - UML Sequence (цикл ReAct): [docs/diagrams/sequence-react-loop.puml](docs/diagrams/sequence-react-loop.puml)
 - ER-диаграмма: [docs/diagrams/ER-диаграммаER-диаграмма.puml](docs/diagrams/ER-диаграммаER-диаграмма.puml)
-
-## Статус
-
-Аналитическая фаза (BRS → SRS → Data Model → диаграммы) завершена.
-Следующие шаги: evaluation-plan, risks-and-security, ADR, реализация прототипа.
-
-> **Дисклеймер:** Все данные в проекте синтетические. Схема учебная и не содержит реальных банковских данных или ПДн.
 
 # Architecture Decision Records (ADR)
 ## PoC: AML / Anti-Fraud Copilot
@@ -49,3 +63,28 @@ evaluation-наборы, метрики faithfulness/relevance, guardrails и re
 - Каждое решение имеет уникальный номер и статус (Proposed / Accepted / Deprecated / Superseded).
 - Решение не удаляется; при замене создаётся новый ADR со ссылкой на заменённый (Superseded by).
 - Изменение принятого решения требует новой записи и обновления связей в SRS.
+
+## Реализация прототипа
+
+### Стек
+
+Python + LangGraph (оркестрация) + Ollama (локальная LLM) + ChromaDB (векторная БД / RAG)
++ Streamlit (UI) + pytest (evaluation). Обоснование выбора — в [ADR](docs/adr/).
+
+### Инструкции
+
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env             # заполнить при необходимости
+
+### Структура кода
+
+src/ - исходный код прототипа (модули трассируются на SR из SRS).
+prompts/ - версионируемые системные промпты.
+data/synthetic/ - синтетические данные (см. дисклеймер).
+tests/ - evaluation-тесты и Golden Dataset (см. Evaluation Plan).
+
+### Запуск тестов  
+pytest tests/ -v
+
