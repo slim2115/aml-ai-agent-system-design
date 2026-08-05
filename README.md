@@ -58,6 +58,39 @@ evaluation-наборы, метрики faithfulness/relevance, guardrails и re
 - [ADR-0004](docs/adr/0004-retrieval-first.md) — Retrieval-first (RAG) как основа генерации правил. Статус: Accepted.
 - [ADR-0005](docs/adr/0005-on-premise-llm.md) — Локальная (on-premise) LLM и векторная БД. Статус: Accepted.
 
+# Реестр системных промптов
+
+Промпт является **версионируемым требованием** (QA.md P0; SRS v0.2, раздел 4).
+Изменение промпта = изменение требования: требует новой версии файла, записи в changelog
+и регрессионного прогона Golden Dataset (Evaluation Plan, раздел 7) до мержа.
+
+## Активные версии
+
+- **system_prompt_v0.2.md** — статус: **Active**. Соответствует SRS v0.2 (раздел 4).
+  Добавлены: EVIDENCE MANDATORY (tx_id + field), явная структура JSON-вывода.
+
+## Changelog
+
+- **v0.2** (Июль 2026) — добавлено ограничение EVIDENCE MANDATORY (BR-05, SR-14);
+  формализована структура JSON-вывода (ADR-0003); уточнена политика отказа (BRULE-03).
+- **v0.1** (черновик) — базовая версия: роль, READ-ONLY, ONLY APPROVED SOURCES,
+  NO HALLUCINATION, CITATION MANDATORY, refusal policy, защита от injection.
+
+## Правила версионирования
+
+1. Имя файла: `system_prompt_v{MAJOR}.{MINOR}.md`.
+2. Любое изменение поведения промпта повышает версию (минимум MINOR).
+3. Старые версии не удаляются — сохраняются для регрессионного сравнения (A/B, Evaluation Plan раздел 7.4).
+4. Загрузка промпта в коде — только через `src/agent/prompt_loader.py` (без хардкода строк).
+5. Метрики регрессии: Faithfulness, Answer Relevance, Refusal Correctness, Schema Match
+   (Evaluation Plan, раздел 3) не должны деградировать относительно baseline.
+
+## Связь с артефактами
+
+- Спецификация промпта: `docs/srs.md`, раздел 4.
+- Обоснование structured output: `docs/adr/0003-structured-output.md`.
+- Защита от injection: `docs/risks-and-security.md` (RISK-SEC-01), `docs/evaluation-plan.md` (категория C).
+
 ## Правила ведения
 
 - Каждое решение имеет уникальный номер и статус (Proposed / Accepted / Deprecated / Superseded).
@@ -88,3 +121,14 @@ tests/ - evaluation-тесты и Golden Dataset (см. Evaluation Plan).
 ### Запуск тестов  
 pytest tests/ -v
 
+![CI](https://github.com/slim2115/aml-ai-agent-system-design/actions/workflows/ci.yml/badge.svg)
+
+## Evaluation
+
+Качество агента измеряется прогоном по Golden Dataset (code-based метрики:
+Schema Match, Traceability, Refusal Correctness, Evidence Grounding, RAG Recall, Latency).
+
+- Запуск детерминированных тестов в CI: `pytest -m "not llm"` (на каждый push).
+- Полный прогон с генерацией отчёта (требуется Ollama):
+  ```bash
+  python -m scripts.run_evaluation
