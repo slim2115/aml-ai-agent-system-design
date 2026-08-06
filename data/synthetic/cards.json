@@ -1,0 +1,23 @@
+[
+  {
+    "card_id": "CARD-1001",
+    "client_id": "C-00045",
+    "pan_masked": "**** **** **** 7781",
+    "card_status": "active",
+    "issue_date": "2022-01-10"
+  },
+  {
+    "card_id": "CARD-1002",
+    "client_id": "C-00055",
+    "pan_masked": "**** **** **** 3322",
+    "card_status": "active",
+    "issue_date": "2023-05-05"
+  },
+  {
+    "card_id": "CARD-1003",
+    "client_id": "C-00077",
+    "pan_masked": "**** **** **** 9900",
+    "card_status": "active",
+    "issue_date": "2021-09-01"
+  }
+]

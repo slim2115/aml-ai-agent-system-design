@@ -1,0 +1,34 @@
+[
+  {
+    "client_id": "C-00045",
+    "full_name": "Иванов Иван Иванович",
+    "risk_category": "medium",
+    "kyc_status": "verified",
+    "client_since": "2019-03-15",
+    "inn": "770123456789"
+  },
+  {
+    "client_id": "C-00055",
+    "full_name": "Петрова Мария Сергеевна",
+    "risk_category": "high",
+    "kyc_status": "verified",
+    "client_since": "2021-07-01",
+    "inn": "770987654321"
+  },
+  {
+    "client_id": "C-00077",
+    "full_name": "Сидоров Алексей Петрович",
+    "risk_category": "low",
+    "kyc_status": "verified",
+    "client_since": "2020-11-20",
+    "inn": "770555444333"
+  },
+  {
+    "client_id": "C-00099",
+    "full_name": "Кузнецов Дмитрий Олегович",
+    "risk_category": "medium",
+    "kyc_status": "pending",
+    "client_since": "2026-06-01",
+    "inn": null
+  }
+]
