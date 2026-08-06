@@ -7,8 +7,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from app.config import get_settings
-from app.schemas import validate_draft
+from src.config import get_settings
+from src.schemas import validate_draft
 
 # 1. Проверка конфигурации
 s = get_settings()
