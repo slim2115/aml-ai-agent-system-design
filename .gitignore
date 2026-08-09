@@ -6,3 +6,5 @@ __pycache__/
 *.pyc
 dist/
 build/
+# Векторная БД ChromaDB (генерируется при индексации, не версионируется)
+data/chroma/
