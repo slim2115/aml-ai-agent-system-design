@@ -7,10 +7,14 @@
 
 Архитектура (ADR-0005, on-premise):
   - векторная БД: локальная ChromaDB (PersistentClient);
-  - embedding: локальная функция ChromaDB (ONNX), без внешних вызовов.
-    Для production рекомендуется мультиязычная модель (открытый вопрос).
+  - embedding: мультиязычная модель paraphrase-multilingual-MiniLM-L12-v2
+    (sentence-transformers, локально). Обеспечивает корректную семантику
+    русскоязычных регламентов. Требует: pip install sentence-transformers.
 
 Формат чанка соответствует Data Model, раздел 4.3.
+
+ВАЖНО: при смене embedding-модели необходимо удалить data/chroma и
+переиндексировать базу — векторные пространства разных моделей несовместимы.
 """
 from __future__ import annotations
 
@@ -22,6 +26,31 @@ from chromadb.utils import embedding_functions
 
 from src.config import get_settings
 from src.schemas import Rule
+
+#: Мультиязычная embedding-модель для корректной работы с русскоязычными
+#: регламентами (on-premise, NFR-10). Требует: pip install sentence-transformers.
+_RU_EMBEDDING_MODEL = "paraphrase-multilingual-MiniLM-L12-v2"
+
+
+def _build_embedding_function():
+    """Возвращает мультиязычную embedding-функцию.
+
+    Явно сообщает, какая модель используется, и падает с понятной ошибкой,
+    если sentence-transformers не установлен или модель недоступна
+    (вместо тихого отката на англоязычную модель).
+    """
+    try:
+        fn = embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name=_RU_EMBEDDING_MODEL
+        )
+        print(f"[knowledge_base] embedding: {_RU_EMBEDDING_MODEL} (multilingual)")
+        return fn
+    except Exception as exc:  # noqa: BLE001
+        raise RuntimeError(
+            f"Не удалось загрузить мультиязычную модель '{_RU_EMBEDDING_MODEL}'. "
+            "Установите зависимости: pip install sentence-transformers. "
+            f"Причина: {exc}"
+        ) from exc
 
 
 @dataclass(frozen=True)
@@ -106,13 +135,12 @@ class KnowledgeBase:
         self._collection = None
 
     def _get_collection(self):
-        """Создаёт/открывает коллекцию ChromaDB с локальной embedding-функцией."""
+        """Создаёт/открывает коллекцию ChromaDB с мультиязычной embedding-функцией."""
         if self._collection is None:
             client = chromadb.PersistentClient(path=self._persist_dir)
-            embedding_fn = embedding_functions.DefaultEmbeddingFunction()
             self._collection = client.get_or_create_collection(
                 name=self._collection_name,
-                embedding_function=embedding_fn,
+                embedding_function=_build_embedding_function(),
             )
         return self._collection
 
