@@ -225,9 +225,37 @@ class ReportGenerator:
 
         raw_response = self._call_llm(system_prompt, user_message)
         payload = json.loads(raw_response)
-
+        payload = self._normalize_payload(payload, context.incident_id)
+        
         return GenerationResult(
             payload=payload,
             raw_response=raw_response,
             retrieved_rules=rules,
         )
+    
+    def _normalize_payload(self, payload: dict, incident_id: str) -> dict:
+        """Очищает типичные артефакты слабой LLM.
+
+        - скобки в source_ref;
+        - фиктивная generated_at (подставляется реальная).
+        """
+        from datetime import datetime, timezone
+
+        payload["incident_id"] = incident_id
+        payload["generated_at"] = datetime.now(timezone.utc).isoformat()
+
+        def _strip_brackets(s):
+            return s.strip().strip("[]") if isinstance(s, str) else s
+
+        for fact in payload.get("found_facts", []):
+            if fact.get("source_ref"):
+                fact["source_ref"] = _strip_brackets(fact["source_ref"])
+
+        for pattern in payload.get("suspicious_patterns", []):
+            if pattern.get("source_ref"):
+                pattern["source_ref"] = _strip_brackets(pattern["source_ref"])
+
+        for rule in payload.get("applicable_rules", []):
+            if rule.get("source_ref"):
+                rule["source_ref"] = _strip_brackets(rule["source_ref"])
+        return payload
