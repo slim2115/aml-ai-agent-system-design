@@ -122,15 +122,9 @@ class TraceabilityValidator:
         self._kb = knowledge_base
 
     def validate(self, draft: AMLInvestigationDraft) -> CheckResult:
-        """Сверяет все source_ref черновика с базой знаний.
-
-        Args:
-            draft: валидный черновик (после SchemaValidator).
-
-        Returns:
-            CheckResult: passed=True, если все ссылки существуют.
-        """
+        """Сверяет все source_ref и rule_id черновика с базой знаний."""
         invalid_refs: List[str] = []
+        invalid_rule_ids: List[str] = []
 
         for fact in draft.found_facts:
             if fact.source_ref and not self._kb.validate_source_ref(fact.source_ref):
@@ -143,12 +137,20 @@ class TraceabilityValidator:
         for rule in draft.applicable_rules:
             if not self._kb.validate_source_ref(rule.source_ref):
                 invalid_refs.append(rule.source_ref)
+            if not self._kb.validate_rule_id(rule.rule_id):
+                invalid_rule_ids.append(rule.rule_id)
 
+        problems = []
         if invalid_refs:
+            problems.append(f"невалидные source_ref: {sorted(set(invalid_refs))}")
+        if invalid_rule_ids:
+            problems.append(f"несуществующие rule_id: {sorted(set(invalid_rule_ids))}")
+
+        if problems:
             return CheckResult(
                 name=self.name,
                 passed=False,
-                detail=f"Невалидные source_ref: {sorted(set(invalid_refs))}",
+                detail="; ".join(problems),
             )
         return CheckResult(name=self.name, passed=True)
 
