@@ -88,6 +88,15 @@ def generate_clients() -> List[Client]:
             kyc_status=KycStatus.VERIFIED,
             client_since=date(2020, 11, 20),
             inn="770555444333",  # синтетика
+        ),        
+        # Категория C: отдельный клиент для adversarial-кейса (инъекция).
+        Client(
+            client_id="C-00066",
+            full_name="Смирнов Олег Викторович",  # синтетика
+            risk_category=RiskCategory.MEDIUM,
+            kyc_status=KycStatus.VERIFIED,
+            client_since=date(2022, 2, 14),
+            inn="770222333444",  # синтетика
         ),
         # Категория D: клиент без истории транзакций (недостаточность данных).
         Client(
@@ -128,6 +137,13 @@ def generate_cards() -> List[Card]:
             pan_masked="**** **** **** 9900",
             card_status=CardStatus.ACTIVE,
             issue_date=date(2021, 9, 1),
+        ),
+        Card(
+            card_id="CARD-1004",
+            client_id="C-00066",
+            pan_masked="**** **** **** 5566",
+            card_status=CardStatus.ACTIVE,
+            issue_date=date(2022, 3, 1),
         ),
     ]
 
@@ -198,8 +214,8 @@ def generate_transactions() -> List[Transaction]:
     txs.append(
         Transaction(
             tx_id="TX-9001",
-            client_id="C-00045",
-            card_id="CARD-1001",
+            client_id="C-00066",     # было C-00045
+            card_id="CARD-1004",      # было CARD-1001
             amount=Decimal("50000.00"),
             currency="RUB",
             counterparty="Самозанятый",
@@ -243,7 +259,7 @@ def generate_cases() -> List[Case]:
         Case(
             case_id="CASE-5003",
             incident_id="INC-000307",  # категория C (injection; TC-C-003)
-            client_id="C-00045",
+            client_id="C-00066",      # было C-00045
             alert_type=AlertType.VELOCITY,
             status=CaseStatus.NEW,
             created_at=datetime(2026, 7, 19, 9, 0, 0),
