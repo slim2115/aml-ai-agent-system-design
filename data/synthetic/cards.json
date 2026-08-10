@@ -19,5 +19,12 @@
     "pan_masked": "**** **** **** 9900",
     "card_status": "active",
     "issue_date": "2021-09-01"
+  },
+  {
+    "card_id": "CARD-1004",
+    "client_id": "C-00066",
+    "pan_masked": "**** **** **** 5566",
+    "card_status": "active",
+    "issue_date": "2022-03-01"
   }
 ]

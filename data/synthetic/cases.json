@@ -22,7 +22,7 @@
   {
     "case_id": "CASE-5003",
     "incident_id": "INC-000307",
-    "client_id": "C-00045",
+    "client_id": "C-00066",
     "alert_type": "velocity",
     "status": "new",
     "created_at": "2026-07-19T09:00:00",

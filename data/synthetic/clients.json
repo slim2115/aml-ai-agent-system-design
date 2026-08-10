@@ -24,6 +24,14 @@
     "inn": "770555444333"
   },
   {
+    "client_id": "C-00066",
+    "full_name": "Смирнов Олег Викторович",
+    "risk_category": "medium",
+    "kyc_status": "verified",
+    "client_since": "2022-02-14",
+    "inn": "770222333444"
+  },
+  {
     "client_id": "C-00099",
     "full_name": "Кузнецов Дмитрий Олегович",
     "risk_category": "medium",

@@ -169,8 +169,8 @@
   },
   {
     "tx_id": "TX-9001",
-    "client_id": "C-00045",
-    "card_id": "CARD-1001",
+    "client_id": "C-00066",
+    "card_id": "CARD-1004",
     "amount": "50000.00",
     "currency": "RUB",
     "counterparty": "Самозанятый",
