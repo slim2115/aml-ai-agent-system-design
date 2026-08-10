@@ -129,9 +129,8 @@ class KnowledgeBase:
         self._collection_name = collection_name or settings.vector_store.collection_name
         self._persist_dir = persist_dir or settings.vector_store.persist_dir
         self._chunks: List[RuleChunk] = [RuleChunk.from_rule(rule) for rule in rules]
-        self._known_regulation_refs: Set[str] = {
-            rule.regulation_ref for rule in rules
-        }
+        self._known_regulation_refs: Set[str] = {rule.regulation_ref for rule in rules}
+        self._known_rule_ids: Set[str] = {rule.rule_id for rule in rules}
         self._collection = None
 
     def _get_collection(self):
@@ -213,3 +212,7 @@ class KnowledgeBase:
             source_ref.startswith(known)
             for known in self._known_regulation_refs
         )
+    
+    def validate_rule_id(self, rule_id: str) -> bool:
+        """Проверяет существование rule_id в базе знаний (SR-12, BRULE-02)."""
+        return rule_id in self._known_rule_ids
