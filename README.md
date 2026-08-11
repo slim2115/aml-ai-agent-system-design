@@ -132,3 +132,12 @@ Schema Match, Traceability, Refusal Correctness, Evidence Grounding, RAG Recall,
 - Полный прогон с генерацией отчёта (требуется Ollama):
   ```bash
   python -m scripts.run_evaluation
+
+## Текущий статус
+
+✅ Итерации 1–9 завершены: полный цикл от инцидента до валидного черновика.
+- Аналитика: BRS, SRS, Data Model, Evaluation Plan, Risks, ADR, диаграммы.
+- Реализация: data_access, retrieval (RAG), generation (Ollama), guardrails, LangGraph-агент.
+- Happy-path кейс INC-000123 проходит все защитные проверки.
+
+🔜 Итерация 10: Golden Dataset + evaluation-тесты (метрики M-01…M-09).
