@@ -125,13 +125,19 @@ class ReportGenerator:
 
     @staticmethod
     def _serialize_rules(rules: List[RetrievalResult]) -> str:
-        """Сериализует извлечённые правила в текст для user-сообщения."""
+        """Сериализует правила для контекста LLM.
+
+        Формат намеренно не использует скобки и разделители, которые модель
+        может скопировать в source_ref. source_ref явно отделён от rule_id.
+        """
         if not rules:
             return "Применимые правила не найдены."
-        lines = ["УТВЕРЖДЁННАЯ БАЗА ЗНАНИЙ (используй только эти правила):"]
+        lines = ["УТВЕРЖДЁННАЯ БАЗА ЗНАНИЙ:"]
         for rule in rules:
             lines.append(
-                f"- [{rule.regulation_ref}] {rule.section}: {rule.text}"
+                f"- rule_id: {rule.rule_id}\n"
+                f"  source_ref: {rule.regulation_ref}\n"
+                f"  текст: {rule.section}. {rule.text}"
             )
         return "\n".join(lines)
 
@@ -256,15 +262,39 @@ class ReportGenerator:
     _VALID_FIELDS = {"amount", "currency", "counterparty", "purpose",
                      "channel", "status", "timestamp"}
 
+        #: Маппинг русских/альтернативных названий полей на допустимые (SR-14).
+    _FIELD_ALIASES = {
+        "назначение": "purpose",
+        "назначение платежа": "purpose",
+        "сумма": "amount",
+        "валюта": "currency",
+        "контрагент": "counterparty",
+        "канал": "channel",
+        "статус": "status",
+        "время": "timestamp",
+        "дата": "timestamp",
+    }
+
+    #: Поля, входящие в схему AMLInvestigationDraft (лишние удаляются).
+    _SCHEMA_KEYS = {
+        "incident_id", "status", "generated_at", "data_completeness",
+        "found_facts", "suspicious_patterns", "applicable_rules",
+        "refusal_reason", "reasoning_trace", "confidence",
+    }
+
+    _VALID_FIELDS = {"amount", "currency", "counterparty", "purpose",
+                     "channel", "status", "timestamp"}
+
     def _normalize_payload(self, payload: dict, incident_id: str) -> dict:
         """Приводит ответ LLM к схеме AMLInvestigationDraft.
 
         Обрабатывает типичные артефакты слабой LLM:
-        - скобки в source_ref;
+        - загрязнённые source_ref (скобки, примесь rule_id, разделители);
         - фиктивная/отсутствующая generated_at;
         - отсутствующий confidence (дефолт 0.5);
-        - массивы tx_id/field -> развёртка в отдельные факты (декартово произведение);
+        - массивы tx_id/field -> развёртка в отдельные факты;
         - недопустимые значения field (маппинг русских названий);
+        - галлюцинированные rule_id (коррекция по source_ref);
         - факты без валидного доказательства (удаляются, BR-05);
         - лишние поля вне схемы (удаляются).
         """
@@ -288,10 +318,28 @@ class ReportGenerator:
                 return field
             return self._FIELD_ALIASES.get(field)
 
-        def _expand_evidence(items, text_key):
-            """Разворачивает массивы tx_id/field в отдельные элементы."""
+        def _clean_source_ref(s):
+            """Усиленная очистка source_ref (заменяет _strip_brackets для source_ref)."""
+            if not isinstance(s, str):
+                return None
+            cleaned = _strip_brackets(s)
+            # Если уже валиден — вернуть как есть
+            if self._kb.validate_source_ref(cleaned):
+                return cleaned
+            # Иначе извлечь известный regulation_ref как подстроку
+            extracted = self._kb.extract_regulation_ref(cleaned)
+            return extracted if extracted else cleaned
+
+                #: Максимальное число фактов/паттернов после развёртки (защита от взрывного роста).
+        MAX_EXPANDED_ITEMS = 20
+
+        def _expand_evidence(items):
+            """Разворачивает массивы tx_id/field компактно (без декартова произведения)."""
             expanded = []
             for item in items:
+                if item.get("source_ref"):
+                    item["source_ref"] = _clean_source_ref(item["source_ref"])
+
                 ev = item.get("evidence_ref") or {}
                 tx_ids = ev.get("tx_id")
                 fields = ev.get("field")
@@ -302,41 +350,41 @@ class ReportGenerator:
                 field_list = [f for f in (_fix_field(f) for f in field_list) if f]
 
                 if is_array and tx_list and field_list:
-                    # Декартово произведение: каждый tx_id x каждый валидный field
+                    # Компактная развёртка: каждый tx_id с ПЕРВЫМ field (не декартово)
+                    primary_field = field_list[0]
                     for tx_id in tx_list:
-                        for field in field_list:
-                            new_item = dict(item)
-                            new_item["evidence_ref"] = {"tx_id": tx_id, "field": field}
-                            expanded.append(new_item)
+                        if len(expanded) >= MAX_EXPANDED_ITEMS:
+                            break
+                        new_item = dict(item)
+                        new_item["evidence_ref"] = {"tx_id": tx_id, "field": primary_field}
+                        expanded.append(new_item)
                 else:
-                    # Одиночные значения
-                    fixed_field = _fix_field(ev.get("field")) if not is_array else None
                     single_tx = tx_ids if isinstance(tx_ids, str) else (tx_list[0] if tx_list else None)
-                    single_field = fixed_field or (field_list[0] if field_list else None)
+                    single_field = _fix_field(ev.get("field")) or (field_list[0] if field_list else None)
                     if single_tx and single_field:
                         item["evidence_ref"] = {"tx_id": single_tx, "field": single_field}
                         expanded.append(item)
-                    # иначе факт без доказательства -> не добавляется (BR-05)
+
+                if len(expanded) >= MAX_EXPANDED_ITEMS:
+                    break
             return expanded
 
-        # Обработка found_facts
-        facts = payload.get("found_facts", [])
-        for fact in facts:
-            if fact.get("source_ref"):
-                fact["source_ref"] = _strip_brackets(fact["source_ref"])
-        payload["found_facts"] = _expand_evidence(facts, "fact")
+        # Обработка found_facts (очистка source_ref внутри _expand_evidence)
+        payload["found_facts"] = _expand_evidence(payload.get("found_facts", []))
 
-        # Обработка suspicious_patterns
-        patterns = payload.get("suspicious_patterns", [])
-        for pattern in patterns:
-            if pattern.get("source_ref"):
-                pattern["source_ref"] = _strip_brackets(pattern["source_ref"])
-        payload["suspicious_patterns"] = _expand_evidence(patterns, "pattern")
+        # Обработка suspicious_patterns (очистка source_ref внутри _expand_evidence)
+        payload["suspicious_patterns"] = _expand_evidence(payload.get("suspicious_patterns", []))
 
         # Обработка applicable_rules
         for rule in payload.get("applicable_rules", []):
             if rule.get("source_ref"):
-                rule["source_ref"] = _strip_brackets(rule["source_ref"])
+                rule["source_ref"] = _clean_source_ref(rule["source_ref"])
+            # Коррекция галлюцинированного rule_id по source_ref
+            src = rule.get("source_ref")
+            if src and not self._kb.validate_rule_id(rule.get("rule_id", "")):
+                real_id = self._kb.get_rule_id_by_regulation_ref(src)
+                if real_id:
+                    rule["rule_id"] = real_id
 
         # Удаление лишних полей вне схемы
         payload = {k: v for k, v in payload.items() if k in self._SCHEMA_KEYS}
