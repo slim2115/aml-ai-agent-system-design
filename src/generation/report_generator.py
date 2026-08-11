@@ -233,29 +233,112 @@ class ReportGenerator:
             retrieved_rules=rules,
         )
     
-    def _normalize_payload(self, payload: dict, incident_id: str) -> dict:
-        """Очищает типичные артефакты слабой LLM.
+    #: Маппинг русских/альтернативных названий полей на допустимые (SR-14).
+    _FIELD_ALIASES = {
+        "назначение": "purpose",
+        "назначение платежа": "purpose",
+        "сумма": "amount",
+        "валюта": "currency",
+        "контрагент": "counterparty",
+        "канал": "channel",
+        "статус": "status",
+        "время": "timestamp",
+        "дата": "timestamp",
+    }
 
+    #: Поля, входящие в схему AMLInvestigationDraft (лишние удаляются).
+    _SCHEMA_KEYS = {
+        "incident_id", "status", "generated_at", "data_completeness",
+        "found_facts", "suspicious_patterns", "applicable_rules",
+        "refusal_reason", "reasoning_trace", "confidence",
+    }
+
+    _VALID_FIELDS = {"amount", "currency", "counterparty", "purpose",
+                     "channel", "status", "timestamp"}
+
+    def _normalize_payload(self, payload: dict, incident_id: str) -> dict:
+        """Приводит ответ LLM к схеме AMLInvestigationDraft.
+
+        Обрабатывает типичные артефакты слабой LLM:
         - скобки в source_ref;
-        - фиктивная generated_at (подставляется реальная).
+        - фиктивная/отсутствующая generated_at;
+        - отсутствующий confidence (дефолт 0.5);
+        - массивы tx_id/field -> развёртка в отдельные факты (декартово произведение);
+        - недопустимые значения field (маппинг русских названий);
+        - факты без валидного доказательства (удаляются, BR-05);
+        - лишние поля вне схемы (удаляются).
         """
         from datetime import datetime, timezone
 
         payload["incident_id"] = incident_id
         payload["generated_at"] = datetime.now(timezone.utc).isoformat()
 
+        # Дефолт confidence, если модель его не сгенерировала
+        if "confidence" not in payload or payload["confidence"] is None:
+            payload["confidence"] = 0.5
+
         def _strip_brackets(s):
             return s.strip().strip("[]") if isinstance(s, str) else s
 
-        for fact in payload.get("found_facts", []):
+        def _fix_field(field):
+            if not field:
+                return None
+            field = str(field).strip().lower()
+            if field in self._VALID_FIELDS:
+                return field
+            return self._FIELD_ALIASES.get(field)
+
+        def _expand_evidence(items, text_key):
+            """Разворачивает массивы tx_id/field в отдельные элементы."""
+            expanded = []
+            for item in items:
+                ev = item.get("evidence_ref") or {}
+                tx_ids = ev.get("tx_id")
+                fields = ev.get("field")
+
+                is_array = isinstance(tx_ids, list) or isinstance(fields, list)
+                tx_list = tx_ids if isinstance(tx_ids, list) else ([tx_ids] if tx_ids else [])
+                field_list = fields if isinstance(fields, list) else ([fields] if fields else [])
+                field_list = [f for f in (_fix_field(f) for f in field_list) if f]
+
+                if is_array and tx_list and field_list:
+                    # Декартово произведение: каждый tx_id x каждый валидный field
+                    for tx_id in tx_list:
+                        for field in field_list:
+                            new_item = dict(item)
+                            new_item["evidence_ref"] = {"tx_id": tx_id, "field": field}
+                            expanded.append(new_item)
+                else:
+                    # Одиночные значения
+                    fixed_field = _fix_field(ev.get("field")) if not is_array else None
+                    single_tx = tx_ids if isinstance(tx_ids, str) else (tx_list[0] if tx_list else None)
+                    single_field = fixed_field or (field_list[0] if field_list else None)
+                    if single_tx and single_field:
+                        item["evidence_ref"] = {"tx_id": single_tx, "field": single_field}
+                        expanded.append(item)
+                    # иначе факт без доказательства -> не добавляется (BR-05)
+            return expanded
+
+        # Обработка found_facts
+        facts = payload.get("found_facts", [])
+        for fact in facts:
             if fact.get("source_ref"):
                 fact["source_ref"] = _strip_brackets(fact["source_ref"])
+        payload["found_facts"] = _expand_evidence(facts, "fact")
 
-        for pattern in payload.get("suspicious_patterns", []):
+        # Обработка suspicious_patterns
+        patterns = payload.get("suspicious_patterns", [])
+        for pattern in patterns:
             if pattern.get("source_ref"):
                 pattern["source_ref"] = _strip_brackets(pattern["source_ref"])
+        payload["suspicious_patterns"] = _expand_evidence(patterns, "pattern")
 
+        # Обработка applicable_rules
         for rule in payload.get("applicable_rules", []):
             if rule.get("source_ref"):
                 rule["source_ref"] = _strip_brackets(rule["source_ref"])
+
+        # Удаление лишних полей вне схемы
+        payload = {k: v for k, v in payload.items() if k in self._SCHEMA_KEYS}
+
         return payload
