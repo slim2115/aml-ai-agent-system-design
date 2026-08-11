@@ -216,3 +216,23 @@ class KnowledgeBase:
     def validate_rule_id(self, rule_id: str) -> bool:
         """Проверяет существование rule_id в базе знаний (SR-12, BRULE-02)."""
         return rule_id in self._known_rule_ids
+
+    def get_rule_id_by_regulation_ref(self, regulation_ref: str) -> Optional[str]:
+        """Возвращает rule_id правила по regulation_ref (для нормализации)."""
+        for chunk in self._chunks:
+            if chunk.regulation_ref == regulation_ref:
+                return chunk.rule_id
+        return None
+
+    def extract_regulation_ref(self, source_ref: str) -> Optional[str]:
+        """Извлекает известный regulation_ref из строки (если он в ней как подстрока).
+
+        Защита от загрязнения формата: если LLM сгенерировала
+        'R-115-002 | [115-ФЗ, ст.6, п.2', метод вернёт '115-ФЗ, ст.6, п.2'.
+        """
+        if not source_ref:
+            return None
+        for known in self._known_regulation_refs:
+            if known in source_ref:
+                return known
+        return None
