@@ -14,3 +14,18 @@
 
 ### Conclusion
 qwen2.5:14b provides significantly better structured output adherence while running on 16GB RAM. Recommended as default model for PoC.
+
+## Iteration 9: End-to-End Agent Orchestration (LangGraph)
+
+**Result:** happy-path case INC-000123 passes all guardrails.
+
+| Guard | Status |
+|---|---|
+| prompt_injection | PASS |
+| schema_match | PASS |
+| traceability | PASS |
+| evidence_grounding | PASS |
+
+Model: qwen2.5:14b (Ollama, on-premise). Retrieval: paraphrase-multilingual-MiniLM-L12-v2.
+Defects discovered and fixed during stabilization: 6 (source_ref brackets, rule_id hallucinations,
+evidence arrays, format leakage, missing confidence, read timeout).
