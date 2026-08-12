@@ -60,7 +60,7 @@ class AgentState(TypedDict, total=False):
     error: Optional[str]
     reasoning_trace: List[str]
     generation_attempts: int
-
+    failed_guards: List[str]
 
 # =============================================================================
 # Агент
@@ -194,7 +194,7 @@ class AMLAgent:
 
         if payload is None:
             trace.append("Guardrails пропущены: отсутствует payload (ошибка генерации)")
-            return {"guardrail_passed": False, "reasoning_trace": trace}
+            return {"guardrail_passed": False, "failed_guards": failed, "reasoning_trace": trace}
 
         report = self._guardrails.run(payload, context)
         failed = [check.name for check in report.failed_checks()]
@@ -282,18 +282,24 @@ class AMLAgent:
 
     @staticmethod
     def _route_after_guardrails(state: AgentState) -> str:
-        """Решение после guardrails: draft (успех), retry (повтор) или refusal.
+        """Решение после guardrails: draft, retry или refusal.
 
-        При провале guardrails проверяет число попыток генерации:
-          - попытки не исчерпаны  -> retry (возврат к generate);
-          - попытки исчерпаны     -> refusal (окончательный отказ);
-          - payload отсутствует   -> refusal (ошибка генерации).
+        Оптимизация: если среди проваленных проверок есть prompt_injection,
+        retry бесполезен — инъекция находится в исходных данных и не будет
+        устранена повторной генерацией. В этом случае сразу отказ.
         """
         if state.get("payload") is None:
             return "refusal"
         if state.get("guardrail_passed"):
             return "draft"
-        # Guardrails провалили — проверяем лимит retry
+
+        # Инъекция в данных не исправляется повторной генерацией — сразу отказ
+        failed = state.get("failed_guards", [])
+        if "prompt_injection" in failed:
+            return "refusal"
+
+        # Остальные провалы (schema, traceability) — случайные артефакты,
+        # пробуем повторить генерацию
         attempts = state.get("generation_attempts", 0)
         if attempts < AMLAgent.MAX_GENERATION_ATTEMPTS:
             return "retry"
