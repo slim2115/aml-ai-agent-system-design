@@ -14,6 +14,14 @@
 """
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+# Корень проекта для импортов `from src.*`
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+
 import streamlit as st
 
 from src.agent import AMLAgent
@@ -110,7 +118,6 @@ def _transactions_html(
         rows.append("<tr>" + "".join(cells) + "</tr>")
     return f"<table class='tx-table'>{header}{''.join(rows)}</table>"
 
-
 def _mask_name(full_name: str) -> str:
     """Маскирование ФИО до фамилии и инициалов (NFR-09)."""
     parts = full_name.split()
@@ -118,6 +125,24 @@ def _mask_name(full_name: str) -> str:
         return full_name
     return parts[0] + " " + " ".join(p[0] + "." for p in parts[1:] if p)
 
+def _group_by_text(items: list, text_attr: str) -> list[dict]:
+    """Группирует элементы с одинаковым текстом, собирая все evidence_ref.
+
+    Нормализатор разворачивает массивы tx_id в отдельные факты/паттерны
+    (для валидности схемы), что приводит к дублированию текста.
+    Группировка на уровне UI восстанавливает читаемость без изменения payload.
+    """
+    groups: dict[str, dict] = {}
+    order: list[str] = []
+    for item in items:
+        text = getattr(item, text_attr)
+        if text not in groups:
+            groups[text] = {"text": text, "item": item, "evidences": []}
+            order.append(text)
+        ev = getattr(item, "evidence_ref", None)
+        if ev:
+            groups[text]["evidences"].append(ev)
+    return [groups[t] for t in order]
 
 # ---------------------------------------------------------------------------
 # Рендер результатов
@@ -147,17 +172,34 @@ def _render_draft(payload: dict, incident_id: str) -> None:
 
     with tab_report:
         st.subheader("Найденные факты")
-        for fact in draft.found_facts:
-            ref = fact.evidence_ref
+        for group in _group_by_text(draft.found_facts, "fact"):
+            fact = group["item"]
+            evidences = group["evidences"]
             src = f" · источник: {fact.source_ref}" if fact.source_ref else ""
-            st.markdown(
-                f"- {fact.fact}  \n  _доказательство: `{ref.tx_id}.{ref.field.value}`{src}_"
-            )
+            if len(evidences) > 1:
+                ev_list = ", ".join(f"`{e.tx_id}.{e.field.value}`" for e in evidences)
+                st.markdown(
+                    f"- {fact.fact}  \n"
+                    f"  _доказательства ({len(evidences)}): {ev_list}{src}_"
+                )
+            else:
+                e = evidences[0]
+                st.markdown(
+                    f"- {fact.fact}  \n"
+                    f"  _доказательство: `{e.tx_id}.{e.field.value}`{src}_"
+                )
 
         st.subheader("Подозрительные паттерны")
-        if draft.suspicious_patterns:
-            for p in draft.suspicious_patterns:
-                st.markdown(f"- {p.pattern}  \n  _обоснование: {p.source_ref}_")
+        patterns_grouped = _group_by_text(draft.suspicious_patterns, "pattern")
+        if patterns_grouped:
+            for group in patterns_grouped:
+                p = group["item"]
+                evidences = group["evidences"]
+                ev_note = ""
+                if evidences:
+                    ev_list = ", ".join(f"`{e.tx_id}.{e.field.value}`" for e in evidences)
+                    ev_note = f"  \n  _доказательства ({len(evidences)}): {ev_list}_"
+                st.markdown(f"- {p.pattern}{ev_note}  \n  _обоснование: {p.source_ref}_")
         else:
             st.caption("Подозрительные паттерны не выявлены.")
 
