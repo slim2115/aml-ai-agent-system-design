@@ -59,6 +59,7 @@ class AgentState(TypedDict, total=False):
     status: str
     error: Optional[str]
     reasoning_trace: List[str]
+    generation_attempts: int
 
 
 # =============================================================================
@@ -72,6 +73,8 @@ class AMLAgent:
     черновик отчёта (draft) или явный отказ (refusal). Изменение статусов кейсов
     и автоэкспорт выполняются внешней системой после HITL-одобрения (SR-22).
     """
+    
+    MAX_GENERATION_ATTEMPTS = 3
 
     def __init__(self) -> None:
         """Инициализирует зависимости и компилирует граф."""
@@ -97,17 +100,27 @@ class AMLAgent:
         graph.add_node("finalize_refusal", self._node_finalize_refusal)
 
         graph.add_edge(START, "build_context")
+
+        # После сборки контекста: generate (полные данные) или refusal (неполные/ошибка)
         graph.add_conditional_edges(
             "build_context",
             self._route_after_context,
             {"generate": "generate", "refusal": "finalize_refusal"},
         )
+
         graph.add_edge("generate", "run_guardrails")
+
+        # После guardrails: draft (успех), refusal (провал/лимит), retry (повтор генерации)
         graph.add_conditional_edges(
             "run_guardrails",
             self._route_after_guardrails,
-            {"draft": "finalize_draft", "refusal": "finalize_refusal"},
+            {
+                "draft": "finalize_draft",
+                "refusal": "finalize_refusal",
+                "retry": "generate",
+            },
         )
+
         graph.add_edge("finalize_draft", END)
         graph.add_edge("finalize_refusal", END)
 
@@ -143,19 +156,31 @@ class AMLAgent:
             }
 
     def _node_generate(self, state: AgentState) -> dict:
-        """Фаза 3: RAG-поиск правил и генерация черновика (SR-05..07)."""
+        """Фаза 3: RAG-поиск правил и генерация черновика (SR-05..07).
+
+        При повторной генерации (retry) инкрементирует счётчик попыток.
+        """
         context = state["context"]
         trace = list(state.get("reasoning_trace", []))
+        attempts = state.get("generation_attempts", 0) + 1
+
         try:
             result = self._generator.generate(context)
             trace.append(
-                f"Черновик сгенерирован; извлечено правил: {len(result.retrieved_rules)}"
+                f"Черновик сгенерирован (попытка {attempts}/"
+                f"{self.MAX_GENERATION_ATTEMPTS}); "
+                f"извлечено правил: {len(result.retrieved_rules)}"
             )
-            return {"payload": result.payload, "reasoning_trace": trace}
-        except Exception as exc:  # noqa: BLE001 - фиксируем любую ошибку генерации
-            trace.append(f"Ошибка генерации: {exc}")
+            return {
+                "payload": result.payload,
+                "generation_attempts": attempts,
+                "reasoning_trace": trace,
+            }
+        except Exception as exc:  # noqa: BLE001
+            trace.append(f"Ошибка генерации (попытка {attempts}): {exc}")
             return {
                 "payload": None,
+                "generation_attempts": attempts,
                 "error": str(exc),
                 "status": "error",
                 "reasoning_trace": trace,
@@ -257,10 +282,22 @@ class AMLAgent:
 
     @staticmethod
     def _route_after_guardrails(state: AgentState) -> str:
-        """Решение после guardrails: draft (успех) или refusal (провал)."""
+        """Решение после guardrails: draft (успех), retry (повтор) или refusal.
+
+        При провале guardrails проверяет число попыток генерации:
+          - попытки не исчерпаны  -> retry (возврат к generate);
+          - попытки исчерпаны     -> refusal (окончательный отказ);
+          - payload отсутствует   -> refusal (ошибка генерации).
+        """
         if state.get("payload") is None:
             return "refusal"
-        return "draft" if state.get("guardrail_passed") else "refusal"
+        if state.get("guardrail_passed"):
+            return "draft"
+        # Guardrails провалили — проверяем лимит retry
+        attempts = state.get("generation_attempts", 0)
+        if attempts < AMLAgent.MAX_GENERATION_ATTEMPTS:
+            return "retry"
+        return "refusal"
 
     # -------------------------------------------------------------------------
     # Публичный интерфейс
@@ -279,6 +316,7 @@ class AMLAgent:
         initial_state: AgentState = {
             "incident_id": incident_id,
             "reasoning_trace": [],
+            "generation_attempts": 0,
         }
         final_state = self._graph.invoke(initial_state)
         return final_state["final_draft"]
