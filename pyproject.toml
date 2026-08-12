@@ -1,0 +1,8 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "llm: тесты, требующие запущенной локальной LLM (Ollama). Запуск: pytest -m llm",
+    "eval: evaluation-тесты с прогонкой по Golden Dataset и расчётом quality gates.",
+    "unit: быстрые детерминированные unit-тесты без внешних зависимостей.",
+]
+addopts = "-ra --strict-markers"
