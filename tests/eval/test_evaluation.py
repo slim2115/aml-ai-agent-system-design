@@ -21,7 +21,6 @@ from src.config import get_settings
 from src.schemas import validate_draft
 
 # Порог соответствия expected_applicable_rules (доля совпавших source_ref).
-RECALL_THRESHOLD = 1.0
 
 def _load_golden_dataset():
     """Загружает Golden Dataset с защитой от отсутствия файла.
@@ -182,5 +181,5 @@ def test_quality_gates(agent, golden_dataset, knowledge_base, transaction_reposi
     assert report["M-04 Traceability"] >= settings.thresholds.traceability
     assert report["M-05 Refusal Correctness"] >= settings.thresholds.refusal_correctness
     assert report["M-06 Evidence Grounding"] == 1.0
-    assert report["M-07 RAG Recall"] >= RECALL_THRESHOLD
+    assert report["M-07 RAG Recall"] >= settings.thresholds.rag_recall
     assert report["M-09 Max Latency (s)"] <= settings.performance.generation_timeout_sec

@@ -83,16 +83,24 @@ class ThresholdsConfig:
       faithfulness       -> NFR-02 (PoC >= 0.90);
       schema_match       -> NFR-01 (= 1.0);
       traceability       -> NFR-04 (= 1.0);
-      refusal_correctness-> NFR-05 (>= 0.95).
+      refusal_correctness-> NFR-05 (>= 0.95);
+      rag_recall         -> NFR-03 (>= 0.5, допускает недетерминизм LLM).
     """
     faithfulness: float
     schema_match: float
     traceability: float
     refusal_correctness: float
+    rag_recall: float
 
     def __post_init__(self) -> None:
         """Контроль диапазонов порогов [0..1]."""
-        for name in ("faithfulness", "schema_match", "traceability", "refusal_correctness"):
+        for name in (
+            "faithfulness",
+            "schema_match",
+            "traceability",
+            "refusal_correctness",
+            "rag_recall",
+        ):
             value = getattr(self, name)
             if not 0.0 <= value <= 1.0:
                 raise ValueError(f"Порог {name}={value} вне диапазона [0..1]")
@@ -148,6 +156,7 @@ def get_settings() -> Settings:
             schema_match=_env_float("SCHEMA_MATCH_THRESHOLD", 1.0),
             traceability=_env_float("TRACEABILITY_THRESHOLD", 1.0),
             refusal_correctness=_env_float("REFUSAL_CORRECTNESS_THRESHOLD", 0.95),
+            rag_recall=_env_float("RAG_RECALL_THRESHOLD", 0.50)
         ),
         performance=PerformanceConfig(
             generation_timeout_sec=_env_int("GENERATION_TIMEOUT_SEC", 180),
