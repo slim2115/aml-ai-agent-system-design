@@ -194,12 +194,20 @@ class AMLAgent:
 
         if payload is None:
             trace.append("Guardrails пропущены: отсутствует payload (ошибка генерации)")
-            return {"guardrail_passed": False, "failed_guards": failed, "reasoning_trace": trace}
+            return {
+                "guardrail_passed": False,
+                "failed_guards": ["generation_error"],
+                "reasoning_trace": trace,
+            }
 
         report = self._guardrails.run(payload, context)
         failed = [check.name for check in report.failed_checks()]
         trace.append(f"Guardrails: passed={report.passed}, failed={failed}")
-        return {"guardrail_passed": report.passed, "reasoning_trace": trace}
+        return {
+            "guardrail_passed": report.passed,
+            "failed_guards": failed,
+            "reasoning_trace": trace,
+        }
 
     def _node_finalize_draft(self, state: AgentState) -> dict:
         """Фаза 5: возврат валидного черновика (status=draft)."""
