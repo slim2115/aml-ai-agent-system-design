@@ -1,34 +1,57 @@
 # AML / Anti-Fraud Copilot (PoC)
 
-Пет-проект для позиции **Системный аналитик AI-Native** (финтех, AML/anti-fraud).
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![On-Premise](https://img.shields.io/badge/Deployment-On--Premise-orange)
+![Read-Only](https://img.shields.io/badge/Agent-Read--Only-lightgrey)
+![Quality Gates](https://img.shields.io/badge/Quality%20Gates-100%25-brightgreen)
+![CI](https://github.com/slim2115/aml-ai-agent-system-design/actions/workflows/ci.yml/badge.svg)
+
+**Пет-проект для позиции Системный аналитик AI-Native (финтех, AML/anti-fraud).**
 Проектирую требования к LLM-агентам так, чтобы их можно было проверить и измерить:
 evaluation-наборы, метрики faithfulness/relevance, guardrails и refusal-политика.
-Разрабатываю прототип интеллектуального ассистента первичного расследования комплаенс-инцидентов на базе LLM + RAG,
-работающий строго в режиме **Read-Only** и на принципах **Human-in-the-Loop**.
+Разрабатываю прототип интеллектуального ассистента первичного расследования комплаенс-инцидентов
+на базе LLM + RAG, работающий строго в режиме **Read-Only** и на принципах **Human-in-the-Loop**.
 
-# Данные PoC-контура
+---
 
-> **ДИСКЛЕЙМЕР:** Все данные в этой директории являются **синтетическими** и сгенерированы
-> исключительно для демонстрации работы прототипа. Схема учебная и не содержит реальных
-> банковских данных или персональных данных клиентов. Совпадения с реальными лицами
-> и транзакциями случайны.
+## Дисклеймер (PoC-контур)
 
-## Состав
+> Все данные в проекте являются **синтетическими** и сгенерированы исключительно для демонстрации
+> работы прототипа. Схема учебная, не содержит реальных банковских данных или персональных данных
+> клиентов. Совпадения с реальными лицами и транзакциями случайны.
 
-- `synthetic/clients.json` — профили клиентов (сущность Client, Data Model).
-- `synthetic/transactions.json` — транзакции (сущность Transaction, Data Model).
-- `synthetic/cases.json` — кейсы/инциденты (сущность Case, Data Model).
-- `synthetic/rules.json` — база знаний комплаенса для RAG (сущность Rule, Data Model).
+### Состав синтетических данных
 
-## Генерация
+| Файл | Сущность | Описание |
+|---|---|---|
+| `data/synthetic/clients.json` | Client | Профили клиентов (риск-категории, KYC) |
+| `data/synthetic/transactions.json` | Transaction | Транзакционный лог |
+| `data/synthetic/cases.json` | Case | Кейсы/инциденты |
+| `data/synthetic/cards.json` | Card | Карты клиентов |
+| `data/synthetic/rules.json` | Rule | База знаний комплаенса для RAG |
 
-Данные генерируются скриптом `scripts/generate_synthetic_data.py` в соответствии
- со схемой из `docs/data-model.md`.
+Генерация выполняется скриптом `scripts/generate_synthetic_data.py` по схеме из
+[`docs/data-model.md`](./docs/data-model.md).
 
-## PII
+### PII
 
 Поля `full_name`, `inn`, `pan_masked` в синтетике являются вымышленными и дополнительно
-маскируются в логах и трейсах (NFR-09, 152-ФЗ).
+маскируются в UI и трейсах (NFR-09, 152-ФЗ).
+
+---
+
+## Ключевые возможности
+
+| Функция | Описание | Реализация |
+|---|---|---|
+| Агрегация контекста | Клиент + транзакции + кейс + карты в единый объект | `InvestigationContextBuilder` |
+| RAG-поиск правил | Извлечение релевантных норм из базы знаний | `KnowledgeBase` + ChromaDB |
+| Генерация черновика | Структурированный JSON с доказательствами | `ReportGenerator` + Ollama |
+| Защитные проверки | Schema / traceability / evidence / injection | `GuardrailPipeline` |
+| Умный retry | Повтор только для случайных артефактов, пропуск при injection | LangGraph conditional edges |
+| Операторский UI | Подсветка evidence + HITL-кнопки | Streamlit |
+
+---
 
 
 ## Аналитические артефакты
@@ -141,3 +164,26 @@ Schema Match, Traceability, Refusal Correctness, Evidence Grounding, RAG Recall,
 - Happy-path кейс INC-000123 проходит все защитные проверки.
 
 🔜 Итерация 10: Golden Dataset + evaluation-тесты (метрики M-01…M-09).
+
+Слои pipeline:
+Data Access — агрегация данных (клиенты, транзакции, кейсы, карты).
+Retrieval — RAG-поиск в базе знаний (ChromaDB, multilingual embedding).
+Generation — LLM-генерация черновика с нормализацией артефактов.
+Guardrails — 4 уровня защитных проверок + умный retry.
+UI — Streamlit с HITL и подсветкой доказательств.
+Каждый модуль src/ трассируется на SR/NFR из SRS (матрица: docs/traceability-matrix.md
+
+## Архитектура
+
+```mermaid
+graph LR
+    A[Incident ID] --> B[build_context]
+    B -->|полнота=full| C[generate<br/>RAG + LLM]
+    B -->|partial / error| E[refusal]
+    C --> D[run_guardrails]
+    D -->|passed| F[finalize_draft]
+    D -->|failed + schema/traceability| C
+    D -->|failed + prompt_injection| E
+    D -->|attempts exhausted| E
+    F --> G[Draft → HITL]
+    E --> H[Refusal / Error]
