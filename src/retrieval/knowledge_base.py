@@ -195,23 +195,22 @@ class KnowledgeBase:
         return set(self._known_regulation_refs)
 
     def validate_source_ref(self, source_ref: str) -> bool:
-        """Проверяет существование ссылки на регламент (SR-12, BRULE-02).
+        """Проверяет, что source_ref точно соответствует известному regulation_ref.
 
-        Ссылка валидна, если она точно соответствует известному regulation_ref
-        либо начинается с него (формат «regulation_ref / section»).
+        Используется точное равенство вместо startswith, чтобы избежать
+        ложноположительных совпадений (например, "115-ФЗ, ст.6, п.2" не должен
+        совпадать с "115-ФЗ, ст.6, п.2.1" или "115-ФЗ, ст.6, п.2extra").
+
+        Соответствует требованию промпта v0.5: "source_ref должен быть ТОЧНО
+        равен ссылке на регламент из базы знаний".
 
         Args:
             source_ref: ссылка из черновика отчёта.
 
         Returns:
-            bool: True, если ссылка существует в базе знаний.
+            bool: True, если ссылка точно существует в базе знаний.
         """
-        if source_ref in self._known_regulation_refs:
-            return True
-        return any(
-            source_ref.startswith(known)
-            for known in self._known_regulation_refs
-        )
+        return source_ref in self._known_regulation_refs
     
     def validate_rule_id(self, rule_id: str) -> bool:
         """Проверяет существование rule_id в базе знаний (SR-12, BRULE-02)."""
