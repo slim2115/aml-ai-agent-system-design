@@ -1,1 +1,10 @@
-Nothing to output - the change list contains only a source/config file (README.md) with no build artifacts, dependencies, or temp files that need to be ignored.
+.venv/
+__pycache__/
+.env
+.vscode/
+.idea/
+*.pyc
+dist/
+build/
+# Векторная БД ChromaDB (генерируется при индексации, не версионируется)
+data/chroma/
