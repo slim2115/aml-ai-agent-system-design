@@ -30,7 +30,7 @@ PROMPTS_DIR_NAME = "prompts"
 PROMPT_FILE_TEMPLATE = "system_prompt_v{version}.md"
 
 # Версия промпта по умолчанию.
-DEFAULT_PROMPT_VERSION = "0.5"
+DEFAULT_PROMPT_VERSION = "0.6"
 
 # Регулярное выражение для извлечения версии из имени файла.
 _VERSION_PATTERN = re.compile(r"^system_prompt_v(?P<version>\d+\.\d+)\.md$")
