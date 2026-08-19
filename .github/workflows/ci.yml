@@ -1,15 +1,44 @@
+env:
+  # General
+  ENVIRONMENT: "ci"
+  LOG_LEVEL: "WARNING"
+  
+  # LLM (Ollama)
+  OLLAMA_HOST: "http://localhost:11434"
+  OLLAMA_MODEL: "qwen2.5:14b"
+  
+  # RAG (ChromaDB)
+  CHROMA_PATH: "/tmp/ci_mock_chroma"
+  CHROMA_COLLECTION_NAME: "aml_knowledge_ci"
+  EMBEDDING_MODEL: "paraphrase-multilingual-MiniLM-L12-v2"
+  
+  # Thresholds (M-01...M-09)
+  THRESHOLD_SCHEMA_MATCH: "1.0"
+  THRESHOLD_TRACEABILITY: "1.0"
+  THRESHOLD_REFUSAL_CORRECTNESS: "0.95"
+  THRESHOLD_EVIDENCE_GROUNDING: "1.0"
+  THRESHOLD_RAG_RECALL: "0.50"
+  THRESHOLD_MAX_LATENCY: "600"
+  
+  # Guardrails
+  GUARDRAILS_ENABLED: "true"
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: 'pip' # Включение встроенного кэширования pip
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
+          cache: 'pip'
+          
       - name: Install dependencies
-        run: pip install --no-cache-dir -r requirements.txt
-      - name: Run tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Run tests (Strict Isolation)
         run: pytest -m "not llm" -v
