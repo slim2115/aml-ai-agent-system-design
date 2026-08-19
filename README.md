@@ -7,7 +7,7 @@
 [![CI](https://github.com/slim2115/aml-ai-agent-system-design/actions/workflows/ci.yml/badge.svg)](https://github.com/slim2115/aml-ai-agent-system-design/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Пет-проект для позиции Системный аналитик / AI Engineer (FinTech, AML/anti-fraud)**  
+> **Пет-проект (FinTech, AML/anti-fraud)**  
 > Демонстрация end-to-end подхода к проектированию и реализации LLM-агентов с измеряемым качеством, 
 > защитными механизмами (guardrails) и полной трассировкой требований от бизнес-целей до тестов.
 
