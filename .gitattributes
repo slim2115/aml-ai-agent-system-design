@@ -1,0 +1,9 @@
+# These synthetic fixtures and their manifests are validated byte for byte.
+# Keep their original line endings when staging and checking out on Windows.
+qa/datasets/** -text
+data/demo-v1/** -text
+data/synthetic/** -text
+config/embedding-files.json -text
+src/runtime/retrieval.py -text
+lab/api/static/** -text
+verification/qa-step-07-2026-10-20/pilot-first/** -text
