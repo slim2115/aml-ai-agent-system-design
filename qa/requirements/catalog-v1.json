@@ -1,0 +1,618 @@
+{
+  "schema_version": "1.0",
+  "catalog_id": "dark-factory-requirements-v1",
+  "version": "1.0",
+  "title": "Исполняемые требования качества локального AML-сервиса и его оценщиков",
+  "scope": "Программные инварианты текущей синтетической реализации. Положительный и отрицательный сценарии оба ожидают успешного выполнения своих проверок. Каталог не закрывает замечания аудита, не подтверждает живые модели или независимую продуктовую приёмку.",
+  "policy": {
+    "path": "qa/strategy/quality-policy.json",
+    "canonical_sha256": "803b0beb11c4ac194f1d40a65c284e248ede9b2ba8035e0ea26909a3f1c18439"
+  },
+  "requirements": [
+    {
+      "id": "DFR-001",
+      "version": "1.0",
+      "title": "Подготовка и допуск задания",
+      "statement": "Обработчик принимает новое задание только после явной подготовки и при доступной мощности. Повтор принятого запроса возвращает исходное принятие без нового выполнения.",
+      "risk": "Неподготовленный или занятый обработчик принимает работу либо повторно обрабатывает уже принятый запрос.",
+      "priority": "P0",
+      "owner": "qa_automation",
+      "scope": "Жизненный цикл worker и программный допуск workflow-задания.",
+      "preconditions": [
+        "Изолированная workflow-БД и синтетический обработчик.",
+        "Валидный запрос контракта v1; готовность и занятость задаются условиями сценария."
+      ],
+      "allowed_outcomes": [
+        "prepared_worker_reused",
+        "new_work_rejected_when_unavailable"
+      ],
+      "expectation_source": {
+        "path": "qa/strategy/quality-policy.json",
+        "reference": "coverage.risk_priorities: cancellation and deadlines; scopes.browser_or_live_integration.required"
+      },
+      "limitations": [
+        "Positive использует настоящий Windows spawn с синтетическим handler.",
+        "Negative использует настоящую SQLite и FakeWorker.",
+        "Не проверяет готовность MiniLM/Ollama или производственную пропускную способность."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-001-POS",
+          "kind": "positive",
+          "given": "Создан отдельный worker с синтетической функцией подготовки и обработчиком.",
+          "action": "Подготовить worker и последовательно выполнить несколько разрешённых запросов.",
+          "expected_outcome": "prepared_worker_reused",
+          "test_selectors": [
+            "tests/workflow/test_worker.py::test_single_bootstrap_persistent_child_reused"
+          ]
+        },
+        {
+          "id": "DFR-001-NEG",
+          "kind": "negative",
+          "given": "Обработчик ещё не подготовлен либо занят ранее принятым заданием.",
+          "action": "Проверить отказ до подготовки; затем повторить принятый запрос, отправить новый запрос занятому обработчику и изменить тело под прежним ключом.",
+          "expected_outcome": "new_work_rejected_when_unavailable",
+          "test_selectors": [
+            "tests/workflow/test_controller.py::test_admission_requires_readiness_and_accepted_request_is_replayed_without_rerun",
+            "tests/workflow/test_controller.py::test_capacity_rejects_new_work_but_allows_idempotent_replay"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DFR-002",
+      "version": "1.0",
+      "title": "Устойчивость отмены и дедлайна",
+      "statement": "Отмена и истечение дедлайна сохраняются как терминальные исходы. Поздний ответ обработчика не может заменить сохранённое терминальное состояние.",
+      "risk": "Задание после отмены или таймаута ошибочно публикует результат либо остаётся без сохранённого исхода.",
+      "priority": "P0",
+      "owner": "qa_automation",
+      "scope": "Сохранение терминального состояния и остановка управляемого обработчика.",
+      "preconditions": [
+        "Задание принято в отдельную workflow-БД.",
+        "Отмена запрашивается владельцем; срок выполнения задан явно."
+      ],
+      "allowed_outcomes": [
+        "cancellation_persisted",
+        "late_result_ignored"
+      ],
+      "expectation_source": {
+        "path": "qa/strategy/quality-policy.json",
+        "reference": "coverage.risk_priorities: cancellation and deadlines; scopes.browser_or_live_integration.required"
+      },
+      "limitations": [
+        "Проверки контроллера используют FakeWorker и настоящую SQLite.",
+        "Дополнительная отмена worker проверяет настоящий Windows spawn без модели.",
+        "Остановка Python worker не подтверждает остановку вычислений в отдельном сервере Ollama."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-002-POS",
+          "kind": "positive",
+          "given": "Есть активное синтетическое задание и его владелец.",
+          "action": "Сохранить отмену, повторить запрос отмены и дождаться остановки worker.",
+          "expected_outcome": "cancellation_persisted",
+          "test_selectors": [
+            "tests/workflow/test_controller.py::test_cancel_is_durable_before_worker_stops_and_cross_user_is_forbidden",
+            "tests/workflow/test_worker.py::test_active_cancel_kills_without_late_result"
+          ]
+        },
+        {
+          "id": "DFR-002-NEG",
+          "kind": "negative",
+          "given": "Обработчик удерживает ответ до истечения сохранённого дедлайна.",
+          "action": "Дождаться timed_out, затем разрешить поздний возврат и повторно прочитать задание.",
+          "expected_outcome": "late_result_ignored",
+          "test_selectors": [
+            "tests/workflow/test_controller.py::test_timer_persists_timeout_before_ignoring_worker_returns_and_late_result_cannot_replace_it"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DFR-003",
+      "version": "1.0",
+      "title": "Связь факта с неизменённым источником",
+      "statement": "Подтверждение факта разрешается только для точной исходной ячейки, значения и редакции правила из доступного зафиксированного снимка.",
+      "risk": "Подтверждён изменённый факт, чужая операция, недоступный снимок или подменённая редакция правила.",
+      "priority": "P0",
+      "owner": "qa_automation",
+      "scope": "Разрешение исходных доказательств отчёта.",
+      "preconditions": [
+        "Отчёт соответствует v1.",
+        "Доступен зафиксированный синтетический снимок с проверяемыми хэшами."
+      ],
+      "allowed_outcomes": [
+        "exact_sources_resolved",
+        "changed_sources_blocked"
+      ],
+      "expectation_source": {
+        "path": "qa/strategy/quality-policy.json",
+        "reference": "coverage.risk_priorities: source integrity; scopes.model_evaluation.required"
+      },
+      "limitations": [
+        "Используются настоящий ContextBuilder, renderer и resolver на синтетических файлах.",
+        "Проверяется связь с данным снимком, а не достоверность реальных банковских данных.",
+        "Модель, сеть и независимая AML-экспертиза не вызываются."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-003-POS",
+          "kind": "positive",
+          "given": "Черновик получен из неизменённого синтетического снимка.",
+          "action": "Разрешить источники фактов и фрагменты редакций правил.",
+          "expected_outcome": "exact_sources_resolved",
+          "test_selectors": [
+            "tests/workflow/test_sources.py::test_exact_cell_pointer_and_value_and_edition_range"
+          ]
+        },
+        {
+          "id": "DFR-003-NEG",
+          "kind": "negative",
+          "given": "Сохранённый отчёт или исходные байты изменены после формирования.",
+          "action": "Попытаться подтвердить источники изменённого отчёта.",
+          "expected_outcome": "changed_sources_blocked",
+          "test_selectors": [
+            "tests/workflow/test_sources.py::test_changed_or_unresolvable_report_never_gets_source_confirmation",
+            "tests/workflow/test_sources.py::test_changed_source_bytes_rejected"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DFR-004",
+      "version": "1.0",
+      "title": "Полнота и точность каталога фактов",
+      "statement": "Разрешена перестановка полного каталога фактов и правил. Модельный ответ не может пропустить, продублировать, добавить или изменить факт, сумму, валюту или привязку доказательства.",
+      "risk": "Черновик содержит неполные или вымышленные факты, изменённые суммы либо смешение валют.",
+      "priority": "P0",
+      "owner": "qa_automation",
+      "scope": "Подготовка каталога, проверка модельного выбора и программное формирование отчёта.",
+      "preconditions": [
+        "Контекст и каталог правил прошли структурную проверку.",
+        "Ответ содержит только предусмотренные контрактом идентификаторы и порядок."
+      ],
+      "allowed_outcomes": [
+        "complete_exact_catalog_rendered",
+        "fabricated_or_incomplete_catalog_rejected"
+      ],
+      "expectation_source": {
+        "path": "qa/strategy/quality-policy.json",
+        "reference": "scopes.model_evaluation.required; existing_evaluator_gates: M-04 and M-06"
+      },
+      "limitations": [
+        "Используются настоящий renderer и publication guard с синтетическим model payload.",
+        "Проверки не измеряют способность настоящей LLM правильно ответить.",
+        "Форматирование и точность проверяются для поддерживаемого каталога, а не для свободного AML-заключения."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-004-POS",
+          "kind": "positive",
+          "given": "Подготовлен полный каталог с несколькими валютами и статусами операций.",
+          "action": "Сформировать черновик, затем допустимо переставить все факты.",
+          "expected_outcome": "complete_exact_catalog_rendered",
+          "test_selectors": [
+            "tests/runtime/test_generation.py::test_complete_catalog_has_exact_money_all_statuses_profile_and_bound_sources",
+            "tests/runtime/test_generation.py::test_model_may_reorder_all_facts_but_cannot_select_a_subset"
+          ]
+        },
+        {
+          "id": "DFR-004-NEG",
+          "kind": "negative",
+          "given": "Модельный ответ или готовый отчёт содержит намеренный пропуск, дубль, неизвестный элемент либо искажённый факт.",
+          "action": "Выполнить проверку модельного выбора и защиту публикации.",
+          "expected_outcome": "fabricated_or_incomplete_catalog_rejected",
+          "test_selectors": [
+            "tests/runtime/test_generation.py::test_missing_duplicate_unknown_or_semantic_response_content_is_rejected",
+            "tests/runtime/test_generation.py::test_publication_guard_rejects_fabrication_even_with_valid_evidence_ids"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DFR-005",
+      "version": "1.0",
+      "title": "Однозначность редакции правила",
+      "statement": "Редакция правила выбирается по явному моменту as_of до top-k. Неоднозначный корпус отклоняется, а результат ранжирования не объявляется правовым одобрением.",
+      "risk": "Поиск возвращает неподходящую редакцию либо ранжирование ошибочно трактуется как нормативная применимость.",
+      "priority": "P0",
+      "owner": "model_evaluation",
+      "scope": "Программные границы редакций, идентичности и назначения retrieval.",
+      "preconditions": [
+        "Момент as_of задан явно.",
+        "Корпус имеет проверяемые идентификаторы и временные границы редакций."
+      ],
+      "allowed_outcomes": [
+        "active_edition_selected_before_ranking",
+        "invalid_edition_selection_and_approval_claim_blocked"
+      ],
+      "expectation_source": {
+        "path": "docs/rebuild/retrieval-v1.md",
+        "reference": "Границы редакций, идентичность цитат и отличие ранжирования от применимости"
+      },
+      "limitations": [
+        "Используется настоящий RuleIndex с тестовыми tokenizer и embedding.",
+        "Проверки не оценивают качество MiniLM или юридическую применимость правил.",
+        "Корпус и временные границы искусственные."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-005-POS",
+          "kind": "positive",
+          "given": "Корпус содержит определённые редакции с временной границей.",
+          "action": "Выполнить поиск по обе стороны границы с явным часовым поясом.",
+          "expected_outcome": "active_edition_selected_before_ranking",
+          "test_selectors": [
+            "tests/runtime/test_retrieval.py::test_explicit_edition_boundary_and_timezone_are_applied_before_top_k"
+          ]
+        },
+        {
+          "id": "DFR-005-NEG",
+          "kind": "negative",
+          "given": "Неактивная редакция имеет лучший рейтинг, корпус неоднозначен либо потребитель пытается трактовать ранжирование как одобрение.",
+          "action": "Проверить сохранение активного результата при k=1, отказ неоднозначного корпуса и ограниченный смысл результата поиска.",
+          "expected_outcome": "invalid_edition_selection_and_approval_claim_blocked",
+          "test_selectors": [
+            "tests/runtime/test_retrieval.py::test_expired_higher_ranked_edition_cannot_consume_top_one_slot",
+            "tests/runtime/test_retrieval.py::test_ambiguous_editions_fail_before_embedding",
+            "tests/runtime/test_retrieval.py::test_ranking_is_not_an_applicability_or_legal_approval_claim"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DFR-006",
+      "version": "1.0",
+      "title": "Авторизованное сохраняемое решение",
+      "statement": "Решение по конкретной версии отчёта сохраняется от имени уполномоченного владельца с серверными actor и временем. Повтор запроса возвращает исходное решение.",
+      "risk": "Решение сохраняется от чужого пользователя, привязано к подменённому отчёту либо теряется после перезапуска.",
+      "priority": "P0",
+      "owner": "qa_automation",
+      "scope": "Авторизация и сохранение решения в workflow.",
+      "preconditions": [
+        "Есть готовый отчёт и его владелец.",
+        "Запрос связывает report_id, версию, хэш и ожидаемую ревизию."
+      ],
+      "allowed_outcomes": [
+        "authorized_decision_persisted",
+        "unauthorized_or_forged_decision_rejected"
+      ],
+      "expectation_source": {
+        "path": "qa/strategy/quality-policy.json",
+        "reference": "coverage.risk_priorities: human approval; owners.operator"
+      },
+      "limitations": [
+        "Используются настоящая SQLite и синтетические Principal/отчёты.",
+        "Проверка не подтверждает банковский IAM или фактическую работу человека.",
+        "Смысл одобрения ограничен учебным отчётом."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-006-POS",
+          "kind": "positive",
+          "given": "Владелец просматривает текущую версию синтетического отчёта.",
+          "action": "Сохранить решение, переоткрыть хранилище и повторить запрос с прежним ключом.",
+          "expected_outcome": "authorized_decision_persisted",
+          "test_selectors": [
+            "tests/workflow/test_store.py::test_decision_persists_server_actor_time_event_and_replay"
+          ]
+        },
+        {
+          "id": "DFR-006-NEG",
+          "kind": "negative",
+          "given": "Запрос пришёл от другого владельца, содержит поддельный хэш отчёта либо пытается задать серверные actor, decided_at или decision_id.",
+          "action": "Попытаться сохранить решение.",
+          "expected_outcome": "unauthorized_or_forged_decision_rejected",
+          "test_selectors": [
+            "tests/workflow/test_store.py::test_decision_request_cannot_supply_server_fields",
+            "tests/workflow/test_store.py::test_decision_cannot_be_made_by_other_owner_even_supervisor",
+            "tests/workflow/test_store.py::test_forged_report_hash_rejected"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DFR-007",
+      "version": "1.0",
+      "title": "Экспорт одобренной версии",
+      "statement": "Локальный экспорт принимает точные байты одобренного отчёта. Состояние pending сохраняется до отправки; несоответствующее решение или идентичность блокирует экспорт.",
+      "risk": "Отправлен неутверждённый, чужой либо изменённый отчёт.",
+      "priority": "P0",
+      "owner": "qa_automation",
+      "scope": "Учебная доставка конкретной одобренной версии.",
+      "preconditions": [
+        "Отчёт сохранён в workflow.",
+        "Есть действующее одобрение точной версии и хэша; запрос выполняет владелец."
+      ],
+      "allowed_outcomes": [
+        "approved_exact_report_exported",
+        "unapproved_or_mismatched_export_rejected"
+      ],
+      "expectation_source": {
+        "path": "qa/strategy/quality-policy.json",
+        "reference": "coverage.risk_priorities: human approval and export; scopes.browser_or_live_integration.required"
+      },
+      "limitations": [
+        "Используются настоящая SQLite и локальный delivery simulator.",
+        "Не проверяются внешняя доставка, электронная подпись и закрытие банковского кейса.",
+        "Сценарии не заменяют решение оператора по содержанию отчёта."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-007-POS",
+          "kind": "positive",
+          "given": "Одобрена точная версия синтетического отчёта.",
+          "action": "Создать pending-доставку и выполнить её локальное принятие.",
+          "expected_outcome": "approved_exact_report_exported",
+          "test_selectors": [
+            "tests/workflow/test_delivery.py::test_pending_is_durable_before_send_and_exact_report_is_accepted"
+          ]
+        },
+        {
+          "id": "DFR-007-NEG",
+          "kind": "negative",
+          "given": "Одобрение отсутствует либо запрос связан с неверными job/report/version/hash/decision.",
+          "action": "Попытаться создать или выполнить экспорт.",
+          "expected_outcome": "unapproved_or_mismatched_export_rejected",
+          "test_selectors": [
+            "tests/workflow/test_delivery.py::test_export_requires_approval_not_just_any_decision",
+            "tests/workflow/test_delivery.py::test_mismatched_report_job_hash_version_or_decision_rejected"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DFR-008",
+      "version": "1.0",
+      "title": "Сохранение Kafka-запроса до offset commit",
+      "statement": "Валидный запрос сохраняется в durable inbox до фиксации Kafka offset. Ошибка БД не должна фиксировать offset или инициировать HTTP-передачу.",
+      "risk": "Событие теряется между чтением Kafka и сохранением обработки.",
+      "priority": "P0",
+      "owner": "qa_automation",
+      "scope": "Порядок побочных эффектов входящего AML-события.",
+      "preconditions": [
+        "Событие соответствует контракту и разрешённому топику.",
+        "Доступны контролируемые зависимости broker и inbox."
+      ],
+      "allowed_outcomes": [
+        "inbox_committed_before_offset",
+        "database_failure_preserves_uncommitted_input"
+      ],
+      "expectation_source": {
+        "path": "qa/strategy/quality-policy.json",
+        "reference": "coverage.risk_priorities: durable Kafka intake and projection; scopes.browser_or_live_integration.required"
+      },
+      "limitations": [
+        "Используется настоящий consumer с broker/queue doubles.",
+        "Проверяется порядок вызовов и поведение при ошибке, а не работа живых Kafka/PostgreSQL.",
+        "Результат не является универсальной гарантией exactly-once."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-008-POS",
+          "kind": "positive",
+          "given": "Из Kafka поступило валидное синтетическое AML-событие.",
+          "action": "Обработать один входящий record и наблюдать порядок побочных эффектов.",
+          "expected_outcome": "inbox_committed_before_offset",
+          "test_selectors": [
+            "tests/lab/test_kafka_analysis_consumer.py::test_intake_commits_durable_queue_before_offset_without_http"
+          ]
+        },
+        {
+          "id": "DFR-008-NEG",
+          "kind": "negative",
+          "given": "Сохранение в inbox возвращает контролируемую ошибку БД.",
+          "action": "Обработать входящий record и проверить отсутствие последующих опасных эффектов.",
+          "expected_outcome": "database_failure_preserves_uncommitted_input",
+          "test_selectors": [
+            "tests/lab/test_kafka_analysis_consumer.py::test_database_failure_stops_before_later_offset_and_never_uses_http"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DFR-009",
+      "version": "1.0",
+      "title": "Идемпотентность события и запрет замены содержимого",
+      "statement": "Повтор того же event_id с тем же содержимым сохраняет одну логическую заявку и отдельные доставки. Изменённое содержимое под прежним UUID не заменяет принятую заявку.",
+      "risk": "Повтор создаёт второе задание либо подменяет содержание уже принятого запроса.",
+      "priority": "P0",
+      "owner": "qa_automation",
+      "scope": "Идентичность события, повторная доставка и неоднозначное HTTP-подтверждение.",
+      "preconditions": [
+        "Событие имеет стабильный UUID и каноническое содержимое.",
+        "Координаты доставки и ключ API сохраняются явно."
+      ],
+      "allowed_outcomes": [
+        "one_request_preserved_across_redelivery",
+        "changed_uuid_payload_rejected"
+      ],
+      "expectation_source": {
+        "path": "qa/strategy/quality-policy.json",
+        "reference": "coverage.risk_priorities: idempotency; scopes.browser_or_live_integration.required"
+      },
+      "limitations": [
+        "AnalysisStore проверяется с TransactionDatabase double.",
+        "Consumer использует контролируемые HTTP/broker зависимости.",
+        "Перезапуск и повтор моделируются; живой кластер этим набором не квалифицируется."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-009-POS",
+          "kind": "positive",
+          "given": "Одна заявка уже принята; доставка повторяется или потерян HTTP-ответ принятия.",
+          "action": "Повторить идентичное событие и восстановить наблюдение задания.",
+          "expected_outcome": "one_request_preserved_across_redelivery",
+          "test_selectors": [
+            "tests/lab/test_kafka_analysis_store.py::test_redelivery_and_process_restart_keep_one_request_and_record_new_coordinates",
+            "tests/lab/test_kafka_analysis_consumer.py::test_lost_http_ack_retries_identical_uuid_and_never_creates_second_job"
+          ]
+        },
+        {
+          "id": "DFR-009-NEG",
+          "kind": "negative",
+          "given": "Существующий UUID повторно используется с изменённым телом.",
+          "action": "Попытаться сохранить и передать изменённый запрос.",
+          "expected_outcome": "changed_uuid_payload_rejected",
+          "test_selectors": [
+            "tests/lab/test_kafka_analysis_store.py::test_changed_uuid_body_is_rejected_before_any_submission"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DFR-010",
+      "version": "1.0",
+      "title": "Недоверенный текст не становится командой модели",
+      "statement": "Свободный текст источников и ненужные идентификаторы исключаются из модельной проекции. Изменение этих полей не меняет разрешённый каталог фактов.",
+      "risk": "Текст банковского поля меняет инструкции или содержимое черновика либо раскрывает лишние идентификаторы.",
+      "priority": "P0",
+      "owner": "qa_automation",
+      "scope": "Минимизация модельного входа и граница данных/инструкций.",
+      "preconditions": [
+        "Контекст структурно валиден.",
+        "Свободный текст источника рассматривается как данные и не является частью разрешённого выбора модели."
+      ],
+      "allowed_outcomes": [
+        "minimal_projection_excludes_free_text",
+        "source_instructions_do_not_change_draft"
+      ],
+      "expectation_source": {
+        "path": "docs/rebuild/generation-v1.md",
+        "reference": "Модельная проекция и недоверенный свободный текст источников"
+      },
+      "limitations": [
+        "Используются настоящие projection/render и фиксированный открытый набор синтетических строк.",
+        "Настоящая LLM и сеть не вызываются.",
+        "Результат не доказывает устойчивость произвольной модели ко всем prompt-инъекциям."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-010-POS",
+          "kind": "positive",
+          "given": "Контекст содержит данные, не нужные для выбора порядка фактов.",
+          "action": "Подготовить модельную проекцию и проверить исключение лишних значений.",
+          "expected_outcome": "minimal_projection_excludes_free_text",
+          "test_selectors": [
+            "tests/runtime/test_generation.py::test_model_projection_excludes_unneeded_identifiers_and_all_source_free_text"
+          ]
+        },
+        {
+          "id": "DFR-010-NEG",
+          "kind": "negative",
+          "given": "В свободные поля источника подставлены команды, активный HTML или контрольный обычный текст.",
+          "action": "Повторно подготовить проекцию и сравнить разрешённый черновик с исходным.",
+          "expected_outcome": "source_instructions_do_not_change_draft",
+          "test_selectors": [
+            "tests/runtime/test_generation.py::test_untrusted_source_text_is_not_a_command_and_does_not_change_draft"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DFR-011",
+      "version": "1.0",
+      "title": "Judge не заменяет программный gate и человека",
+      "statement": "Judge остаётся консультативным. Его PASS не отменяет программный FAIL/INCOMPLETE; отсутствующие человеческие оценки не выводятся из синтетических ожиданий.",
+      "risk": "Ложное одобрение Judge скрывает дефект или автоматически создаёт видимость человеческой приёмки.",
+      "priority": "P0",
+      "owner": "model_evaluation",
+      "scope": "Разделение программных проверок, оценок Judge и человеческой калибровки.",
+      "preconditions": [
+        "Наблюдения Judge проходят структурную проверку.",
+        "Программные результаты и фактически предоставленные human labels учитываются отдельно."
+      ],
+      "allowed_outcomes": [
+        "supplied_labels_only_counted",
+        "judge_cannot_override_or_invent_acceptance"
+      ],
+      "expectation_source": {
+        "path": "qa/strategy/quality-policy.json",
+        "reference": "scopes.judge; scopes.product_acceptance"
+      },
+      "limitations": [
+        "Используются программный scorer и синтетические записи оценок.",
+        "Проверка обработки supplied labels не означает проведения независимой человеческой калибровки.",
+        "Продуктовая приёмка остаётся INCOMPLETE."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-011-POS",
+          "kind": "positive",
+          "given": "Предоставлена валидная человеческая разметка только части заданного набора.",
+          "action": "Проверить её учёт без заполнения пропущенных оценок.",
+          "expected_outcome": "supplied_labels_only_counted",
+          "test_selectors": [
+            "tests/evaluator/test_qa_judge_scoring.py::test_human_review_subset_is_valid_but_does_not_fill_omitted_labels"
+          ]
+        },
+        {
+          "id": "DFR-011-NEG",
+          "kind": "negative",
+          "given": "Judge одобряет случай с программным FAIL/INCOMPLETE или человеческие оценки отсутствуют.",
+          "action": "Собрать итог и проверить независимость программного результата и отсутствие вымышленной калибровки.",
+          "expected_outcome": "judge_cannot_override_or_invent_acceptance",
+          "test_selectors": [
+            "tests/evaluator/test_qa_judge_scoring.py::test_judge_pass_never_overrides_the_independent_fact_gate",
+            "tests/evaluator/test_qa_judge_scoring.py::test_no_human_labels_are_not_invented_from_challenge_expectations"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DFR-012",
+      "version": "1.0",
+      "title": "Полнота и корректный смысл результатов проверки",
+      "statement": "Сравнение использует идентичные случаи и явные первые попытки. Успех повтора не скрывает исходный дефект. Успешное обнаружение дефекта не становится одобрением кандидата.",
+      "risk": "Отсутствующая первая попытка или противоречивое свидетельство выдаётся за PASS; успешное измерение ошибочно одобряет дефектный кандидат.",
+      "priority": "P0",
+      "owner": "model_evaluation",
+      "scope": "Полнота сравнения и разделение качества измерения, кандидата и приёмки.",
+      "preconditions": [
+        "Подготовлены наблюдения с известными каталогом и case identity; отрицательные случаи намеренно нарушают их соответствие.",
+        "Run IDs различаются, все попытки имеют явные номера и статусы."
+      ],
+      "allowed_outcomes": [
+        "complete_comparable_observations_measured",
+        "missing_or_failed_evidence_not_promoted"
+      ],
+      "expectation_source": {
+        "path": "qa/strategy/quality-policy.json",
+        "reference": "verdicts; precedence; scopes.model_evaluation.required"
+      },
+      "limitations": [
+        "Сравниваются синтетические наблюдения; replay документов в report-тестах подменён.",
+        "Результат не удостоверяет происхождение внешнего JUnit или актуальность всех исходников модели.",
+        "MEASURED и PASS проверочного компонента не являются продуктовой приёмкой."
+      ],
+      "scenarios": [
+        {
+          "id": "DFR-012-POS",
+          "kind": "positive",
+          "given": "Полные наблюдения с общим каталогом получены для разных model/prompt identity.",
+          "action": "Построить сравнение и сохранить идентичности обеих сторон.",
+          "expected_outcome": "complete_comparable_observations_measured",
+          "test_selectors": [
+            "tests/dark_compare/test_comparison.py::test_candidate_may_change_model_or_prompt_but_not_dataset"
+          ]
+        },
+        {
+          "id": "DFR-012-NEG",
+          "kind": "negative",
+          "given": "Идентичности каталога или случая не совпадают, первая попытка отсутствует, завершилась ошибкой либо сводки противоречат отдельным наблюдениям.",
+          "action": "Построить сравнение и сводку парного эксперимента.",
+          "expected_outcome": "missing_or_failed_evidence_not_promoted",
+          "test_selectors": [
+            "tests/dark_compare/test_comparison.py::test_run_identity_is_strict",
+            "tests/dark_compare/test_comparison.py::test_case_identity_mismatch_is_rejected",
+            "tests/dark_compare/test_comparison.py::test_only_retry_without_first_attempt_is_incomplete",
+            "tests/dark_compare/test_comparison.py::test_failure_remains_visible_when_second_attempt_passes",
+            "tests/dark_factory/test_policy_pair_report.py::test_successful_detection_never_approves_candidate",
+            "tests/dark_factory/test_policy_pair_report.py::test_conflicting_summaries_preserve_individual_case_failure"
+          ]
+        }
+      ]
+    }
+  ]
+}

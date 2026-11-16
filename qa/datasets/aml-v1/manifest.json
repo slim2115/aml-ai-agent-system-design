@@ -1,0 +1,551 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "1.0.0",
+  "files": [
+    {
+      "path": "build_fixtures.py",
+      "bytes": 19714,
+      "sha256": "634057fe9a9768188343b5f2d3b75d684ebcab6102359cfcd0e218853f928e61"
+    },
+    {
+      "path": "cases.json",
+      "bytes": 67688,
+      "sha256": "507e129087137b1252c4456379f9ae90ec043490d27d0ab31649486032845f0d"
+    },
+    {
+      "path": "fixtures/S01/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S01/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S01/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S01/manifest.json",
+      "bytes": 2171,
+      "sha256": "ce650db1766a6f42962457cabf002641bf2cd959818140841a51dc0700c25e5e"
+    },
+    {
+      "path": "fixtures/S01/policy.json",
+      "bytes": 776,
+      "sha256": "2f68513c05a1102809c97cb387f9b649fe4af843c1093ba470607a858356c552"
+    },
+    {
+      "path": "fixtures/S01/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S01/transactions.json",
+      "bytes": 5097,
+      "sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+    },
+    {
+      "path": "fixtures/S02/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S02/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S02/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S02/manifest.json",
+      "bytes": 2171,
+      "sha256": "a4f1509c5ed738a67217d502b5b5bb91714817e7aa8c18384b35019324676569"
+    },
+    {
+      "path": "fixtures/S02/policy.json",
+      "bytes": 776,
+      "sha256": "5ea0237b3d4de9f772b4381eb1c7eb0bf628e1ab3a1ba19a4d8e985cd30133a0"
+    },
+    {
+      "path": "fixtures/S02/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S02/transactions.json",
+      "bytes": 5107,
+      "sha256": "615cbe12794fbeebfed44a041995a940ba3740f197b495cfe6e4d39e73ef0a86"
+    },
+    {
+      "path": "fixtures/S03/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S03/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S03/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S03/manifest.json",
+      "bytes": 2171,
+      "sha256": "b3072013f01c6cb83528c742b2cc2a3a5d3e97a204df5b5f2a9963fd13209803"
+    },
+    {
+      "path": "fixtures/S03/policy.json",
+      "bytes": 776,
+      "sha256": "750f7c92c7dfc118980b4aea29075b68d5ca9134d883e6aa5d101db41e1359aa"
+    },
+    {
+      "path": "fixtures/S03/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S03/transactions.json",
+      "bytes": 5767,
+      "sha256": "744458fe613045febdf071b2de51e50bdaf163d01338afed96c105ca71912952"
+    },
+    {
+      "path": "fixtures/S04/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S04/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S04/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S04/manifest.json",
+      "bytes": 2171,
+      "sha256": "c46f4fdfe0fd526bed7755e8ace4ea8a1e59c45f836178ddf118d76a56a6ab79"
+    },
+    {
+      "path": "fixtures/S04/policy.json",
+      "bytes": 776,
+      "sha256": "f7831c9765c07015b3af6f95e70e4fa2494fe369ff796cb1808336788351945c"
+    },
+    {
+      "path": "fixtures/S04/rules.json",
+      "bytes": 3255,
+      "sha256": "a727497635f0562a7081756974b4ad5f690c0128c2d3c3f9aa9e208cef3b04c6"
+    },
+    {
+      "path": "fixtures/S04/transactions.json",
+      "bytes": 5097,
+      "sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+    },
+    {
+      "path": "fixtures/S05/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S05/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S05/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S05/manifest.json",
+      "bytes": 2171,
+      "sha256": "8fd00d9db363a97de27a5bcb5c5a7e2bbd354de0613f2cb4b919341cf99d50bd"
+    },
+    {
+      "path": "fixtures/S05/policy.json",
+      "bytes": 776,
+      "sha256": "0fc35435836555362e50010c2cd64f32e707f29279595698107e5e85c07f5e14"
+    },
+    {
+      "path": "fixtures/S05/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S05/transactions.json",
+      "bytes": 5097,
+      "sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+    },
+    {
+      "path": "fixtures/S06/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S06/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S06/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S06/manifest.json",
+      "bytes": 2171,
+      "sha256": "bab161ca33c5ac88e449b133cb6cae941a1d9213bfb6cbc370f99a6b4a27247c"
+    },
+    {
+      "path": "fixtures/S06/policy.json",
+      "bytes": 776,
+      "sha256": "c5b7ab2454ac72bcd70ec1cbe24665b60b926b28d9807cecc7159b2bff40aa66"
+    },
+    {
+      "path": "fixtures/S06/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S06/transactions.json",
+      "bytes": 5097,
+      "sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+    },
+    {
+      "path": "fixtures/S07/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S07/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S07/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S07/manifest.json",
+      "bytes": 2171,
+      "sha256": "ff81400a26d28abd718a07ef8e2cb7bbd82dbbfecc3512cae1c81f2ac1acbdf6"
+    },
+    {
+      "path": "fixtures/S07/policy.json",
+      "bytes": 776,
+      "sha256": "29865cb943831272f29375e009e3b72278059264adf77f297dcbf46ff4d00ed8"
+    },
+    {
+      "path": "fixtures/S07/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S07/transactions.json",
+      "bytes": 5097,
+      "sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+    },
+    {
+      "path": "fixtures/S08/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S08/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S08/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S08/manifest.json",
+      "bytes": 2171,
+      "sha256": "3c5dac757bf2e3f4260115fa0893b43358df533873b28f0ffb060921102ceead"
+    },
+    {
+      "path": "fixtures/S08/policy.json",
+      "bytes": 776,
+      "sha256": "d0ef874bc14344dc7c34e4561c1896d9ea06c844339708ed514f75f14e92e82b"
+    },
+    {
+      "path": "fixtures/S08/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S08/transactions.json",
+      "bytes": 5097,
+      "sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+    },
+    {
+      "path": "fixtures/S09/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S09/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S09/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S09/manifest.json",
+      "bytes": 2171,
+      "sha256": "c3aef94d028ad2826285d11191237b66fc3a31760d5dde92fd4c7d88c09b0f52"
+    },
+    {
+      "path": "fixtures/S09/policy.json",
+      "bytes": 776,
+      "sha256": "5a3cf5a32e715e5e4254c7690970cc5136063b4b0519305ff32f3c936d429a41"
+    },
+    {
+      "path": "fixtures/S09/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S09/transactions.json",
+      "bytes": 5097,
+      "sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+    },
+    {
+      "path": "fixtures/S10/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S10/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S10/clients.json",
+      "bytes": 522,
+      "sha256": "09c19bc5a044d3aa659fb65123c7ac360efdcf9fdf7accef642ace7a21f9dbfd"
+    },
+    {
+      "path": "fixtures/S10/manifest.json",
+      "bytes": 2171,
+      "sha256": "53288aaef9b5fa786237e2c04b5cfa116d0a6c744481aea5ff3cb7323b9b203d"
+    },
+    {
+      "path": "fixtures/S10/policy.json",
+      "bytes": 776,
+      "sha256": "819e79d9f9e5c9324738c1d20bc41a123dee4c960ddb073cb5c406a7e82d4ae1"
+    },
+    {
+      "path": "fixtures/S10/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S10/transactions.json",
+      "bytes": 5097,
+      "sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+    },
+    {
+      "path": "fixtures/S11/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S11/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S11/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S11/manifest.json",
+      "bytes": 2171,
+      "sha256": "483b52de6198adb6db1c802a8b28e8254bd28ff832f4c01bf95bb423f9c582ab"
+    },
+    {
+      "path": "fixtures/S11/policy.json",
+      "bytes": 776,
+      "sha256": "a8c6fe80cfba481956d0a14c38072ba34047565a0b41146717447a6b65f87849"
+    },
+    {
+      "path": "fixtures/S11/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S11/transactions.json",
+      "bytes": 5426,
+      "sha256": "590ca30703e40a218f9b7134d10f79409c9d0e9f35b91644f9f8bfc162687417"
+    },
+    {
+      "path": "fixtures/S12/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S12/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S12/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S12/manifest.json",
+      "bytes": 2171,
+      "sha256": "e446ed062e97e4865f0af656b34081bf1bde71f32f622f7a0e9e689719b9b06c"
+    },
+    {
+      "path": "fixtures/S12/policy.json",
+      "bytes": 776,
+      "sha256": "f91918d79c78931eb2d311fc60673b275fcc9c7ab33c4426170e2fc3f669e867"
+    },
+    {
+      "path": "fixtures/S12/rules.json",
+      "bytes": 3207,
+      "sha256": "bc1c5357503d87318f2def85e3d03c5401f35eca22cfade27298c06c1bb17359"
+    },
+    {
+      "path": "fixtures/S12/transactions.json",
+      "bytes": 5097,
+      "sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+    },
+    {
+      "path": "fixtures/S13/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S13/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S13/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S13/manifest.json",
+      "bytes": 2171,
+      "sha256": "61b598e470ec2e8c83cd3d3805aae63bc605dce96166130ae4e29b1707678158"
+    },
+    {
+      "path": "fixtures/S13/policy.json",
+      "bytes": 776,
+      "sha256": "8b8d005e9bd8da49eea61a801361ca4d589ce4381c4bc63d87eada6bf845ce0e"
+    },
+    {
+      "path": "fixtures/S13/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S13/transactions.json",
+      "bytes": 5097,
+      "sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+    },
+    {
+      "path": "fixtures/S14/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S14/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S14/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S14/manifest.json",
+      "bytes": 2171,
+      "sha256": "76662bd8d18fd720ed0178d8e0d9fd0fbd944c8c68873ab6f5bf1a3737ceb48a"
+    },
+    {
+      "path": "fixtures/S14/policy.json",
+      "bytes": 776,
+      "sha256": "f909c50ffab341ad07bfc0370c2329a4dbeed6df64549072ff1259d5431d574d"
+    },
+    {
+      "path": "fixtures/S14/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S14/transactions.json",
+      "bytes": 5293,
+      "sha256": "98aec7a1aae43cb6ef55d536c42573745a784c5cccdad4781dec7c0bcb09ef1e"
+    },
+    {
+      "path": "fixtures/S15/cards.json",
+      "bytes": 375,
+      "sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+    },
+    {
+      "path": "fixtures/S15/cases.json",
+      "bytes": 872,
+      "sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+    },
+    {
+      "path": "fixtures/S15/clients.json",
+      "bytes": 652,
+      "sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+    },
+    {
+      "path": "fixtures/S15/manifest.json",
+      "bytes": 2171,
+      "sha256": "5b709f68d1a96e97c3388b5b646e991102a7257811d6f7bc3ee4bafb246cd361"
+    },
+    {
+      "path": "fixtures/S15/policy.json",
+      "bytes": 776,
+      "sha256": "c850a87ad105d1973dbbad4e43d4279f3ab3c30d85927b7fba313e19c0ad1e64"
+    },
+    {
+      "path": "fixtures/S15/rules.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "fixtures/S15/transactions.json",
+      "bytes": 5097,
+      "sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+    },
+    {
+      "path": "README.md",
+      "bytes": 11993,
+      "sha256": "fb72bd6b3636ff38488c2279a9a7f5329072ec9eda1ae75a9212266646b01fa2"
+    },
+    {
+      "path": "schema.json",
+      "bytes": 26637,
+      "sha256": "49bda1336c8bf483e0d54f396aa481609647ad1176dc97741e2c264fc53c319b"
+    }
+  ]
+}

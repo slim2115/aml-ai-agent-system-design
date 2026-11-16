@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "snapshot_id": "qa-aml-v1-s11",
+  "captured_at": "2026-07-20T00:00:00Z",
+  "purpose": "synthetic_learning_only",
+  "policy_id": "qa-policy-v1-s11",
+  "assumed_naive_timezone": "UTC",
+  "window": {
+    "start_inclusive": "2026-07-01T00:00:00Z",
+    "end_exclusive": "2026-07-20T00:00:00Z",
+    "as_of": "2026-07-20T00:00:00Z"
+  },
+  "original_sources": [
+    {
+      "source": "cases.json",
+      "version": "535940fd645c2b41d1ec167e8a98d58597adadf0",
+      "content_sha256": "7080ef9c51340ccfc1460d1cccab8eb9b2bf31151a8a627bf15aaf05e547f9b4"
+    },
+    {
+      "source": "clients.json",
+      "version": "535940fd645c2b41d1ec167e8a98d58597adadf0",
+      "content_sha256": "bfaeab6e0dd2a978d5274bb0caef72b194568229f6377fa4a5210a0811f78ea4"
+    },
+    {
+      "source": "cards.json",
+      "version": "535940fd645c2b41d1ec167e8a98d58597adadf0",
+      "content_sha256": "578d37230d860ae48486d12899a5f4a6c37f0a26a9fd12cc13ee5dd32ec36857"
+    },
+    {
+      "source": "transactions.json",
+      "version": "535940fd645c2b41d1ec167e8a98d58597adadf0",
+      "content_sha256": "9c21e51d19706554cdb765b86a6b96e35aa191c0c604abbee385835d92fadd95"
+    },
+    {
+      "source": "rules.json",
+      "version": "535940fd645c2b41d1ec167e8a98d58597adadf0",
+      "content_sha256": "4da8822ec5a7133c0375af81c58746cd089125fa078e66a54e4b70d6cf096834"
+    }
+  ],
+  "files": [
+    {
+      "name": "cases.json",
+      "content_sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def",
+      "row_count": 5
+    },
+    {
+      "name": "clients.json",
+      "content_sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d",
+      "row_count": 5
+    },
+    {
+      "name": "cards.json",
+      "content_sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916",
+      "row_count": 4
+    },
+    {
+      "name": "transactions.json",
+      "content_sha256": "590ca30703e40a218f9b7134d10f79409c9d0e9f35b91644f9f8bfc162687417",
+      "row_count": 16
+    },
+    {
+      "name": "rules.json",
+      "content_sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8",
+      "row_count": 5
+    }
+  ]
+}

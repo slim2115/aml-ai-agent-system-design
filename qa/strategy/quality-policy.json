@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "recorded_date": "2026-10-07",
+  "status": "qa_step_1_strategy_not_product_acceptance",
+  "scope": "Local synthetic rebuild; original repository and audit remain read-only.",
+  "verdicts": {
+    "PASS": "Every required check for the named scope ran and passed, with current evidence and prerequisites.",
+    "FAIL": "At least one required measured check failed; successful retries do not erase the original failure.",
+    "INCOMPLETE": "Required evidence, dependency, observation, independent cases or human acceptance is missing; never promoted to PASS.",
+    "ERROR": "The runner, input, tool or evidence processing failed; no product success claim is possible."
+  },
+  "precedence": "For valid evaluable evidence, FAIL precedes INCOMPLETE, and PASS requires neither. ERROR denotes inability to evaluate, not a product-quality score.",
+  "scopes": {
+    "hermetic_regression": {
+      "required": ["nonempty configured collection", "zero failed tests", "zero test errors", "zero skips", "contract artifacts match"],
+      "does_not_prove": ["browser E2E", "live dependencies", "real model quality", "SME acceptance", "remote GitHub run"]
+    },
+    "browser_or_live_integration": {
+      "required": ["owned isolated QA resources", "all scenario checkpoints", "bounded completion", "saved event/job/report references", "no unexpected duplicate effect", "no automatic operator approval"],
+      "availability_failure": "INCOMPLETE if prerequisite absent; FAIL if an expected recovery scenario violates its contract. Record original runner error separately."
+    },
+    "model_evaluation": {
+      "required": ["case and source versions", "model and prompt identity", "all attempts retained", "invariants per case", "explicit denominators", "cold/warm and queue/runtime boundaries", "missing metrics visible"],
+      "repetitions_are_independent_cases": false,
+      "full_json_byte_equality_required": false,
+      "judge_overrides_programmatic_invariants": false
+    },
+    "judge": {
+      "mode": "advisory_until_calibrated",
+      "required": ["rubric version", "model identity", "evidence-bound structured verdict", "format and reference validation", "known-defect challenge set", "human calibration and held-out check", "false-pass and abstention report"],
+      "may_write_operator_decision": false,
+      "may_supply_M08": false,
+      "ordering_quality_is_M02_or_M03": false
+    },
+    "product_acceptance": {
+      "synthetic_controls_verdict": "INCOMPLETE",
+      "minimum_independent_cases": 30,
+      "required_categories": ["A", "B", "C", "D", "E"],
+      "category_C_requires": "Expected refusal with correct behavior and reason for every case; no averaging away critical failures.",
+      "requires": ["acceptance dataset", "SME evidence for exact case set", "complete measurements", "all existing evaluator gates pass"],
+      "formally_closed_audit_fixes": []
+    }
+  },
+  "existing_evaluator_gates": [
+    {"metric": "M-01 Schema Match", "operator": ">=", "threshold": 1.0},
+    {"metric": "M-02 RAG Faithfulness", "operator": ">=", "threshold": 0.9},
+    {"metric": "M-03 Answer Relevance", "operator": ">=", "threshold": 0.9},
+    {"metric": "M-04 Traceability Ratio", "operator": ">=", "threshold": 1.0},
+    {"metric": "M-05 Refusal Correctness", "operator": ">=", "threshold": 0.95},
+    {"metric": "M-06 Evidence Grounding Correctness", "operator": ">=", "threshold": 1.0},
+    {"metric": "M-07 RAG Precision", "operator": ">=", "threshold": 1.0},
+    {"metric": "M-07 RAG Recall", "operator": ">=", "threshold": 1.0},
+    {"metric": "M-08 Draft Acceptance Rate", "operator": ">=", "threshold": 0.8, "measurement_owner": "human operator or AML expert"},
+    {"metric": "M-09 Max Latency (s)", "operator": "<=", "threshold": 180},
+    {"metric": "M-09 P95 Latency (s)", "operator": "<=", "threshold": 180}
+  ],
+  "coverage": {
+    "purpose": "Diagnostic identification of unexecuted lines and branches in critical modules, not model-quality evidence.",
+    "initial_numeric_gate": null,
+    "subprocesses_measured": false,
+    "risk_priorities": ["cancellation and deadlines", "idempotency", "source integrity", "human approval", "export", "durable Kafka intake and projection"]
+  },
+  "owners": {
+    "qa_automation": "Functional controls, fixtures, reproducible runners and evidence integrity",
+    "model_evaluation": "Observed retrieval/model metrics, repeatability and judge calibration reports",
+    "operator": "Usability, manual review and measured report acceptance",
+    "aml_expert": "Domain labels, policy/interpretation and SME acceptance",
+    "project_owner": "Commits/push, remote CI evidence and scope decisions"
+  },
+  "source_of_thresholds": "src/evaluation/gates.py; stricter supported runtime settings retain precedence",
+  "future_profile_implementation": "Not implemented by this strategy file; existing evaluator behavior is unchanged."
+}

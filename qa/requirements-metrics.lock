@@ -1,0 +1,3 @@
+# Standalone measurement tool, Windows x64 CPython 3.12. Not application dependencies.
+# Downloaded from PyPI; installed into var/qa/tooling/coverage-7.16.2 only.
+coverage==7.16.2 --hash=sha256:e6c52d3307824ff93b39efd99e4185d557db40bd841452abfb32e5d9151ca162

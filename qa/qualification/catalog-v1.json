@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "catalog_id": "evaluator-qualification-v1",
+  "evaluators": [
+    {
+      "id": "core", "purpose": "Offline replay: schema, exact citation identity, context references and missing evidence.",
+      "limitations": ["One open synthetic replay family; no acceptance dataset or independent human labels.", "Typed references do not prove free-text grounding or AML meaning.", "Expected synthetic INCOMPLETE is a correct evaluator response, not a failed qualification."],
+      "requirements": ["DFR-003", "DFR-005", "DFR-012"]
+    },
+    {
+      "id": "scenario", "purpose": "Scenario oracle: hand-calculated facts and exact rule versions; harmless fact-order invariance.",
+      "limitations": ["Exact current wording and one synthetic transaction; not a free-text semantic judge.", "Reordering the same facts creates no independent scenario."],
+      "requirements": ["DFR-004", "DFR-005", "DFR-012"]
+    },
+    {
+      "id": "model", "purpose": "Repeat evaluator: factual violations, metadata invariance and full planned denominators.",
+      "limitations": ["Reports are synthetic; no LLM, transport or model identity is measured.", "Two repetitions of one family do not prove statistical stability or ordering usefulness."],
+      "requirements": ["DFR-004", "DFR-012"]
+    },
+    {
+      "id": "retrieval", "purpose": "Exact citation ranking metrics with fixed k, missing retrieval and zero-label scope.",
+      "limitations": ["No embedding or vector database is called.", "Synthetic labels do not establish relevance, applicable legislation or real search quality."],
+      "requirements": ["DFR-005", "DFR-012"]
+    },
+    {
+      "id": "judge", "purpose": "Judge response protocol and advisory aggregation: quotations, false approvals, missing observations and human boundaries.",
+      "limitations": ["Hand-written responses exercise software contracts, not a real Judge model.", "Known engineering labels are not human calibration; historical Judge FAIL is not reassessed."],
+      "requirements": ["DFR-011", "DFR-012"]
+    },
+    {
+      "id": "reporting", "purpose": "Result aggregation: zero tests, skips, known failures and absent JUnit cannot support a claimed PASS.",
+      "limitations": ["Small synthetic JSON and JUnit exercise report interpretation only.", "This control does not prove that the reported tests actually ran or qualify an external CI service."],
+      "requirements": ["DFR-012"]
+    }
+  ],
+  "controls": [
+    {"id": "CORE-01", "evaluator_id": "core", "kind": "positive", "description": "One valid replay and one valid citation give 1/1 schema and traceability; synthetic product acceptance remains incomplete.", "expected": {"decision": "INCOMPLETE", "schema": {"numerator": 1, "denominator": 1, "value": 1.0}, "traceability": {"numerator": 1, "denominator": 1, "value": 1.0}, "missing_outcomes": 0, "codes": [], "synthetic_acceptance_blocked": true}},
+    {"id": "CORE-02", "evaluator_id": "core", "kind": "negative", "description": "Change only the outcome citation version to v2 while the catalog remains v1; schema stays valid but traceability becomes 0/1.", "expected": {"decision": "FAIL", "schema": {"numerator": 1, "denominator": 1, "value": 1.0}, "traceability": {"numerator": 0, "denominator": 1, "value": 0.0}, "missing_outcomes": 0, "codes": [], "synthetic_acceptance_blocked": true}},
+    {"id": "CORE-03", "evaluator_id": "core", "kind": "incomplete", "description": "Remove the only observed outcome; one missing outcome remains and both zero-denominator metrics are undefined.", "expected": {"decision": "INCOMPLETE", "schema": {"numerator": 0, "denominator": 0, "value": null}, "traceability": {"numerator": 0, "denominator": 0, "value": null}, "missing_outcomes": 1, "codes": [], "synthetic_acceptance_blocked": true}},
+    {"id": "CORE-04", "evaluator_id": "core", "kind": "negative", "description": "Reference ABSENT-TX in a typed fact: valid JSON and citation cannot hide invalid context evidence.", "expected": {"decision": "FAIL", "schema": {"numerator": 1, "denominator": 1, "value": 1.0}, "traceability": {"numerator": 1, "denominator": 1, "value": 1.0}, "missing_outcomes": 0, "codes": ["INVALID_REPORT_CONTEXT_OR_EVIDENCE"], "synthetic_acceptance_blocked": true}},
+    {"id": "CORE-05", "evaluator_id": "core", "kind": "invalid", "description": "An unknown replay envelope field is rejected with the documented exact BundleInputError code.", "expected": {"decision": "REJECTED", "code": "INVALID_REPLAY_BUNDLE"}},
+    {"id": "SCENARIO-01", "evaluator_id": "scenario", "kind": "positive", "description": "Six hand-written facts match one 10.00 RUB transaction, profile and v1 rule.", "expected": {"decision": "PASS", "codes": []}},
+    {"id": "SCENARIO-02", "evaluator_id": "scenario", "kind": "negative", "description": "Change the total's wording from 10.00 to 99.00 while typed evidence remains 10.00; exact fact oracle must detect it.", "expected": {"decision": "FAIL", "codes": ["FACT_CATALOG_MISMATCH"]}},
+    {"id": "SCENARIO-03", "evaluator_id": "scenario", "kind": "negative", "description": "Substitute v2 only in the selected report rule; the v1 golden rule remains unchanged.", "expected": {"decision": "FAIL", "codes": ["RULE_CATALOG_MISMATCH"]}},
+    {"id": "SCENARIO-04", "evaluator_id": "scenario", "kind": "invariant", "description": "Reverse the six facts without changing their content or evidence; the scenario oracle is order-insensitive.", "expected": {"decision": "PASS", "codes": []}},
+    {"id": "MODEL-01", "evaluator_id": "model", "kind": "invariant", "description": "Change only generated report_id and generated_at between two valid reports; ordered and semantic fingerprints stay equal.", "expected": {"decision": "PASS", "semantic_equal": true, "ordered_equal": true}},
+    {"id": "MODEL-02", "evaluator_id": "model", "kind": "negative", "description": "Replace a profile fact with an unsupported approval sentence; repetition checks must preserve the factual error.", "expected": {"decision": "FAIL", "fact_issues": ["FACT_CATALOG_MISMATCH"]}},
+    {"id": "MODEL-03", "evaluator_id": "model", "kind": "incomplete", "description": "Supply one successful repeat for two planned slots; pass rate stays 1/2 and independence count stays one.", "expected": {"decision": "INCOMPLETE", "planned": 2, "observed": 1, "missing": 1, "pass_rate": {"numerator": 1, "denominator": 2, "value": 0.5}, "fact_violations": 0, "independence_families": 1}},
+    {"id": "MODEL-04", "evaluator_id": "model", "kind": "negative", "description": "One valid and one factually wrong report fill two slots; failure remains visible and the failed slot stays in the denominator.", "expected": {"decision": "FAIL", "planned": 2, "observed": 2, "missing": 0, "pass_rate": {"numerator": 1, "denominator": 2, "value": 0.5}, "fact_violations": 1, "independence_families": 1}},
+    {"id": "RETRIEVAL-01", "evaluator_id": "retrieval", "kind": "positive", "description": "At k=2, one relevant v1 citation is first and one irrelevant v2 citation is second: precision 1/2, recall 1, reciprocal rank 1.", "expected": {"decision": "PASS", "k": 2, "observed_count": 2, "evaluated_count": 2, "relevant_count": 1, "hit_count": 1, "first_relevant_rank": 1, "ranking_status": "evaluated", "precision_at_k": 0.5, "recall_at_k": 1.0, "reciprocal_rank_at_k": 1.0}},
+    {"id": "RETRIEVAL-02", "evaluator_id": "retrieval", "kind": "negative", "description": "A sole v2 citation is not the expected v1 identity even though rule_id is the same.", "expected": {"decision": "FAIL", "k": 2, "observed_count": 1, "evaluated_count": 1, "relevant_count": 1, "hit_count": 0, "first_relevant_rank": null, "ranking_status": "evaluated", "precision_at_k": 0.0, "recall_at_k": 0.0, "reciprocal_rank_at_k": 0.0}},
+    {"id": "RETRIEVAL-03", "evaluator_id": "retrieval", "kind": "negative", "description": "Observed empty retrieval with one expected citation is a measured miss; k remains two rather than shrinking to zero.", "expected": {"decision": "FAIL", "k": 2, "observed_count": 0, "evaluated_count": 0, "relevant_count": 1, "hit_count": 0, "first_relevant_rank": null, "ranking_status": "evaluated", "precision_at_k": 0.0, "recall_at_k": 0.0, "reciprocal_rank_at_k": 0.0}},
+    {"id": "RETRIEVAL-04", "evaluator_id": "retrieval", "kind": "incomplete", "description": "No relevant labels means no ranking denominator; returned candidates cannot manufacture a measured success.", "expected": {"decision": "INCOMPLETE", "k": 2, "observed_count": 2, "evaluated_count": 2, "relevant_count": 0, "hit_count": 0, "first_relevant_rank": null, "ranking_status": "out_of_scope", "precision_at_k": null, "recall_at_k": null, "reciprocal_rank_at_k": null}},
+    {"id": "RETRIEVAL-05", "evaluator_id": "retrieval", "kind": "invalid", "description": "Duplicate the first identity after k=2; truncation must not hide invalid observations beyond the cutoff.", "expected": {"decision": "REJECTED", "code": "DUPLICATE_OBSERVED_CITATION"}},
+    {"id": "JUDGE-01", "evaluator_id": "judge", "kind": "positive", "description": "A hand-written protocol-valid response quotes an exact supplied source fragment; this validates format, not judgement accuracy.", "expected": {"decision": "PASS", "verdict": "pass", "references": 1}},
+    {"id": "JUDGE-02", "evaluator_id": "judge", "kind": "invalid", "description": "An invented quotation must be rejected with the exact contextual reference error.", "expected": {"decision": "REJECTED", "code": "QA_JUDGE_REFERENCE_QUOTE"}},
+    {"id": "JUDGE-03", "evaluator_id": "judge", "kind": "invalid", "description": "Remove required rationale from otherwise valid JSON; require the response-fields rejection.", "expected": {"decision": "REJECTED", "code": "QA_JUDGE_RESPONSE_FIELDS"}},
+    {"id": "JUDGE-04", "evaluator_id": "judge", "kind": "negative", "description": "Three planned controls contain one correct pass, one false approval and one timeout: accuracy 1/3 and false approval 1/2; no human calibration or gate override.", "expected": {"decision": "FAIL", "planned": 3, "valid": 2, "missing": 0, "timeout": 1, "confusion": {"positive_class": "fail", "tp": 0, "tn": 1, "fp": 0, "fn": 1}, "all_planned_accuracy": {"numerator": 1, "denominator": 3, "rate": 0.3333333333333333, "undefined_reason": null}, "false_pass_rate": {"numerator": 1, "denominator": 2, "rate": 0.5, "undefined_reason": null}, "human_calibration": "INCOMPLETE", "product_acceptance": "INCOMPLETE", "gate_overridden": false}},
+    {"id": "JUDGE-05", "evaluator_id": "judge", "kind": "incomplete", "description": "Only one correct response arrives for two planned controls; missing remains one and all-planned accuracy 1/2 without implying human agreement.", "expected": {"decision": "INCOMPLETE", "planned": 2, "valid": 1, "missing": 1, "timeout": 0, "confusion": {"positive_class": "fail", "tp": 0, "tn": 1, "fp": 0, "fn": 0}, "all_planned_accuracy": {"numerator": 1, "denominator": 2, "rate": 0.5, "undefined_reason": null}, "false_pass_rate": {"numerator": 0, "denominator": 1, "rate": 0.0, "undefined_reason": null}, "human_calibration": "INCOMPLETE", "product_acceptance": "INCOMPLETE", "gate_overridden": false}},
+    {"id": "REPORTING-01", "evaluator_id": "reporting", "kind": "positive", "description": "One passing test with consistent JSON, JUnit and contract checks supports PASS within report interpretation scope.", "expected": {"decision": "PASS", "tests": 1, "failures": 0, "skipped": 0, "codes": []}},
+    {"id": "REPORTING-02", "evaluator_id": "reporting", "kind": "incomplete", "description": "A claimed PASS with zero tests and empty JUnit remains incomplete.", "expected": {"decision": "INCOMPLETE", "tests": 0, "failures": 0, "skipped": 0, "codes": ["claimed_pass_not_supported"]}},
+    {"id": "REPORTING-03", "evaluator_id": "reporting", "kind": "negative", "description": "One skipped test invalidates a claimed successful run.", "expected": {"decision": "FAIL", "tests": 1, "failures": 0, "skipped": 1, "codes": ["claimed_pass_not_supported"]}},
+    {"id": "REPORTING-04", "evaluator_id": "reporting", "kind": "negative", "description": "JSON claims PASS but both counts and JUnit contain a failure; retain FAIL.", "expected": {"decision": "FAIL", "tests": 1, "failures": 1, "skipped": 0, "codes": ["claimed_pass_not_supported"]}},
+    {"id": "REPORTING-05", "evaluator_id": "reporting", "kind": "incomplete", "description": "A passing JSON without its JUnit companion cannot establish complete evidence.", "expected": {"decision": "INCOMPLETE", "tests": 1, "failures": 0, "skipped": 0, "codes": ["claimed_pass_not_supported", "junit_missing"]}},
+    {"id": "REPORTING-06", "evaluator_id": "reporting", "kind": "negative", "description": "An observed failure remains FAIL even when the companion JUnit is absent; incompleteness must not erase failure.", "expected": {"decision": "FAIL", "tests": 1, "failures": 1, "skipped": 0, "codes": ["claimed_pass_not_supported", "junit_missing"]}}
+  ]
+}

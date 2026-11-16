@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "1.0.0",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4926,
+      "sha256": "4f8a8a7bd7d9af8f56ff73e4a70f3dc492ab98322a06d0f4a9d3f400702c1463"
+    },
+    {
+      "path": "build_dataset.py",
+      "bytes": 6283,
+      "sha256": "e78f8a3ad24ea14302126d03650c056966d1ee5e671a71bd37149c7d1766b437"
+    },
+    {
+      "path": "cases.json",
+      "bytes": 29215,
+      "sha256": "727fb3eb27436dbc3cde60ac5764e75b5af9f01ab4b92dfa1b465e515780968f"
+    },
+    {
+      "path": "corpora/base.json",
+      "bytes": 2700,
+      "sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    {
+      "path": "corpora/editions.json",
+      "bytes": 3255,
+      "sha256": "a727497635f0562a7081756974b4ad5f690c0128c2d3c3f9aa9e208cef3b04c6"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "policy_id": "qa-policy-v1-s01",
+  "purpose": "synthetic_learning_only",
+  "expert_approved": false,
+  "assumed_naive_timezone": "UTC",
+  "snapshot_id": "qa-aml-v1-s01",
+  "snapshot_manifest_sha256": "ce650db1766a6f42962457cabf002641bf2cd959818140841a51dc0700c25e5e",
+  "window": {
+    "start_inclusive": "2026-07-01T00:00:00Z",
+    "end_exclusive": "2026-07-20T00:00:00Z",
+    "as_of": "2026-07-20T00:00:00Z"
+  },
+  "max_snapshot_age_seconds": 0,
+  "currency_scales": {
+    "RUB": 2,
+    "USD": 2
+  },
+  "applicability": {
+    "structuring": [
+      "R-115-002"
+    ],
+    "high_risk_country": [
+      "R-AML-010"
+    ],
+    "threshold_breach": [
+      "R-115-006"
+    ],
+    "kyc_mismatch": [
+      "R-115-007"
+    ],
+    "velocity": []
+  }
+}

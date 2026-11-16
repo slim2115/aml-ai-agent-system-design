@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.0",
+  "catalog_id": "environment-scenarios-v1",
+  "scenarios": [
+    {
+      "id": "baseline", "title": "Intake, admission and terminal projection",
+      "purpose": "Persist the request before acknowledgement, admit one job and project its synthetic terminal refusal.",
+      "limitations": ["Kafka and PostgreSQL are modeled; HTTP is scripted.", "Real SQLite/client/scheduler; terminal refusal is injected through valid transitions, not AML generation."],
+      "requirements": ["DFR-008", "DFR-009"],
+      "steps": [{"action":"receive"},{"action":"tick"},{"action":"finish"},{"action":"tick"}],
+      "expected": [
+        {"action":"receive","outcome":["queued"],"queue_status":"queued","queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["submitted"],"queue_status":"submitted","queue_error":null,"job_status":"queued","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"finish","outcome":["refused"],"queue_status":"submitted","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["projected"],"queue_status":"refused","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0}
+      ]
+    },
+    {
+      "id": "db-recovery", "title": "Database outage and scripted redelivery",
+      "purpose": "An unavailable queue receives no offset acknowledgement; restored intake admits the original event.",
+      "limitations": ["Queue failure and redelivery are scripted, not a live PostgreSQL or Kafka outage.", "Terminal refusal is synthetic; no AML model or worker runs."],
+      "requirements": ["DFR-008", "DFR-009"],
+      "steps": [{"action":"receive","fault":"db_unavailable"},{"action":"receive"},{"action":"tick"},{"action":"finish"},{"action":"tick"}],
+      "expected": [
+        {"action":"receive","outcome":["failure:DATABASE_UNAVAILABLE"],"queue_status":null,"queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":0,"dlq_acks":0},
+        {"action":"receive","outcome":["queued"],"queue_status":"queued","queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["submitted"],"queue_status":"submitted","queue_error":null,"job_status":"queued","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"finish","outcome":["refused"],"queue_status":"submitted","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["projected"],"queue_status":"refused","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0}
+      ]
+    },
+    {
+      "id": "offset-redelivery", "title": "Offset acknowledgement loss",
+      "purpose": "After durable intake and an ambiguous offset acknowledgement, scripted redelivery recognizes a duplicate.",
+      "limitations": ["The broker cannot confirm offset acceptance on the failed attempt; redelivery is explicit.", "Restart recreates the HTTP adapter and reopens SQLite in one process, retaining the modeled durable queue."],
+      "requirements": ["DFR-008", "DFR-009"],
+      "steps": [{"action":"receive","fault":"offset_ack_lost"},{"action":"restart"},{"action":"receive"},{"action":"tick"},{"action":"finish"},{"action":"tick"}],
+      "expected": [
+        {"action":"receive","outcome":["failure:OFFSET_COMMIT_FAILED"],"queue_status":"queued","queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":0,"dlq_acks":0},
+        {"action":"restart","outcome":["restarted"],"queue_status":"queued","queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":0,"dlq_acks":0},
+        {"action":"receive","outcome":["duplicate"],"queue_status":"queued","queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["submitted"],"queue_status":"submitted","queue_error":null,"job_status":"queued","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"finish","outcome":["refused"],"queue_status":"submitted","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["projected"],"queue_status":"refused","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0}
+      ]
+    },
+    {
+      "id": "http-ack-replay", "title": "Lost HTTP acknowledgement after real SQLite admission",
+      "purpose": "Retry the original admission key even if the job completed before the acknowledgement was recovered.",
+      "limitations": ["Timeout is injected into the urllib transport after a real SQLite commit.", "The modeled PG row survives adapter reconstruction; no actual process crash or AML generation is exercised."],
+      "requirements": ["DFR-009"],
+      "steps": [{"action":"receive"},{"action":"tick","fault":"http_ack_lost"},{"action":"finish"},{"action":"restart"},{"action":"tick"},{"action":"tick"}],
+      "expected": [
+        {"action":"receive","outcome":["queued"],"queue_status":"queued","queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["deferred:NOT_READY"],"queue_status":"queued","queue_error":"NOT_READY","job_status":"queued","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"finish","outcome":["refused"],"queue_status":"queued","queue_error":"NOT_READY","job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"restart","outcome":["restarted"],"queue_status":"queued","queue_error":"NOT_READY","job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["submitted"],"queue_status":"submitted","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":2,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["projected"],"queue_status":"refused","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":2,"key_count":1,"offset_acks":1,"dlq_acks":0}
+      ]
+    },
+    {
+      "id": "projection-replay", "title": "Failed queue projection after admission",
+      "purpose": "Reconcile a job already admitted to SQLite when persisting its ID to the queue failed.",
+      "limitations": ["Projection failure is a modeled queue exception, not a live PostgreSQL transaction failure.", "SQLite replay is real; terminal refusal and same-process restart are synthetic controls."],
+      "requirements": ["DFR-009"],
+      "steps": [{"action":"receive"},{"action":"tick","fault":"projection_unavailable"},{"action":"finish"},{"action":"restart"},{"action":"tick"},{"action":"tick"}],
+      "expected": [
+        {"action":"receive","outcome":["queued"],"queue_status":"queued","queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["failure:DATABASE_UNAVAILABLE"],"queue_status":"queued","queue_error":null,"job_status":"queued","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"finish","outcome":["refused"],"queue_status":"queued","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"restart","outcome":["restarted"],"queue_status":"queued","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["submitted"],"queue_status":"submitted","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":2,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["projected"],"queue_status":"refused","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":2,"key_count":1,"offset_acks":1,"dlq_acks":0}
+      ]
+    },
+    {
+      "id": "budget-reconcile", "title": "Virtual scheduler budget expires after admission",
+      "purpose": "Stop further operations in the expired tick and reconcile with the stable key in the next tick.",
+      "limitations": ["Virtual monotonic time verifies control flow, not elapsed performance or an AML SLA.", "Kafka intake is outside this scheduler budget; terminal refusal is synthetic."],
+      "requirements": ["DFR-009"],
+      "steps": [{"action":"receive"},{"action":"tick","fault":"budget_after_admission"},{"action":"finish"},{"action":"restart"},{"action":"tick"},{"action":"tick"}],
+      "expected": [
+        {"action":"receive","outcome":["queued"],"queue_status":"queued","queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["budget_exhausted:SCHEDULER_BUDGET_EXHAUSTED"],"queue_status":"queued","queue_error":null,"job_status":"queued","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"finish","outcome":["refused"],"queue_status":"queued","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"restart","outcome":["restarted"],"queue_status":"queued","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["submitted"],"queue_status":"submitted","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":2,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["projected"],"queue_status":"refused","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":2,"key_count":1,"offset_acks":1,"dlq_acks":0}
+      ]
+    },
+    {
+      "id": "not-found-recovery", "title": "Missing accepted job remains referenced",
+      "purpose": "A temporary NOT_FOUND from GET preserves the admitted job reference and never resubmits it.",
+      "limitations": ["NOT_FOUND is a scripted typed HTTP response; SQLite still contains the accepted job.", "The case exercises one job and same-process adapter reconstruction, not concurrent workers."],
+      "requirements": ["DFR-009"],
+      "steps": [{"action":"receive"},{"action":"tick"},{"action":"tick","fault":"get_not_found"},{"action":"finish"},{"action":"restart"},{"action":"tick"}],
+      "expected": [
+        {"action":"receive","outcome":["queued"],"queue_status":"queued","queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["submitted"],"queue_status":"submitted","queue_error":null,"job_status":"queued","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["failure:WORKFLOW_JOB_UNAVAILABLE"],"queue_status":"submitted","queue_error":"NOT_FOUND","job_status":"queued","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"finish","outcome":["refused"],"queue_status":"submitted","queue_error":"NOT_FOUND","job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"restart","outcome":["restarted"],"queue_status":"submitted","queue_error":"NOT_FOUND","job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["projected"],"queue_status":"refused","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0}
+      ]
+    },
+    {
+      "id": "protocol-recovery", "title": "Malformed admission acknowledgement",
+      "purpose": "A protocol-invalid response stops the tick but retains the admission key for reconciliation.",
+      "limitations": ["The transport returns an empty JSON object after real SQLite admission; no network proxy is involved.", "Queue persistence and terminal refusal are modeled controls."],
+      "requirements": ["DFR-009"],
+      "steps": [{"action":"receive"},{"action":"tick","fault":"protocol_error"},{"action":"finish"},{"action":"restart"},{"action":"tick"},{"action":"tick"}],
+      "expected": [
+        {"action":"receive","outcome":["queued"],"queue_status":"queued","queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["failure:WORKFLOW_PROTOCOL_ERROR"],"queue_status":"queued","queue_error":"PROTOCOL_ERROR","job_status":"queued","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"finish","outcome":["refused"],"queue_status":"queued","queue_error":"PROTOCOL_ERROR","job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"restart","outcome":["restarted"],"queue_status":"queued","queue_error":"PROTOCOL_ERROR","job_status":"refused","job_count":1,"submit_calls":1,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["submitted"],"queue_status":"submitted","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":2,"key_count":1,"offset_acks":1,"dlq_acks":0},
+        {"action":"tick","outcome":["projected"],"queue_status":"refused","queue_error":null,"job_status":"refused","job_count":1,"submit_calls":2,"key_count":1,"offset_acks":1,"dlq_acks":0}
+      ]
+    },
+    {
+      "id": "dlq-recovery", "title": "Invalid event with unavailable DLQ",
+      "purpose": "Do not acknowledge an invalid event until its bounded dead-letter copy is acknowledged.",
+      "limitations": ["Kafka publish/commit and redelivery are modeled, so this does not prove broker durability.", "No workflow job or AML processing is expected for the invalid event."],
+      "requirements": ["DFR-008"],
+      "steps": [{"action":"receive","invalid":true,"fault":"dlq_unavailable"},{"action":"restart"},{"action":"receive","invalid":true}],
+      "expected": [
+        {"action":"receive","outcome":["failure:DLQ_PUBLISH_FAILED"],"queue_status":null,"queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":0,"dlq_acks":0},
+        {"action":"restart","outcome":["restarted"],"queue_status":null,"queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":0,"dlq_acks":0},
+        {"action":"receive","outcome":["dead_lettered"],"queue_status":null,"queue_error":null,"job_status":null,"job_count":0,"submit_calls":0,"key_count":0,"offset_acks":1,"dlq_acks":1}
+      ]
+    }
+  ]
+}

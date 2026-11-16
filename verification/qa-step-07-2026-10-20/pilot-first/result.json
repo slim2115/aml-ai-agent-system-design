@@ -1,0 +1,461 @@
+{
+  "status": "PASS",
+  "product_acceptance": "INCOMPLETE",
+  "sme_acceptance": "pending",
+  "summary": {
+    "status": "PASS",
+    "planned_case_count": 5,
+    "observed_case_count": 5,
+    "observed_independence_family_count": 3,
+    "planned_repeat_count": 15,
+    "observed_repeat_count": 15,
+    "missing_repeat_count": 0,
+    "repeat_checks_pass_rate": {
+      "numerator": 15,
+      "denominator": 15,
+      "value": 1.0
+    },
+    "case_checks_pass_rate": {
+      "numerator": 5,
+      "denominator": 5,
+      "value": 1.0
+    },
+    "outcome_counts": {
+      "draft": 15,
+      "refusal": 0,
+      "error": 0,
+      "timeout": 0,
+      "dependency_failure": 0
+    },
+    "fact_violation_count": 0,
+    "independence_note": "Repetitions do not increase the number of independent cases; no confidence interval is inferred.",
+    "cases": [
+      {
+        "case_id": "QA-S01",
+        "independence_id": "FAMILY-STRUCTURING",
+        "status": "PASS",
+        "planned_repeats": 3,
+        "observed_repeats": 3,
+        "missing_repeat_indices": [],
+        "outcome_counts": {
+          "draft": 3,
+          "refusal": 0,
+          "error": 0,
+          "timeout": 0,
+          "dependency_failure": 0
+        },
+        "status_counts": {
+          "PASS": 3,
+          "FAIL": 0,
+          "INCOMPLETE": 0
+        },
+        "checks_pass_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "draft_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "validated_draft_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "fact_violation_count": 0,
+        "variability": {
+          "status": "evaluated",
+          "population": "drafts_passing_all_checks",
+          "eligible_draft_count": 3,
+          "excluded_observation_count": 0,
+          "distinct_ordered_reports": 1,
+          "distinct_semantic_reports": 1,
+          "distinct_fact_orders": 1,
+          "distinct_rule_orders": 1
+        }
+      },
+      {
+        "case_id": "QA-S02",
+        "independence_id": "FAMILY-STRUCTURING",
+        "status": "PASS",
+        "planned_repeats": 3,
+        "observed_repeats": 3,
+        "missing_repeat_indices": [],
+        "outcome_counts": {
+          "draft": 3,
+          "refusal": 0,
+          "error": 0,
+          "timeout": 0,
+          "dependency_failure": 0
+        },
+        "status_counts": {
+          "PASS": 3,
+          "FAIL": 0,
+          "INCOMPLETE": 0
+        },
+        "checks_pass_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "draft_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "validated_draft_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "fact_violation_count": 0,
+        "variability": {
+          "status": "evaluated",
+          "population": "drafts_passing_all_checks",
+          "eligible_draft_count": 3,
+          "excluded_observation_count": 0,
+          "distinct_ordered_reports": 1,
+          "distinct_semantic_reports": 1,
+          "distinct_fact_orders": 1,
+          "distinct_rule_orders": 1
+        }
+      },
+      {
+        "case_id": "QA-S03",
+        "independence_id": "FAMILY-HIGH-RISK",
+        "status": "PASS",
+        "planned_repeats": 3,
+        "observed_repeats": 3,
+        "missing_repeat_indices": [],
+        "outcome_counts": {
+          "draft": 3,
+          "refusal": 0,
+          "error": 0,
+          "timeout": 0,
+          "dependency_failure": 0
+        },
+        "status_counts": {
+          "PASS": 3,
+          "FAIL": 0,
+          "INCOMPLETE": 0
+        },
+        "checks_pass_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "draft_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "validated_draft_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "fact_violation_count": 0,
+        "variability": {
+          "status": "evaluated",
+          "population": "drafts_passing_all_checks",
+          "eligible_draft_count": 3,
+          "excluded_observation_count": 0,
+          "distinct_ordered_reports": 1,
+          "distinct_semantic_reports": 1,
+          "distinct_fact_orders": 1,
+          "distinct_rule_orders": 1
+        }
+      },
+      {
+        "case_id": "QA-S04",
+        "independence_id": "FAMILY-THRESHOLD",
+        "status": "PASS",
+        "planned_repeats": 3,
+        "observed_repeats": 3,
+        "missing_repeat_indices": [],
+        "outcome_counts": {
+          "draft": 3,
+          "refusal": 0,
+          "error": 0,
+          "timeout": 0,
+          "dependency_failure": 0
+        },
+        "status_counts": {
+          "PASS": 3,
+          "FAIL": 0,
+          "INCOMPLETE": 0
+        },
+        "checks_pass_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "draft_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "validated_draft_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "fact_violation_count": 0,
+        "variability": {
+          "status": "evaluated",
+          "population": "drafts_passing_all_checks",
+          "eligible_draft_count": 3,
+          "excluded_observation_count": 0,
+          "distinct_ordered_reports": 1,
+          "distinct_semantic_reports": 1,
+          "distinct_fact_orders": 1,
+          "distinct_rule_orders": 1
+        }
+      },
+      {
+        "case_id": "QA-S14",
+        "independence_id": "FAMILY-HIGH-RISK",
+        "status": "PASS",
+        "planned_repeats": 3,
+        "observed_repeats": 3,
+        "missing_repeat_indices": [],
+        "outcome_counts": {
+          "draft": 3,
+          "refusal": 0,
+          "error": 0,
+          "timeout": 0,
+          "dependency_failure": 0
+        },
+        "status_counts": {
+          "PASS": 3,
+          "FAIL": 0,
+          "INCOMPLETE": 0
+        },
+        "checks_pass_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "draft_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "validated_draft_rate": {
+          "numerator": 3,
+          "denominator": 3,
+          "value": 1.0
+        },
+        "fact_violation_count": 0,
+        "variability": {
+          "status": "evaluated",
+          "population": "drafts_passing_all_checks",
+          "eligible_draft_count": 3,
+          "excluded_observation_count": 0,
+          "distinct_ordered_reports": 1,
+          "distinct_semantic_reports": 1,
+          "distinct_fact_orders": 1,
+          "distinct_rule_orders": 1
+        }
+      }
+    ]
+  },
+  "controls": [
+    {
+      "case_id": "QA-S05",
+      "repeat_index": 1,
+      "status": "PASS",
+      "issues": [],
+      "model_calls": 0
+    },
+    {
+      "case_id": "QA-S06",
+      "repeat_index": 1,
+      "status": "PASS",
+      "issues": [],
+      "model_calls": 0
+    },
+    {
+      "case_id": "QA-S07",
+      "repeat_index": 1,
+      "status": "PASS",
+      "issues": [],
+      "model_calls": 0
+    },
+    {
+      "case_id": "QA-S08",
+      "repeat_index": 1,
+      "status": "PASS",
+      "issues": [],
+      "model_calls": 0
+    },
+    {
+      "case_id": "QA-S09",
+      "repeat_index": 1,
+      "status": "PASS",
+      "issues": [],
+      "model_calls": 0
+    },
+    {
+      "case_id": "QA-S10",
+      "repeat_index": 1,
+      "status": "PASS",
+      "issues": [],
+      "model_calls": 0
+    },
+    {
+      "case_id": "QA-S11",
+      "repeat_index": 1,
+      "status": "PASS",
+      "issues": [],
+      "model_calls": 0
+    },
+    {
+      "case_id": "QA-S12",
+      "repeat_index": 1,
+      "status": "PASS",
+      "issues": [],
+      "model_calls": 0
+    }
+  ],
+  "draft_observation_count": 15,
+  "control_observation_count": 8,
+  "source_files_unchanged_during_run": true,
+  "model_identity_stable": true,
+  "template_failures": [],
+  "full_planned_matrix": true,
+  "collection_complete": true,
+  "repeats_per_draft_case": 3,
+  "raw_attempt_summary": {
+    "observations": 15,
+    "first_attempt_valid_count": 15,
+    "repair_attempted_count": 0,
+    "total_http_attempts": 15,
+    "rows": [
+      {
+        "case_id": "QA-S01",
+        "repeat_index": 1,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S01",
+        "repeat_index": 2,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S01",
+        "repeat_index": 3,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S02",
+        "repeat_index": 1,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S02",
+        "repeat_index": 2,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S02",
+        "repeat_index": 3,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S03",
+        "repeat_index": 1,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S03",
+        "repeat_index": 2,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S03",
+        "repeat_index": 3,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S04",
+        "repeat_index": 1,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S04",
+        "repeat_index": 2,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S04",
+        "repeat_index": 3,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S14",
+        "repeat_index": 1,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S14",
+        "repeat_index": 2,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      },
+      {
+        "case_id": "QA-S14",
+        "repeat_index": 3,
+        "http_attempts": 1,
+        "first_attempt_valid": true,
+        "repair_attempted": false,
+        "final_status": "draft"
+      }
+    ]
+  },
+  "elapsed_seconds": 357.38417569999,
+  "finished_at_utc": "2026-10-20T19:58:44.594745+00:00"
+}

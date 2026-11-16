@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "purpose": "learning_notes_not_human_judge_calibration",
+  "learner": null,
+  "started_at": null,
+  "exercises": [
+    {"id": 1, "topic": "report_statuses", "status": "not_started"},
+    {"id": 2, "topic": "field_assertion", "status": "not_started"},
+    {"id": 3, "topic": "defect_trace_recovery", "status": "not_started"},
+    {"id": 4, "topic": "event_job_report", "status": "not_started"},
+    {"id": 5, "topic": "deduplication", "status": "not_started"},
+    {"id": 6, "topic": "dlq_worker_timeout", "status": "not_started"},
+    {"id": 7, "topic": "model_comparison", "status": "not_started"},
+    {"id": 8, "topic": "judge_errors", "status": "not_started"},
+    {"id": 9, "topic": "new_test_regression", "status": "not_started"},
+    {"id": 10, "topic": "evidence_summary", "status": "not_started"}
+  ],
+  "entry_example": {
+    "exercise_id": null,
+    "mode": null,
+    "command": null,
+    "expected": null,
+    "observed": null,
+    "evidence_paths": [],
+    "run_id": null,
+    "measured_at": null,
+    "explanation": null,
+    "limitations": null,
+    "cleanup_status": null
+  },
+  "entries": [],
+  "human_judge_calibration": "DEFERRED_BY_USER",
+  "product_acceptance": "INCOMPLETE"
+}

@@ -1,0 +1,12 @@
+# Windows x64 / CPython 3.12 checks: core, Streamlit AppTest, HTTP API, release.
+# Keep application versions aligned with the installed runtime; no model packages.
+pydantic==2.13.4
+jsonschema==4.26.0
+rfc3339-validator==0.1.4
+pytest==9.1.1
+PyYAML==6.0.3
+streamlit==1.60.0
+fastapi==0.141.1
+psycopg[binary]==3.3.6
+httpx==0.28.1
+httpx2==2.13.1

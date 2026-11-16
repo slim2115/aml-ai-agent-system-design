@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "version": "1.0.0",
+  "files": [
+    {
+      "path": "cases.json",
+      "sha256": "5d74a57f31558a71aa19bbc541524558a1530078b7b7bea07d5a81aeba8cc37b",
+      "bytes": 599511
+    }
+  ]
+}

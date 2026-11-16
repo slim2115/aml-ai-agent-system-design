@@ -1,0 +1,26 @@
+[
+  {
+    "client_id": "C-00045",
+    "risk_category": "medium",
+    "kyc_status": "verified",
+    "client_since": "2019-03-15"
+  },
+  {
+    "client_id": "C-00055",
+    "risk_category": "high",
+    "kyc_status": "verified",
+    "client_since": "2021-07-01"
+  },
+  {
+    "client_id": "C-00077",
+    "risk_category": "low",
+    "kyc_status": "verified",
+    "client_since": "2020-11-20"
+  },
+  {
+    "client_id": "C-00066",
+    "risk_category": "medium",
+    "kyc_status": "verified",
+    "client_since": "2022-02-14"
+  }
+]

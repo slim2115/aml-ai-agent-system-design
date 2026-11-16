@@ -1,0 +1,1126 @@
+{
+  "schema_version": 1,
+  "title": "Матрица QA оператора и AI-компонентов",
+  "as_of": "2026-10-07",
+  "baseline_semantics": "Rows preserve the Step 1 baseline. See current_progress and followup_evidence for subsequent implementation and qualification; historical KNOWN_LIMITATION is not the current implementation status.",
+  "current_progress": "qa/progress.json",
+  "followup_evidence": {
+    "QA-022": "verification/qa-step-05-2026-10-17/protocol-final-2026-10-18/result.json",
+    "QA-023": "verification/qa-step-05-2026-10-17/summary.md"
+  },
+  "timezone": "Europe/Moscow",
+  "scope": "D:/work/aml-ai-agent-system-rebuild",
+  "source_plan": "docs/rebuild/qa-practice-plan.md",
+  "reference_validation": {
+    "date": "2026-10-07",
+    "result": "PASS_STATIC_REFERENCES_AND_FRESH_JUNIT_MEMBERSHIP",
+    "rows": 24,
+    "unique_test_selectors": 69,
+    "unique_evidence_paths": 11,
+    "checks": [
+      "Every referenced test file and function/class definition exists",
+      "Every test selector has matching successful cases in the fresh 2026-10-07 JUnit",
+      "Every referenced evidence/context file exists"
+    ],
+    "does_not_prove": "Fresh regression PASS proves existing tests only; no new browser, real-model, Judge, live fault or SME acceptance execution."
+  },
+  "execution_statement": "07.10.2026 выполнена полная существующая регрессия: 920 тестов и 645 подслучаев, PASS без ошибок/пропусков. Все 69 test_refs матрицы сопоставлены с успешными cases свежего JUnit. Новые Playwright/model/Judge/live-сценарии не запускались; исторические live/browser и отдельная 29-проверочная квалификация относятся к 05.10.2026.",
+  "pytest_reference_semantics": "test_refs — существующие pytest selectors: path::function или path::Class::method. Параметризованные selectors охватывают семейство кейсов; это не вымышленные идентификаторы отдельных [param] вариантов.",
+  "priority_rules": {
+    "P0": "Критический инвариант: неверные данные, неавторизованное решение/экспорт, потеря или дублирование задания, порча учебной истории, ложная приёмка.",
+    "P1": "Высокий риск: доступность/диагностика, UI понятность, качество поиска/LLM/Judge, неполнота измерений."
+  },
+  "status_rules": {
+    "GAP_WITH_RELATED_TESTS": "Есть связанные программные проверки, но требуемое новое доказательство отсутствует.",
+    "KNOWN_LIMITATION": "Ограничение подтверждено review кода; новая воспроизводящая проверка пока только спроектирована.",
+    "REGRESSION_PASS_SCOPE_LIMITED": "Существующие test_refs успешно выполнены 07.10.2026; подтверждён только их указанный слой и зависимости. Browser/live/model пробелы и продуктовая приёмка не закрыты."
+  },
+  "acceptance_statement": "Матрица не выдаёт продуктовую acceptance. Judge и повторы кейсов не заменяют SME и независимые случаи. P0/P1 — приоритет риска, не результат теста.",
+  "rows": [
+    {
+      "id": "QA-001",
+      "title": "Подготовка поиска",
+      "priority": "P1",
+      "scenario": "Оператор открывает приложение, запускает подготовку, видит ошибку и повторяет её.",
+      "expected": "Подготовка выполняется явно; повторная кнопка отключена в preparing; ошибка безопасна, повтор возможен, ввод сохраняется.",
+      "test_refs": [
+        "tests/workflow/test_ui_readiness.py::test_preparation_failure_displays_safe_code_and_allows_retry",
+        "tests/workflow/test_ui_readiness.py::test_preparing_disables_duplicate_preparation_without_losing_consent",
+        "tests/workflow/test_ui_readiness.py::test_retry_after_failure_can_reach_ready_and_clears_failure"
+      ],
+      "layer": [
+        "AppTest",
+        "worker lifecycle"
+      ],
+      "dependencies": {
+        "real": [
+          "Streamlit AppTest"
+        ],
+        "doubles": [
+          "readiness service",
+          "store listing"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/kafka-aml-2026-10-04/live-cycle.json",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "AppTest не проверяет браузерный таймер; saved live проверяет успешную реальную подготовку одного запуска.",
+      "gap": "Нет Playwright-сценария ошибки подготовки с реальным UI.",
+      "next_step": "Шаги 2–4: тестовый backend, конечное ожидание, trace ошибки.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 5,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-002",
+      "title": "Ввод и границы данных",
+      "priority": "P1",
+      "scenario": "Некорректный инцидент, изменённое окно, неизвестный инцидент и неполный источник.",
+      "expected": "Валидация отличает ошибку ввода, неизвестный инцидент и отсутствие данных; некорректный ввод не вызывает модель.",
+      "test_refs": [
+        "tests/runtime/test_service.py::test_invalid_input_never_touches_data_or_model",
+        "tests/runtime/test_service.py::test_missing_source_and_unknown_incident_are_distinct",
+        "tests/runtime/test_context.py::test_window_boundaries_are_inclusive_then_exclusive"
+      ],
+      "layer": [
+        "runtime unit"
+      ],
+      "dependencies": {
+        "real": [
+          "валидация",
+          "синтетические файлы"
+        ],
+        "doubles": [
+          "embedding",
+          "LLM"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Проверяется логика на fixtures, не удобство подсказок junior.",
+      "gap": "Нет каталога QA-кейсов, объединяющего UI/API/модель.",
+      "next_step": "Шаги 3–4: общие ожидаемые коды и браузерная проверка подсказок.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 11,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-003",
+      "title": "Приём задания и повтор нажатия",
+      "priority": "P0",
+      "scenario": "Оператор создаёт задание, повторяет запрос с тем же ключом либо создаёт новое при занятом worker.",
+      "expected": "Одно задание на исходный ключ; повтор возвращает исходное подтверждение; занятость не создаёт второй запуск.",
+      "test_refs": [
+        "tests/workflow/test_controller.py::test_admission_requires_readiness_and_accepted_request_is_replayed_without_rerun",
+        "tests/workflow/test_controller.py::test_capacity_rejects_new_work_but_allows_idempotent_replay",
+        "tests/workflow/test_ui_guided.py::test_real_submit_persists_new_job_once_after_preparation_and_consent"
+      ],
+      "layer": [
+        "controller",
+        "AppTest"
+      ],
+      "dependencies": {
+        "real": [
+          "SQLite",
+          "контроллер",
+          "AppTest"
+        ],
+        "doubles": [
+          "worker / synthetic service"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Повторяемость UI покрыта AppTest, реальные browser double-click и transport не проверены.",
+      "gap": "Нет Playwright + SQL корреляции одного задания.",
+      "next_step": "Шаг 4: submit/retry, сверить единственный job и отображаемое состояние.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 3,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-004",
+      "title": "Отмена и поздний ответ",
+      "priority": "P0",
+      "scenario": "Отменить работающий анализ; исполнитель после отмены пытается вернуть результат.",
+      "expected": "Отмена сохраняется до подтверждения; поздний ответ не заменяет terminal; чужой оператор отменять не может.",
+      "test_refs": [
+        "tests/workflow/test_controller.py::test_cancel_is_durable_before_worker_stops_and_cross_user_is_forbidden",
+        "tests/workflow/test_worker.py::test_active_cancel_kills_without_late_result"
+      ],
+      "layer": [
+        "controller",
+        "subprocess"
+      ],
+      "dependencies": {
+        "real": [
+          "SQLite",
+          "дочерний процесс"
+        ],
+        "doubles": [
+          "синтетический worker без модели"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Процессные границы реальны, вычислительная нагрузка модели заменена.",
+      "gap": "Нет UI/API/live-model наблюдения отмены.",
+      "next_step": "Шаги 4–5: E2E отмена, в БД неизменный terminal; Шаг 7: отдельный реальный model run.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 2,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-005",
+      "title": "Дедлайн AML-задания",
+      "priority": "P0",
+      "scenario": "Исполнитель зависает или отвечает после истечения времени анализа.",
+      "expected": "Сохраняется timed_out, процесс останавливается, поздний отчёт не публикуется.",
+      "test_refs": [
+        "tests/workflow/test_controller.py::test_timer_persists_timeout_before_ignoring_worker_returns_and_late_result_cannot_replace_it",
+        "tests/workflow/test_worker.py::test_stalled_execution_deadline_kills_and_invalidates"
+      ],
+      "layer": [
+        "controller",
+        "subprocess"
+      ],
+      "dependencies": {
+        "real": [
+          "SQLite",
+          "дочерний процесс",
+          "таймер"
+        ],
+        "doubles": [
+          "синтетический исполнитель"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Это дедлайн самого AML-задания, не сквозная очередь Kafka и не общий scheduler tick.",
+      "gap": "Нет сквозного замера очереди/выполнения; отдельно открыт QA-023.",
+      "next_step": "Шаги 4–5: timeout UI/API; Шаг 7: cold/warm и раздельные интервалы.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 2,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-006",
+      "title": "Отказ вместо неподтверждённого отчёта",
+      "priority": "P0",
+      "scenario": "Нет допустимых данных либо модель исчерпала корректирующую попытку.",
+      "expected": "Явный отказ/ошибка по контракту; отчёт отсутствует, решение/экспорт не доступны, ручная очередь объяснена.",
+      "test_refs": [
+        "tests/runtime/test_service.py::test_exhausted_retries_refuse_without_partial_draft",
+        "tests/workflow/test_ui_guided.py::test_terminal_job_without_report_explains_outcome_and_allows_only_manual_queue"
+      ],
+      "layer": [
+        "runtime unit",
+        "AppTest"
+      ],
+      "dependencies": {
+        "real": [
+          "валидаторы",
+          "AppTest",
+          "SQLite"
+        ],
+        "doubles": [
+          "LLM",
+          "synthetic execution"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Нет реальной серии отказов Ollama и browser-подтверждения текста.",
+      "gap": "Отказ не включён в единый набор учебных browser кейсов.",
+      "next_step": "Шаги 3–4: refusal fixture; Шаг 7: включить реальные отказы в знаменатель.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 5,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-007",
+      "title": "Факты, суммы и источники",
+      "priority": "P0",
+      "scenario": "Оператор раскрывает источники; в фикстуре подменены сумма, ссылка или содержимое.",
+      "expected": "Полный точный каталог, Decimal без округления; hash/цитаты связывают отчёт со снимком; при недоступном источнике решение и экспорт закрыты.",
+      "test_refs": [
+        "tests/runtime/test_generation.py::test_complete_catalog_has_exact_money_all_statuses_profile_and_bound_sources",
+        "tests/runtime/test_generation.py::test_publication_guard_rejects_fabrication_even_with_valid_evidence_ids",
+        "tests/workflow/test_ui_guided.py::test_unavailable_sources_block_review_and_export_but_allow_local_queue"
+      ],
+      "layer": [
+        "runtime unit",
+        "AppTest",
+        "saved browser observation"
+      ],
+      "dependencies": {
+        "real": [
+          "код формирования",
+          "SQLite",
+          "AppTest",
+          "браузер в историческом открытии"
+        ],
+        "doubles": [
+          "модель в unit/AppTest"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/kafka-aml-2026-10-04/browser-kafka-report.txt",
+        "verification/kafka-aml-2026-10-04/browser-kafka-facts.jpg",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation + AML SME",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Исторический браузер проверял раскрытие сохранённых источников; не доказывает экспертную достаточность.",
+      "gap": "Нет Playwright negative fixture и эталонов эксперта.",
+      "next_step": "Шаги 3–4: искажённые QA-копии; Шаги 6 и 8: отдельные числовые и семантические оценки.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 16,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-008",
+      "title": "Конфликт версии решения",
+      "priority": "P0",
+      "scenario": "Два окна читают одну ревизию; другое окно сохраняет решение первым.",
+      "expected": "Устаревшая запись отклоняется; черновик текста сохраняется, требуется явное перечитывание; чужое решение не перезаписано.",
+      "test_refs": [
+        "tests/workflow/test_ui_guided.py::test_changed_revision_requires_explicit_reread_and_keeps_draft",
+        "tests/workflow/test_ui_guided.py::test_decision_commit_race_is_rejected_without_overwriting_other_operator",
+        "tests/workflow/test_store.py::test_decision_race_one_revision_only_and_changed_replay_conflicts"
+      ],
+      "layer": [
+        "AppTest",
+        "SQLite CAS"
+      ],
+      "dependencies": {
+        "real": [
+          "SQLite",
+          "AppTest"
+        ],
+        "doubles": [
+          "исполнитель анализа",
+          "искусственная гонка"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Проверяется конфликт CAS, а не реальная работа двух browser contexts.",
+      "gap": "Нет браузерного двухоконного сценария.",
+      "next_step": "Шаг 4: два контекста, явная сверка revision и сохранности обоих черновиков.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 3,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-009",
+      "title": "Осознанное решение оператора",
+      "priority": "P0",
+      "scenario": "Оператор выбирает решение с основанием; запрос пытается подменить actor/hash.",
+      "expected": "Без явного выбора и причины решение не сохраняется; actor/time задаёт сервис; hash отчёта связан с решением; генератор и Judge не одобряют.",
+      "test_refs": [
+        "tests/workflow/test_ui_guided.py::test_decision_requires_explicit_choice_and_nonblank_reason",
+        "tests/workflow/test_store.py::test_decision_request_cannot_supply_server_fields",
+        "tests/workflow/test_store.py::test_forged_report_hash_rejected"
+      ],
+      "layer": [
+        "AppTest",
+        "store authorization"
+      ],
+      "dependencies": {
+        "real": [
+          "SQLite",
+          "AppTest",
+          "trusted principal"
+        ],
+        "doubles": [
+          "synthetic report"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation + оператор",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Проверено управление решением, не квалификация оператора и не AML-верность.",
+      "gap": "Нет browser полной записи решения; Judge пока отсутствует.",
+      "next_step": "Шаг 4: synthetic-only решение; Шаг 8: Judge read-only без права решения.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 5,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-010",
+      "title": "Экспорт и его повтор",
+      "priority": "P0",
+      "scenario": "Скачать отчёт до/после одобрения, повторить доставку после потери подтверждения.",
+      "expected": "Экспорт требует актуального одобрения и явного подтверждения; байты соответствуют сохранённому отчёту; повтор сохраняет квитанцию.",
+      "test_refs": [
+        "tests/workflow/test_ui_guided.py::test_export_requires_confirmation_and_returns_exact_saved_report",
+        "tests/workflow/test_delivery.py::test_export_requires_approval_not_just_any_decision",
+        "tests/workflow/test_delivery.py::test_crash_after_accept_before_publish_recovers_exact_receipt",
+        "tests/workflow/test_delivery.py::test_corrupted_export_bytes_are_detected"
+      ],
+      "layer": [
+        "AppTest",
+        "delivery integration"
+      ],
+      "dependencies": {
+        "real": [
+          "SQLite",
+          "локальный симулятор доставки"
+        ],
+        "doubles": [
+          "исполнитель анализа",
+          "граница сбоя"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Сохранённый browser run не скачивал файл и не выполнял решение.",
+      "gap": "Нет Playwright download и хеш-сверки скачанного файла.",
+      "next_step": "Шаг 4: expect_download, содержание/hash, запрет без одобрения; внешней отправки нет.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 5,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-011",
+      "title": "Общая история и владение контроллером",
+      "priority": "P0",
+      "scenario": "Открыть Kafka-задание в UI после рестарта, затем потерять API.",
+      "expected": "UI читает ту же SQLite историю; не создаёт контроллер, не отменяет активные задания; сохранённый отчёт доступен.",
+      "test_refs": [
+        "tests/workflow/test_ui_integrated.py::test_integrated_page_reads_shared_report_and_never_recovers_active_job",
+        "tests/workflow/test_ui_integrated.py::test_history_and_human_decision_remain_available_with_api_offline",
+        "tests/workflow/test_ui_integrated.py::test_kafka_panel_opens_linked_report_without_model_preparation"
+      ],
+      "layer": [
+        "AppTest",
+        "saved browser observation"
+      ],
+      "dependencies": {
+        "real": [
+          "SQLite",
+          "AppTest",
+          "браузер в исторической проверке"
+        ],
+        "doubles": [
+          "API в AppTest"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/kafka-aml-2026-10-04/browser-kafka-report.txt",
+        "verification/kafka-aml-2026-10-04/ui-close-check.json",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Исторически открытие после рестарта подтверждено; browser offline сценарий не автоматизирован.",
+      "gap": "Нет Playwright истории после управляемого restart.",
+      "next_step": "Шаги 4–5: owning process fixture, restart, затем открыть тот же job_id.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 3,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-012",
+      "title": "API/Swagger и полномочия",
+      "priority": "P0",
+      "scenario": "Неавторизованный запрос, валидный Swagger example, SQL-фильтр с метасимволами.",
+      "expected": "Данные требуют X-Lab-Key до I/O; пример соответствует контракту; параметры связаны безопасно; docs не запускают модель.",
+      "test_refs": [
+        "tests/lab/test_api.py::test_every_documented_data_operation_is_authenticated_before_io",
+        "tests/lab/test_api.py::test_swagger_examples_are_valid_and_match_demo_window",
+        "tests/lab/test_api.py::test_parameterized_filters_do_not_turn_input_into_sql",
+        "tests/lab/test_api.py::test_docs_liveness_and_sql_reads_never_construct_worker"
+      ],
+      "layer": [
+        "in-process HTTP"
+      ],
+      "dependencies": {
+        "real": [
+          "FastAPI router",
+          "валидация",
+          "локальные Swagger assets"
+        ],
+        "doubles": [
+          "PostgreSQL",
+          "worker"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "TestClient не проверяет живой сетевой порт или клики Swagger.",
+      "gap": "Нет browser Authorize → Execute с отдельным QA-ключом.",
+      "next_step": "Шаги 2 и 4: Swagger smoke; секрет не включать в trace/evidence.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 4,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-013",
+      "title": "Kafka → AML → проекция",
+      "priority": "P0",
+      "scenario": "Публикация нового события и чтение окончательного отчёта через общий UI.",
+      "expected": "Kafka ACK означает публикацию; offset после durable inbox; job принят отдельно; report/hash совпадают; автоматического одобрения нет.",
+      "test_refs": [
+        "tests/lab/test_kafka_analysis_api.py::test_publication_is_ack_only_and_has_no_aml_side_effects",
+        "tests/lab/test_kafka_analysis_consumer.py::test_intake_commits_durable_queue_before_offset_without_http"
+      ],
+      "layer": [
+        "unit boundaries",
+        "saved live integration"
+      ],
+      "dependencies": {
+        "real": [
+          "в saved live: HTTP",
+          "Kafka",
+          "PostgreSQL",
+          "SQLite",
+          "embedding",
+          "template"
+        ],
+        "doubles": [
+          "broker/PG/HTTP в unit"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/kafka-aml-2026-10-04/live-cycle.json",
+        "verification/kafka-aml-2026-10-04/live-request.json",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Один исторический live путь с template; не серия аварий и не Ollama.",
+      "gap": "Нет изолированного повторяемого live QA-профиля.",
+      "next_step": "Шаги 2 и 5: run_id/event/job/report/offset корреляция на собственных ресурсах.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 2,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-014",
+      "title": "Дубликат события и конфликт UUID",
+      "priority": "P0",
+      "scenario": "Повторить тот же payload, затем тот же UUID с изменённым содержимым.",
+      "expected": "Точный повтор не создаёт второе задание; новая Kafka coordinate учтена; изменённый payload не заменяет исходный inbox.",
+      "test_refs": [
+        "tests/lab/test_kafka_analysis_store.py::test_redelivery_and_process_restart_keep_one_request_and_record_new_coordinates",
+        "tests/lab/test_kafka_analysis_store.py::test_changed_uuid_body_is_rejected_before_any_submission",
+        "tests/lab/test_kafka_analysis_consumer.py::test_uuid_changed_payload_is_dead_lettered_without_replacing_queued_request"
+      ],
+      "layer": [
+        "store unit",
+        "consumer unit",
+        "saved live integration"
+      ],
+      "dependencies": {
+        "real": [
+          "в saved live: Kafka",
+          "PostgreSQL",
+          "API",
+          "SQLite"
+        ],
+        "doubles": [
+          "PG/broker в unit"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/kafka-aml-2026-10-04/live-cycle.json",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Live подтвердил точный повтор и один job; конфликт payload живым брокером отдельно не проверен.",
+      "gap": "Нет live негативного UUID conflict.",
+      "next_step": "Шаг 5: SQL количество/coordinates, DLQ conflicted UUID, исходный отчёт неизменен.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 6,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-015",
+      "title": "Потеря ACK и восстановление",
+      "priority": "P0",
+      "scenario": "API приняло job, но ответ потерян; worker перезапущен без новых сообщений.",
+      "expected": "Тот же idempotency key, один job; очередь продолжает polling; terminal не регенерируется и ревизия не откатывается.",
+      "test_refs": [
+        "tests/lab/test_kafka_analysis_consumer.py::test_real_sqlite_admission_survives_ambiguous_ack_and_projects_without_new_kafka",
+        "tests/lab/test_kafka_analysis_consumer.py::test_terminal_job_outcomes_are_projected_without_regeneration",
+        "tests/lab/test_kafka_analysis_store.py::test_delayed_acceptance_from_one_observer_cannot_regress_another_observers_result"
+      ],
+      "layer": [
+        "component integration",
+        "store unit"
+      ],
+      "dependencies": {
+        "real": [
+          "SQLite",
+          "реальный WorkflowClient поверх транспорта-подмены"
+        ],
+        "doubles": [
+          "HTTP transport",
+          "PG queue",
+          "Kafka",
+          "execution"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Контроль сбоя детерминированный, реальные аварии процессов/сети не выполнялись.",
+      "gap": "Нет живого управляемого падения между ACK/PG projection.",
+      "next_step": "Шаг 5: отдельный fault adapter и проверка восстановления из сохранённой очереди.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 8,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-016",
+      "title": "Poison message и DLQ",
+      "priority": "P0",
+      "scenario": "Повреждённое событие, неверный key, огромный payload или недоступная DLQ.",
+      "expected": "DLQ содержит ограниченную диагностическую копию; input offset только после DLQ ACK; при ошибке offset не продвигается.",
+      "test_refs": [
+        "tests/lab/test_kafka_analysis_consumer.py::test_invalid_event_dlq_ack_precedes_input_commit",
+        "tests/lab/test_kafka_analysis_consumer.py::test_dlq_is_bounded_even_for_huge_key_and_value",
+        "tests/lab/test_kafka_analysis_consumer.py::test_dlq_failure_does_not_commit_input",
+        "tests/lab/test_kafka_analysis_consumer.py::test_database_failure_stops_before_later_offset_and_never_uses_http"
+      ],
+      "layer": [
+        "consumer unit"
+      ],
+      "dependencies": {
+        "real": [
+          "контрактная валидация",
+          "код consumer"
+        ],
+        "doubles": [
+          "Kafka",
+          "PostgreSQL"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation",
+      "evidence_status": "REGRESSION_PASS_SCOPE_LIMITED",
+      "proven_limits": "Порядок ACK/commit проверен трассой подмен, не живым consumer group.",
+      "gap": "Нет live DLQ/error recovery упражнения в QA namespace.",
+      "next_step": "Шаг 5: poison event в собственной теме, offsets и DLQ-содержимое через API/SQL.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 15,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-017",
+      "title": "Изоляция учебной истории и QA",
+      "priority": "P0",
+      "scenario": "Запустить и очистить QA, сохранив пользовательские БД, offset и процессы.",
+      "expected": "QA имеет отдельные DB/role/SQLite/порты/topics/groups/namespace; очищает и останавливает только свои ресурсы.",
+      "test_refs": [
+        "tests/lab/test_kafka_analysis_api.py::test_broker_profile_isolates_topic_and_group",
+        "tests/lab/test_kafka_analysis_store.py::test_foreign_or_partial_namespace_is_never_overwritten_or_granted",
+        "tests/workflow/test_store.py::test_path_escape_rejected_before_writing"
+      ],
+      "layer": [
+        "boundary controls",
+        "planned QA lifecycle"
+      ],
+      "dependencies": {
+        "real": [
+          "валидация путей/профилей"
+        ],
+        "doubles": [
+          "PostgreSQL",
+          "Kafka client"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation + разработчик",
+      "evidence_status": "GAP_WITH_RELATED_TESTS",
+      "proven_limits": "Существующие защиты разделяют bookkeeping/AML и запрещают чужой namespace; полноценного QA-профиля нет.",
+      "gap": "Полная изоляция QA не доказана и ещё не реализована.",
+      "next_step": "Шаг 2: before/after fingerprints ресурсов пользователя, собственные PID/ownership checks.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 8,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-018",
+      "title": "Качество retrieval и редакций",
+      "priority": "P1",
+      "scenario": "Изменить дату действия правила, corpus order; измерить top-k на размеченных запросах.",
+      "expected": "Версия/цитата соответствуют окну; ranking качество измеряется отдельно от полноты получения всех активных правил.",
+      "test_refs": [
+        "tests/runtime/test_retrieval.py::test_explicit_edition_boundary_and_timezone_are_applied_before_top_k",
+        "tests/runtime/test_retrieval.py::test_ranking_is_not_an_applicability_or_legal_approval_claim",
+        "tests/evaluator/test_core.py::EvaluatorControls::test_retrieval_is_independent_of_answer_citations"
+      ],
+      "layer": [
+        "retrieval unit",
+        "evaluator"
+      ],
+      "dependencies": {
+        "real": [
+          "код поиска/редакций",
+          "расчёт метрик"
+        ],
+        "doubles": [
+          "embedding vectors",
+          "сохранённые ответы"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/kafka-aml-2026-10-04/live-cycle.json",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "ML QA + AML SME",
+      "evidence_status": "GAP_WITH_RELATED_TESTS",
+      "proven_limits": "Fake vectors не измеряют релевантность; один live embedding run не benchmark ranking.",
+      "gap": "Нет набора релевантности и повторяемого реального retrieval benchmark.",
+      "next_step": "Шаг 6: corpus/model digest, размеченный top-k, Recall/Precision и отдельные metamorphic проверки.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 3,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-019",
+      "title": "Реальная LLM и повторяемость",
+      "priority": "P1",
+      "scenario": "Прогнать применимые кейсы template/local-model, по 3 повтора на 10 кейсах.",
+      "expected": "Факты/правила неизменны; допустим порядок; учитываются все первые ошибки, retries, отказы, timeout, cold/warm latency.",
+      "test_refs": [
+        "tests/runtime/test_generation.py::test_model_may_reorder_all_facts_but_cannot_select_a_subset",
+        "tests/runtime/test_generation.py::test_untrusted_source_text_is_not_a_command_and_does_not_change_draft",
+        "tests/runtime/test_service.py::test_invalid_selection_retries_once_with_safe_feedback_and_shared_deadline"
+      ],
+      "layer": [
+        "generation unit",
+        "planned model evaluation"
+      ],
+      "dependencies": {
+        "real": [
+          "валидаторы",
+          "готовые факты"
+        ],
+        "doubles": [
+          "ответы LLM",
+          "embedding"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "ML QA",
+      "evidence_status": "GAP_WITH_RELATED_TESTS",
+      "proven_limits": "Unit доказывает ограничения генерации, не статистическое качество Qwen/Ollama; temperature=0 не доказательство воспроизводимости.",
+      "gap": "Нет реального пилота повторов и статистики.",
+      "next_step": "Шаг 7: runner с версиями и полными попытками; группировать по case, не считать повторы независимыми.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 8,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-020",
+      "title": "LLM-as-a-Judge и калибровка",
+      "priority": "P1",
+      "scenario": "Judge оценивает эталон и копии с дефектом, затем варианты в порядке A/B и B/A.",
+      "expected": "JSON/ссылки валидны; pass/fail/abstain; известные ошибки выявляются; Judge без инструментов/решения; числовой FAIL нельзя компенсировать баллом.",
+      "test_refs": [
+        "tests/evaluator/test_core.py::EvaluatorControls::test_external_missing_evidence_or_denominator_is_not_measured",
+        "tests/evaluator/test_core.py::EvaluatorControls::test_free_text_grounding_limitation_is_disclosed"
+      ],
+      "layer": [
+        "evaluator guards",
+        "planned Judge"
+      ],
+      "dependencies": {
+        "real": [
+          "проверка completeness внешних измерений"
+        ],
+        "doubles": [
+          "готовые external metric records; Judge отсутствует"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "ML QA + AML SME",
+      "evidence_status": "GAP_WITH_RELATED_TESTS",
+      "proven_limits": "Связанные тесты проверяют evaluator, не Judge. Действующего Judge и его результатов нет.",
+      "gap": "Нет adapter/rubric/калибровки/holdout/оценки смещений.",
+      "next_step": "Шаг 8: отдельный adapter, дефекты, независимая human разметка, false negatives/abstain/agreement; advisory-only.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 2,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-021",
+      "title": "SME и продуктовая приёмка",
+      "priority": "P0",
+      "scenario": "Сопоставить отчёты с человеческой разметкой и полнотой acceptance dataset.",
+      "expected": "M-08 остаётся человеческой оценкой; обязательны >=30 независимых случаев A–E и подтверждение SME точного состава; недостающие данные → INCOMPLETE.",
+      "test_refs": [
+        "tests/evaluator/test_core.py::EvaluatorControls::test_synthetic_baseline_never_proves_acceptance",
+        "tests/evaluator/test_core.py::EvaluatorControls::test_independence_and_category_coverage_are_required",
+        "tests/evaluator/test_core.py::EvaluatorControls::test_sme_metadata_is_required_and_never_fabricated"
+      ],
+      "layer": [
+        "acceptance gate"
+      ],
+      "dependencies": {
+        "real": [
+          "код evaluator"
+        ],
+        "doubles": [
+          "synthetic evaluation bundle",
+          "метаданные в fixtures"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "AML SME + владелец продукта",
+      "evidence_status": "GAP_WITH_RELATED_TESTS",
+      "proven_limits": "Правила gate проверены; это не подпись SME и не реальное принятие оператором.",
+      "gap": "Экспертная приёмка/полный acceptance набор текущим QA этапом не подтверждены.",
+      "next_step": "Шаги 3 и 8–10: предоставить формы/эталоны и зарегистрировать реальные независимые оценки.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 3,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-022",
+      "title": "Повреждённый HTTP и бесконечное откладывание",
+      "priority": "P1",
+      "scenario": "API стабильно возвращает HTTP 200 с malformed JSON либо неверной формой job.",
+      "expected": "Целевое поведение: ошибка протокола отличима от временной неготовности, retry ограничен/эскалирован без потери запроса и без нового job.",
+      "test_refs": [
+        "tests/workflow/test_remote_workflow.py::test_untrusted_responses_fail_closed",
+        "tests/workflow/test_remote_workflow.py::test_poll_rejects_invalid_result_shape_or_semantics",
+        "tests/lab/test_kafka_analysis_consumer.py::test_temporary_workflow_failure_keeps_queue_and_rotates_fairly"
+      ],
+      "layer": [
+        "review finding",
+        "existing unit boundaries",
+        "planned regression"
+      ],
+      "dependencies": {
+        "real": [
+          "WorkflowClient parser",
+          "scheduler code"
+        ],
+        "doubles": [
+          "HTTP response",
+          "queue"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/kafka-aml-2026-10-04/final-code-review.md",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "разработчик + QA automation",
+      "evidence_status": "KNOWN_LIMITATION",
+      "proven_limits": "Текущие тесты принимают NOT_READY и deferred как безопасную реакцию; общего лимита повторов нет. Новая воспроизводящая проверка не запускалась.",
+      "gap": "KNOWN LIMITATION: нарушение протокола не выделено, запрос может откладываться без конца.",
+      "next_step": "Отдельное проверяемое исправление после QA-профиля; сохранить идемпотентность и диагностическую причину.",
+      "control_case_design": {
+        "id": "DESIGN-QA-022",
+        "execution_status": "DESIGN_ONLY_NOT_IMPLEMENTED_NOT_RUN",
+        "fixture": "Изолированная Queue и настоящий WorkflowClient с Transport, возвращающим HTTP 200/raw b\"{\" для submit; затем вариант с валидным JSON, но некорректным job.",
+        "steps": [
+          "Заморозить AnalysisEvent и enqueue один раз.",
+          "Вызвать scheduler_tick фиксированное число раз (например, 4), без sleep и внешней сети.",
+          "Сохранить число HTTP попыток, исходные key/event_id, status/last_error_code; отдельный healthy ряд проверяет fairness."
+        ],
+        "current_observation_expected": "Все 4 попытки классифицируются NOT_READY; строка остаётся queued/deferred и повторяется. Конечное число шагов не доказывает бесконечность — отсутствие лимита устанавливается чтением кода.",
+        "target_oracle": "После отдельно согласованной политики протокольная ошибка диагностически выделена и число повторов ограничено; исходный event/job не потерян и не заменён.",
+        "not_to_do": "Не исправлять runtime здесь, не добавлять xfail как зелёное доказательство; целевая политика retry ещё не утверждена."
+      },
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 17,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-023",
+      "title": "Общий дедлайн шага Kafka scheduler",
+      "priority": "P1",
+      "scenario": "Медленные последовательные чтения тела HTTP и операции PG удерживают scheduler дольше допустимого бюджета poll.",
+      "expected": "Целевое поведение: общий monotonic deadline ограничивает всю итерацию; остаточный бюджет распространяется на I/O; queue/idempotency сохраняются.",
+      "test_refs": [
+        "tests/lab/test_kafka_analysis_consumer.py::test_tick_reconciles_then_submits_at_most_two_requests",
+        "tests/workflow/test_remote_workflow.py::test_timeout_has_finite_small_bound"
+      ],
+      "layer": [
+        "review finding",
+        "existing call-count checks",
+        "planned timing regression"
+      ],
+      "dependencies": {
+        "real": [
+          "scheduler / remote client code"
+        ],
+        "doubles": [
+          "часы",
+          "HTTP",
+          "PostgreSQL"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/kafka-aml-2026-10-04/final-code-review.md",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "разработчик + QA automation",
+      "evidence_status": "KNOWN_LIMITATION",
+      "proven_limits": "<=2 HTTP вызова и socket timeout <=10с не ограничивают время всего tick. Новый timing case ещё не реализован/не выполнен.",
+      "gap": "KNOWN LIMITATION: нет общего wall-clock deadline; возможен выход за Kafka max.poll.interval.ms.",
+      "next_step": "Шаг 5: измерить полный tick и fault case; отдельным изменением ввести согласованный бюджет до расширения live fault suite.",
+      "control_case_design": {
+        "id": "DESIGN-QA-023",
+        "execution_status": "DESIGN_ONLY_NOT_IMPLEMENTED_NOT_RUN",
+        "fixture": "Fake monotonic clock + controlled store/client: каждая последовательная DB/HTTP операция сдвигает часы; отдельный response double читает несколько chunks, каждый быстрее socket timeout.",
+        "steps": [
+          "Подготовить одну submitted и одну queued строку.",
+          "Задать иллюстративный общий бюджет B=10с только для тест-дизайна; последовательно накопить >B через допустимые отдельные операции.",
+          "Обработать одну итерацию; собрать время/sequence/call count и факт сохранения queue.",
+          "После решения по runtime добавить slow-drip чтение с конечной защитой теста и отдельный изолированный live rebalance case."
+        ],
+        "current_observation_expected": "scheduler_tick не получает общий deadline и завершает последовательность после B; тест количества вызовов остаётся зелёным. Это проверка отсутствия гарантии, не измерение частоты реальных rebalances.",
+        "target_oracle": "После принятия B тик прекращает новые операции по бюджету, не теряет уже принятое задание; API повтор сохраняет ключ и terminal.",
+        "not_to_do": "Не ждать настоящий max.poll.interval в unit-тесте и не замедлять рабочую БД; B=10с не объявлять SLA продукта."
+      },
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 8,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    },
+    {
+      "id": "QA-024",
+      "title": "Полнота результатов и CI",
+      "priority": "P1",
+      "scenario": "Обязательный case не выполнен, измерение отсутствует или первый сбой скрыт успешным повтором.",
+      "expected": "Неизмеренное не становится PASS; denominator и отсутствующие случаи сохранены; отдельные функциональные/model/Judge/SME итоги; результаты привязаны к версиям.",
+      "test_refs": [
+        "tests/evaluator/test_core.py::EvaluatorControls::test_missing_outcome_cannot_disappear",
+        "tests/evaluator/test_core.py::EvaluatorControls::test_runner_failure_code_cannot_pass_with_valid_result",
+        "tests/evaluator/test_core.py::EvaluatorControls::test_external_failure_blocks_even_with_incomplete_coverage"
+      ],
+      "layer": [
+        "evaluator",
+        "planned reporting/CI"
+      ],
+      "dependencies": {
+        "real": [
+          "gates evaluator",
+          "сохранённый JUnit"
+        ],
+        "doubles": [
+          "evaluation bundles"
+        ]
+      },
+      "evidence_paths": [
+        "verification/kafka-aml-2026-10-04/full/unit-tests.xml",
+        "verification/kafka-aml-2026-10-04/full/unit-verification.json",
+        ".github/workflows/ci.yml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+      ],
+      "owner_role": "QA automation + разработчик",
+      "evidence_status": "GAP_WITH_RELATED_TESTS",
+      "proven_limits": "Свежая локальная регрессия 07.10.2026 прошла, но не доказывает успешный удалённый CI. Browser/model/Judge CI не реализован; сохранённые live/browser свидетельства остаются историческими.",
+      "gap": "Нет единого run_id отчёта и подтверждённого удалённого run на QA-изменениях.",
+      "next_step": "Шаг 9: отдельные профили, manifests/traces; push и коммиты делает владелец.",
+      "current_regression": {
+        "date": "2026-10-07",
+        "test_refs_status": "PASS",
+        "matched_junit_cases": 3,
+        "evidence": "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+        "scope": "Только существующие test_refs и их параметризованные варианты. Не доказывает устранение gap/known limitation, живой browser/model/SME запуск или приёмку."
+      }
+    }
+  ],
+  "current_regression": {
+    "date": "2026-10-07",
+    "status": "PASS",
+    "collected_tests": 920,
+    "additional_subtests": 645,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "evidence": [
+      "verification/qa-step-01-2026-10-07/coverage/regression/unit-tests.xml",
+      "verification/qa-step-01-2026-10-07/coverage/regression/unit-verification.json"
+    ],
+    "scope": "Configured contracts, configuration, evaluator, runtime, workflow, API and release controls. Real subprocess lifecycle and SQLite; in-process HTTP and database doubles. No live PostgreSQL, browser, model, network integration or SME acceptance."
+  }
+}

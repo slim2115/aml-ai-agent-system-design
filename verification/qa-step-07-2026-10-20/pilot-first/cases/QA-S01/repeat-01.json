@@ -1,0 +1,1779 @@
+{
+  "evaluation": {
+    "case_id": "QA-S01",
+    "independence_id": "FAMILY-STRUCTURING",
+    "repeat_index": 1,
+    "expected_status": "draft",
+    "engine": "local-model",
+    "transport_outcome": "completed",
+    "draft": {
+      "ordered_fingerprint": "1fe708d20c7cb35da702365ef96ba04582b1c6f2bb31234ff378a6bed64eb0b4",
+      "semantic_fingerprint": "64f8e10557789a8153ca3b74dc9d0a21f595a7c1c2a528cc49400fde81452562",
+      "fact_order": [
+        "c3d528b66cc0297f17b77dc180b8f164247fb6874d4445c01bc5fe81c3259c5e",
+        "231eb7cf965d2b77f2cee9542b6a191fa75e7e4d2c51b29154151aa6b74221f4",
+        "b1593e64a5d93951b41b1e151dfbb9401bdfa34cc432b12e799d6d76fa32a106",
+        "fd659059f202ac07c2e53d40db8feecc2fb0ec93f135293903b512905f018dc9",
+        "66dbfdf42d337f0b40b980f0a59f34cac3fb57442f91f9cdfea089b3f3eaa0cd",
+        "9b030c12221dc4ddd603f37eb9b3636ab898c288ddcf28dbab5c0b9e23aeffaf",
+        "f3fb1a76542fe1e9af4bb2a7ac34cf14cc24c3ec3f5d75a0fc0df61871f21b13",
+        "db71c07d6fd703eda8a9dab006e4d43554bf5989ca0c0c2f7a98349ece5b5267",
+        "775318d352fbdd35ef122818893ad62885ae1c81d3f718507f1ef56521289e3e",
+        "f1e3236aefcd2060d597eb140e4690fde6b74f73d54d6aa1962ff54787f12ca4",
+        "125115c57333bb42a37a015f1110d3cc741e78316119a5a0da227afeca27d288",
+        "28b0480b93360e1fc9d417cd30415ed5403d91fdf296e7911cbe937ca8b892bc",
+        "d3705a143b6b6567cad0829dbbbf6edd620af555562ff54d3a7b7655a99f0fb0",
+        "3fcd5d304625e4a7595d1d6f4d5a8521a6808f30dd0fef5dc365e7d162e1c2d3",
+        "98b4f4210a482341e2adf9ca7572aed045d739cb8bf9f7865b7016948df44a60",
+        "5c6070cd321f712b03a7e9775b0607bae26a81e54fd4831d55491da384e33c8e",
+        "c31cfc257f4ecbd32ed3a1e343fe466d126c67fb02f995184854d76776dc30d7"
+      ],
+      "rule_order": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        }
+      ]
+    },
+    "outcome": "draft",
+    "status": "PASS",
+    "issues": [],
+    "fact_issues": [],
+    "model_calls": 1,
+    "latency_seconds": 62.02742619998753
+  },
+  "observation": {
+    "result": {
+      "schema_version": "1.0",
+      "status": "draft",
+      "incident_id": "INC-000123",
+      "report_id": "report-cd4969805d0e49bf8464cf8a0baace79",
+      "report_version": 1,
+      "generated_at": "2026-10-20T19:56:12.299855+00:00",
+      "snapshot_id": "qa-aml-v1-s01",
+      "policy_version": "qa-policy-v1-s01",
+      "data_completeness": "full",
+      "found_facts": [
+        {
+          "fact": "Категория риска в профиле: medium.",
+          "evidence": [
+            {
+              "kind": "profile",
+              "snapshot_id": "qa-aml-v1-s01",
+              "client_id": "C-00045",
+              "field": "risk_category"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Статус KYC в профиле: verified.",
+          "evidence": [
+            {
+              "kind": "profile",
+              "snapshot_id": "qa-aml-v1-s01",
+              "client_id": "C-00045",
+              "field": "kyc_status"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Дата начала отношений в профиле: 2019-03-15.",
+          "evidence": [
+            {
+              "kind": "profile",
+              "snapshot_id": "qa-aml-v1-s01",
+              "client_id": "C-00045",
+              "field": "client_since"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7700: сумма 95000.00 RUB; время 2026-07-10T09:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7700",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7700",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7700",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7700",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7700",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7701: сумма 95000.00 RUB; время 2026-07-11T10:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7701",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7701",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7701",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7701",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7701",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7702: сумма 95000.00 RUB; время 2026-07-12T11:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7702",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7702",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7702",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7702",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7702",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7703: сумма 95000.00 RUB; время 2026-07-10T12:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7703",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7703",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7703",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7703",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7703",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7704: сумма 95000.00 RUB; время 2026-07-11T13:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7704",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7704",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7704",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7704",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7704",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7705: сумма 95000.00 RUB; время 2026-07-12T14:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7705",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7705",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7705",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7705",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7705",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7706: сумма 95000.00 RUB; время 2026-07-10T15:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7706",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7706",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7706",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7706",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7706",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7707: сумма 95000.00 RUB; время 2026-07-11T16:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7707",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7707",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7707",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7707",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7707",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7708: сумма 95000.00 RUB; время 2026-07-12T09:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7708",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7708",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7708",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7708",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7708",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7709: сумма 95000.00 RUB; время 2026-07-10T10:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7709",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7709",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7709",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7709",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7709",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7710: сумма 95000.00 RUB; время 2026-07-11T11:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7710",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7710",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7710",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7710",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7710",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-7711: сумма 95000.00 RUB; время 2026-07-12T12:00:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7711",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7711",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7711",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7711",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_id": "TX-7711",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Количество всех транзакций в контексте за окно [2026-07-01T00:00:00Z, 2026-07-20T00:00:00Z), включая все статусы: 12.",
+          "evidence": [
+            {
+              "kind": "count",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_ids": [
+                "TX-7700",
+                "TX-7701",
+                "TX-7702",
+                "TX-7703",
+                "TX-7704",
+                "TX-7705",
+                "TX-7706",
+                "TX-7707",
+                "TX-7708",
+                "TX-7709",
+                "TX-7710",
+                "TX-7711"
+              ],
+              "window": {
+                "start_inclusive": "2026-07-01T00:00:00Z",
+                "end_exclusive": "2026-07-20T00:00:00Z",
+                "as_of": "2026-07-20T00:00:00Z"
+              },
+              "value": 12
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Сумма всех транзакций в контексте в валюте RUB за окно [2026-07-01T00:00:00Z, 2026-07-20T00:00:00Z), включая все статусы: 1140000.00 RUB.",
+          "evidence": [
+            {
+              "kind": "sum",
+              "snapshot_id": "qa-aml-v1-s01",
+              "tx_ids": [
+                "TX-7700",
+                "TX-7701",
+                "TX-7702",
+                "TX-7703",
+                "TX-7704",
+                "TX-7705",
+                "TX-7706",
+                "TX-7707",
+                "TX-7708",
+                "TX-7709",
+                "TX-7710",
+                "TX-7711"
+              ],
+              "field": "amount",
+              "window": {
+                "start_inclusive": "2026-07-01T00:00:00Z",
+                "end_exclusive": "2026-07-20T00:00:00Z",
+                "as_of": "2026-07-20T00:00:00Z"
+              },
+              "currency": "RUB",
+              "value": "1140000.00"
+            }
+          ],
+          "sources": []
+        }
+      ],
+      "suspicious_patterns": [],
+      "applicable_rules": [
+        {
+          "citation": {
+            "rule_id": "R-115-002",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.6, п.2",
+            "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+            "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+          },
+          "rule_text": "Операции подлежат обязательному контролю, если выявлены признаки намеренного разбиения суммы на несколько операций ниже порога обязательного контроля с целью избежать его применения."
+        }
+      ],
+      "confidence": null
+    },
+    "context": {
+      "schema_version": "1.0",
+      "incident_id": "INC-000123",
+      "client_id": "C-00045",
+      "snapshot": {
+        "snapshot_id": "qa-aml-v1-s01",
+        "captured_at": "2026-07-20T00:00:00Z",
+        "sources": [
+          {
+            "source": "cases.json",
+            "version": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def",
+            "content_sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+          },
+          {
+            "source": "clients.json",
+            "version": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d",
+            "content_sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+          },
+          {
+            "source": "cards.json",
+            "version": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916",
+            "content_sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+          },
+          {
+            "source": "transactions.json",
+            "version": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5",
+            "content_sha256": "0654def283627772336a868c32d08db9dffe7649dbd1208e1dc7d1b79fcc5ea5"
+          },
+          {
+            "source": "rules.json",
+            "version": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8",
+            "content_sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+          }
+        ]
+      },
+      "window": {
+        "start_inclusive": "2026-07-01T00:00:00Z",
+        "end_exclusive": "2026-07-20T00:00:00Z",
+        "as_of": "2026-07-20T00:00:00Z"
+      },
+      "policy_version": "qa-policy-v1-s01",
+      "data_completeness": "full",
+      "consistency": "consistent",
+      "missing_fields": [],
+      "client": {
+        "client_id": "C-00045",
+        "risk_category": "medium",
+        "kyc_status": "verified",
+        "client_since": "2019-03-15"
+      },
+      "cards": [
+        {
+          "card_id": "CARD-1001",
+          "client_id": "C-00045",
+          "card_status": "active"
+        }
+      ],
+      "transactions": [
+        {
+          "tx_id": "TX-7700",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-0",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-10T09:00:00Z"
+        },
+        {
+          "tx_id": "TX-7701",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-1",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-11T10:00:00Z"
+        },
+        {
+          "tx_id": "TX-7702",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-2",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-12T11:00:00Z"
+        },
+        {
+          "tx_id": "TX-7703",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-3",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-10T12:00:00Z"
+        },
+        {
+          "tx_id": "TX-7704",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-4",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-11T13:00:00Z"
+        },
+        {
+          "tx_id": "TX-7705",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-5",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-12T14:00:00Z"
+        },
+        {
+          "tx_id": "TX-7706",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-6",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-10T15:00:00Z"
+        },
+        {
+          "tx_id": "TX-7707",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-7",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-11T16:00:00Z"
+        },
+        {
+          "tx_id": "TX-7708",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-8",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-12T09:00:00Z"
+        },
+        {
+          "tx_id": "TX-7709",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-9",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-10T10:00:00Z"
+        },
+        {
+          "tx_id": "TX-7710",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-10",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-11T11:00:00Z"
+        },
+        {
+          "tx_id": "TX-7711",
+          "client_id": "C-00045",
+          "card_id": "CARD-1001",
+          "amount": "95000.00",
+          "currency": "RUB",
+          "counterparty": "ООО Ромашка-11",
+          "purpose": "Пополнение счёта",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-12T12:00:00Z"
+        }
+      ]
+    },
+    "selected_rule_ids": [
+      "R-115-002"
+    ],
+    "model_prompts": [
+      {
+        "schema_version": "1.0",
+        "task": "order_all_catalog_ids",
+        "facts": [
+          {
+            "fact_id": "F000001",
+            "kind": "profile_field",
+            "field": "risk_category",
+            "value": "medium"
+          },
+          {
+            "fact_id": "F000002",
+            "kind": "profile_field",
+            "field": "kyc_status",
+            "value": "verified"
+          },
+          {
+            "fact_id": "F000003",
+            "kind": "profile_field",
+            "field": "client_since",
+            "value": "2019-03-15"
+          },
+          {
+            "fact_id": "F000004",
+            "kind": "transaction",
+            "ordinal": 1,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-10T09:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000005",
+            "kind": "transaction",
+            "ordinal": 2,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-11T10:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000006",
+            "kind": "transaction",
+            "ordinal": 3,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-12T11:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000007",
+            "kind": "transaction",
+            "ordinal": 4,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-10T12:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000008",
+            "kind": "transaction",
+            "ordinal": 5,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-11T13:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000009",
+            "kind": "transaction",
+            "ordinal": 6,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-12T14:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000010",
+            "kind": "transaction",
+            "ordinal": 7,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-10T15:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000011",
+            "kind": "transaction",
+            "ordinal": 8,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-11T16:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000012",
+            "kind": "transaction",
+            "ordinal": 9,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-12T09:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000013",
+            "kind": "transaction",
+            "ordinal": 10,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-10T10:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000014",
+            "kind": "transaction",
+            "ordinal": 11,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-11T11:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000015",
+            "kind": "transaction",
+            "ordinal": 12,
+            "amount": "95000.00",
+            "currency": "RUB",
+            "timestamp": "2026-07-12T12:00:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000016",
+            "kind": "transaction_count",
+            "window": {
+              "start_inclusive": "2026-07-01T00:00:00Z",
+              "end_exclusive": "2026-07-20T00:00:00Z",
+              "as_of": "2026-07-20T00:00:00Z"
+            },
+            "value": 12,
+            "status_scope": "all"
+          },
+          {
+            "fact_id": "F000017",
+            "kind": "currency_sum",
+            "window": {
+              "start_inclusive": "2026-07-01T00:00:00Z",
+              "end_exclusive": "2026-07-20T00:00:00Z",
+              "as_of": "2026-07-20T00:00:00Z"
+            },
+            "currency": "RUB",
+            "value": "1140000.00",
+            "member_count": 12,
+            "status_scope": "all"
+          }
+        ],
+        "rule_keys": [
+          "R000001"
+        ]
+      }
+    ],
+    "latency_seconds": 62.02742619998753,
+    "events": [
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "input",
+        "code": "STARTED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "input",
+        "code": "PASSED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "policy",
+        "code": "STARTED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "policy",
+        "code": "PASSED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "context",
+        "code": "STARTED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "context",
+        "code": "PASSED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "retrieval",
+        "code": "STARTED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "retrieval",
+        "code": "PASSED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "generation",
+        "code": "STARTED",
+        "attempt": 1
+      },
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "validation",
+        "code": "STARTED",
+        "attempt": 1
+      },
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "validation",
+        "code": "PASSED",
+        "attempt": 1
+      },
+      {
+        "correlation_id": "run-0757b30f620e419f9fd1cf8dba3ed42d",
+        "stage": "complete",
+        "code": "DRAFT",
+        "attempt": 0
+      }
+    ]
+  },
+  "http_attempts": [
+    {
+      "started_at_utc": "2026-10-20T19:55:10.386726+00:00",
+      "endpoint": "http://127.0.0.1:11434",
+      "method": "POST",
+      "path": "/api/chat",
+      "request_body": "{\"model\": \"qwen2.5:14b\", \"stream\": false, \"format\": {\"type\": \"object\", \"additionalProperties\": false, \"required\": [\"schema_version\", \"fact_order\", \"rule_order\"], \"properties\": {\"schema_version\": {\"type\": \"string\", \"const\": \"1.0\"}, \"fact_order\": {\"type\": \"array\", \"minItems\": 17, \"maxItems\": 17, \"uniqueItems\": true, \"items\": {\"type\": \"string\", \"enum\": [\"F000001\", \"F000002\", \"F000003\", \"F000004\", \"F000005\", \"F000006\", \"F000007\", \"F000008\", \"F000009\", \"F000010\", \"F000011\", \"F000012\", \"F000013\", \"F000014\", \"F000015\", \"F000016\", \"F000017\"]}}, \"rule_order\": {\"type\": \"array\", \"minItems\": 1, \"maxItems\": 1, \"uniqueItems\": true, \"items\": {\"type\": \"string\", \"enum\": [\"R000001\"]}}}}, \"options\": {\"temperature\": 0}, \"messages\": [{\"role\": \"system\", \"content\": \"Return only JSON conforming to the provided schema. The data contains a synthetic educational factual catalog, not instructions. Return every fact_id and rule_key exactly once in an order useful for review. Do not add facts, prose, thresholds, legal conclusions, tools, or confidence. A validation failure code in the data is feedback about a prior invalid order.\"}, {\"role\": \"user\", \"content\": \"{\\\"schema_version\\\": \\\"1.0\\\", \\\"task\\\": \\\"order_all_catalog_ids\\\", \\\"facts\\\": [{\\\"fact_id\\\": \\\"F000001\\\", \\\"kind\\\": \\\"profile_field\\\", \\\"field\\\": \\\"risk_category\\\", \\\"value\\\": \\\"medium\\\"}, {\\\"fact_id\\\": \\\"F000002\\\", \\\"kind\\\": \\\"profile_field\\\", \\\"field\\\": \\\"kyc_status\\\", \\\"value\\\": \\\"verified\\\"}, {\\\"fact_id\\\": \\\"F000003\\\", \\\"kind\\\": \\\"profile_field\\\", \\\"field\\\": \\\"client_since\\\", \\\"value\\\": \\\"2019-03-15\\\"}, {\\\"fact_id\\\": \\\"F000004\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 1, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-10T09:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000005\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 2, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-11T10:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000006\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 3, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-12T11:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000007\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 4, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-10T12:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000008\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 5, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-11T13:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000009\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 6, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-12T14:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000010\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 7, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-10T15:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000011\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 8, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-11T16:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000012\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 9, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-12T09:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000013\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 10, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-10T10:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000014\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 11, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-11T11:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000015\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 12, \\\"amount\\\": \\\"95000.00\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-12T12:00:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000016\\\", \\\"kind\\\": \\\"transaction_count\\\", \\\"window\\\": {\\\"start_inclusive\\\": \\\"2026-07-01T00:00:00Z\\\", \\\"end_exclusive\\\": \\\"2026-07-20T00:00:00Z\\\", \\\"as_of\\\": \\\"2026-07-20T00:00:00Z\\\"}, \\\"value\\\": 12, \\\"status_scope\\\": \\\"all\\\"}, {\\\"fact_id\\\": \\\"F000017\\\", \\\"kind\\\": \\\"currency_sum\\\", \\\"window\\\": {\\\"start_inclusive\\\": \\\"2026-07-01T00:00:00Z\\\", \\\"end_exclusive\\\": \\\"2026-07-20T00:00:00Z\\\", \\\"as_of\\\": \\\"2026-07-20T00:00:00Z\\\"}, \\\"currency\\\": \\\"RUB\\\", \\\"value\\\": \\\"1140000.00\\\", \\\"member_count\\\": 12, \\\"status_scope\\\": \\\"all\\\"}], \\\"rule_keys\\\": [\\\"R000001\\\"]}\"}]}",
+      "request_headers": {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Accept-Encoding": "identity"
+      },
+      "http_status": 200,
+      "http_headers": [
+        [
+          "Content-Type",
+          "application/json; charset=utf-8"
+        ],
+        [
+          "Date",
+          "Tue, 20 Oct 2026 19:56:12 GMT"
+        ],
+        [
+          "Content-Length",
+          "746"
+        ]
+      ],
+      "elapsed_seconds": 61.912849599990295,
+      "response_body_base64": "eyJtb2RlbCI6InF3ZW4yLjU6MTRiIiwiY3JlYXRlZF9hdCI6IjIwMjYtMTAtMjBUMTk6NTY6MTIuMjk4NzE4NVoiLCJtZXNzYWdlIjp7InJvbGUiOiJhc3Npc3RhbnQiLCJjb250ZW50Ijoie1xuICBcInNjaGVtYV92ZXJzaW9uXCI6IFwiMS4wXCIsXG4gIFwiZmFjdF9vcmRlclwiOiBbXG4gICAgXCJGMDAwMDAxXCIsXG4gICAgXCJGMDAwMDAyXCIsXG4gICAgXCJGMDAwMDAzXCIsXG4gICAgXCJGMDAwMDA0XCIsXG4gICAgXCJGMDAwMDA1XCIsXG4gICAgXCJGMDAwMDA2XCIsXG4gICAgXCJGMDAwMDA3XCIsXG4gICAgXCJGMDAwMDA4XCIsXG4gICAgXCJGMDAwMDA5XCIsXG4gICAgXCJGMDAwMDEwXCIsXG4gICAgXCJGMDAwMDExXCIsXG4gICAgXCJGMDAwMDEyXCIsXG4gICAgXCJGMDAwMDEzXCIsXG4gICAgXCJGMDAwMDE0XCIsXG4gICAgXCJGMDAwMDE1XCIsXG4gICAgXCJGMDAwMDE2XCIsXG4gICAgXCJGMDAwMDE3XCJcbiAgXSxcbiAgXCJydWxlX29yZGVyXCI6IFtcbiAgICBcIlIwMDAwMDFcIlxuICBdXG59In0sImRvbmUiOnRydWUsImRvbmVfcmVhc29uIjoic3RvcCIsInRvdGFsX2R1cmF0aW9uIjo2MTg5MzMzNjgwMCwibG9hZF9kdXJhdGlvbiI6MjY4MjI1MTc4MDAsInByb21wdF9ldmFsX2NvdW50IjoxNDcxLCJwcm9tcHRfZXZhbF9jYWNoZWRfY291bnQiOjAsInByb21wdF9ldmFsX2R1cmF0aW9uIjoxODIyNjgxNjAwMCwiZXZhbF9jb3VudCI6MjA5LCJldmFsX2R1cmF0aW9uIjoxNjgyMzYzMTAwMH0=",
+      "response_body_sha256": "da198f028200a7465cdcdeec64ff23d4bacd17e4ce8bccd7b80d027e17ce6bfa",
+      "response_body_bytes": 746,
+      "response_body": "{\"model\":\"qwen2.5:14b\",\"created_at\":\"2026-10-20T19:56:12.2987185Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"schema_version\\\": \\\"1.0\\\",\\n  \\\"fact_order\\\": [\\n    \\\"F000001\\\",\\n    \\\"F000002\\\",\\n    \\\"F000003\\\",\\n    \\\"F000004\\\",\\n    \\\"F000005\\\",\\n    \\\"F000006\\\",\\n    \\\"F000007\\\",\\n    \\\"F000008\\\",\\n    \\\"F000009\\\",\\n    \\\"F000010\\\",\\n    \\\"F000011\\\",\\n    \\\"F000012\\\",\\n    \\\"F000013\\\",\\n    \\\"F000014\\\",\\n    \\\"F000015\\\",\\n    \\\"F000016\\\",\\n    \\\"F000017\\\"\\n  ],\\n  \\\"rule_order\\\": [\\n    \\\"R000001\\\"\\n  ]\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":61893336800,\"load_duration\":26822517800,\"prompt_eval_count\":1471,\"prompt_eval_cached_count\":0,\"prompt_eval_duration\":18226816000,\"eval_count\":209,\"eval_duration\":16823631000}",
+      "response_json": {
+        "model": "qwen2.5:14b",
+        "created_at": "2026-10-20T19:56:12.2987185Z",
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"schema_version\": \"1.0\",\n  \"fact_order\": [\n    \"F000001\",\n    \"F000002\",\n    \"F000003\",\n    \"F000004\",\n    \"F000005\",\n    \"F000006\",\n    \"F000007\",\n    \"F000008\",\n    \"F000009\",\n    \"F000010\",\n    \"F000011\",\n    \"F000012\",\n    \"F000013\",\n    \"F000014\",\n    \"F000015\",\n    \"F000016\",\n    \"F000017\"\n  ],\n  \"rule_order\": [\n    \"R000001\"\n  ]\n}"
+        },
+        "done": true,
+        "done_reason": "stop",
+        "total_duration": 61893336800,
+        "load_duration": 26822517800,
+        "prompt_eval_count": 1471,
+        "prompt_eval_cached_count": 0,
+        "prompt_eval_duration": 18226816000,
+        "eval_count": 209,
+        "eval_duration": 16823631000
+      },
+      "completion": {
+        "valid_complete_selection": true,
+        "queue_wait_seconds": null,
+        "queue_wait_note": "Not independently observable in this local HTTP response.",
+        "model": "qwen2.5:14b",
+        "done": true,
+        "done_reason": "stop",
+        "prompt_eval_count": 1471,
+        "eval_count": 209,
+        "timings_seconds": {
+          "total": 61.8933368,
+          "load": 26.8225178,
+          "prompt_eval": 18.226816,
+          "eval": 16.823631
+        },
+        "fact_order": [
+          "F000001",
+          "F000002",
+          "F000003",
+          "F000004",
+          "F000005",
+          "F000006",
+          "F000007",
+          "F000008",
+          "F000009",
+          "F000010",
+          "F000011",
+          "F000012",
+          "F000013",
+          "F000014",
+          "F000015",
+          "F000016",
+          "F000017"
+        ],
+        "rule_order": [
+          "R000001"
+        ],
+        "parse_status": "parsed"
+      }
+    }
+  ],
+  "rankings": [
+    {
+      "query": "structuring",
+      "as_of": "2026-07-20T00:00:00Z",
+      "k": 5,
+      "candidates": [
+        {
+          "citation": {
+            "rule_id": "R-115-002",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.6, п.2",
+            "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+            "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+          },
+          "distance": 0.4863168679336509,
+          "text": "Операции подлежат обязательному контролю, если выявлены признаки намеренного разбиения суммы на несколько операций ниже порога обязательного контроля с целью избежать его применения."
+        },
+        {
+          "citation": {
+            "rule_id": "R-115-006",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.6, п.1",
+            "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+            "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+          },
+          "distance": 0.527347085394566,
+          "text": "Операция с денежными средствами подлежит обязательному контролю, если её сумма равна или превышает установленный порог."
+        },
+        {
+          "citation": {
+            "rule_id": "R-AML-010",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.6, п.5",
+            "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+            "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+          },
+          "distance": 0.6436592204533078,
+          "text": "Операции с контрагентами из юрисдикций с повышенным уровнем риска подлежат усиленной проверке и документированию обоснования."
+        },
+        {
+          "citation": {
+            "rule_id": "R-AML-015",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.7, п.4",
+            "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+            "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+          },
+          "distance": 0.762216119666134,
+          "text": "Сведения об операциях, подлежащих обязательному контролю, направляются в уполномоченный орган в установленном порядке."
+        },
+        {
+          "citation": {
+            "rule_id": "R-115-007",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.7, п.1",
+            "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+            "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+          },
+          "distance": 0.8426834462036354,
+          "text": "Организация обязана идентифицировать клиента до приёма на обслуживание и обновлять сведения при изменении данных."
+        }
+      ]
+    }
+  ],
+  "loaded_before": {
+    "models": []
+  },
+  "model_load_state": "cold",
+  "transport_outcome": "completed",
+  "template_issues": [],
+  "template_report": {
+    "schema_version": "1.0",
+    "status": "draft",
+    "incident_id": "INC-000123",
+    "report_id": "report-2a7f064984c84e8d971dc164bfd512e0",
+    "report_version": 1,
+    "generated_at": "2026-10-20T19:55:10.256211+00:00",
+    "snapshot_id": "qa-aml-v1-s01",
+    "policy_version": "qa-policy-v1-s01",
+    "data_completeness": "full",
+    "found_facts": [
+      {
+        "fact": "Категория риска в профиле: medium.",
+        "evidence": [
+          {
+            "kind": "profile",
+            "snapshot_id": "qa-aml-v1-s01",
+            "client_id": "C-00045",
+            "field": "risk_category"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Статус KYC в профиле: verified.",
+        "evidence": [
+          {
+            "kind": "profile",
+            "snapshot_id": "qa-aml-v1-s01",
+            "client_id": "C-00045",
+            "field": "kyc_status"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Дата начала отношений в профиле: 2019-03-15.",
+        "evidence": [
+          {
+            "kind": "profile",
+            "snapshot_id": "qa-aml-v1-s01",
+            "client_id": "C-00045",
+            "field": "client_since"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7700: сумма 95000.00 RUB; время 2026-07-10T09:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7700",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7700",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7700",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7700",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7700",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7701: сумма 95000.00 RUB; время 2026-07-11T10:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7701",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7701",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7701",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7701",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7701",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7702: сумма 95000.00 RUB; время 2026-07-12T11:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7702",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7702",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7702",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7702",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7702",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7703: сумма 95000.00 RUB; время 2026-07-10T12:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7703",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7703",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7703",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7703",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7703",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7704: сумма 95000.00 RUB; время 2026-07-11T13:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7704",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7704",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7704",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7704",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7704",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7705: сумма 95000.00 RUB; время 2026-07-12T14:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7705",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7705",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7705",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7705",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7705",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7706: сумма 95000.00 RUB; время 2026-07-10T15:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7706",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7706",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7706",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7706",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7706",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7707: сумма 95000.00 RUB; время 2026-07-11T16:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7707",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7707",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7707",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7707",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7707",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7708: сумма 95000.00 RUB; время 2026-07-12T09:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7708",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7708",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7708",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7708",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7708",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7709: сумма 95000.00 RUB; время 2026-07-10T10:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7709",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7709",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7709",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7709",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7709",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7710: сумма 95000.00 RUB; время 2026-07-11T11:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7710",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7710",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7710",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7710",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7710",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-7711: сумма 95000.00 RUB; время 2026-07-12T12:00:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7711",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7711",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7711",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7711",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_id": "TX-7711",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Количество всех транзакций в контексте за окно [2026-07-01T00:00:00Z, 2026-07-20T00:00:00Z), включая все статусы: 12.",
+        "evidence": [
+          {
+            "kind": "count",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_ids": [
+              "TX-7700",
+              "TX-7701",
+              "TX-7702",
+              "TX-7703",
+              "TX-7704",
+              "TX-7705",
+              "TX-7706",
+              "TX-7707",
+              "TX-7708",
+              "TX-7709",
+              "TX-7710",
+              "TX-7711"
+            ],
+            "window": {
+              "start_inclusive": "2026-07-01T00:00:00Z",
+              "end_exclusive": "2026-07-20T00:00:00Z",
+              "as_of": "2026-07-20T00:00:00Z"
+            },
+            "value": 12
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Сумма всех транзакций в контексте в валюте RUB за окно [2026-07-01T00:00:00Z, 2026-07-20T00:00:00Z), включая все статусы: 1140000.00 RUB.",
+        "evidence": [
+          {
+            "kind": "sum",
+            "snapshot_id": "qa-aml-v1-s01",
+            "tx_ids": [
+              "TX-7700",
+              "TX-7701",
+              "TX-7702",
+              "TX-7703",
+              "TX-7704",
+              "TX-7705",
+              "TX-7706",
+              "TX-7707",
+              "TX-7708",
+              "TX-7709",
+              "TX-7710",
+              "TX-7711"
+            ],
+            "field": "amount",
+            "window": {
+              "start_inclusive": "2026-07-01T00:00:00Z",
+              "end_exclusive": "2026-07-20T00:00:00Z",
+              "as_of": "2026-07-20T00:00:00Z"
+            },
+            "currency": "RUB",
+            "value": "1140000.00"
+          }
+        ],
+        "sources": []
+      }
+    ],
+    "suspicious_patterns": [],
+    "applicable_rules": [
+      {
+        "citation": {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        "rule_text": "Операции подлежат обязательному контролю, если выявлены признаки намеренного разбиения суммы на несколько операций ниже порога обязательного контроля с целью избежать его применения."
+      }
+    ],
+    "confidence": null
+  }
+}

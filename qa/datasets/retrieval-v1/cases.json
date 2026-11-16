@@ -1,0 +1,708 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "1.0.0",
+  "purpose": "synthetic_learning_only",
+  "expert_approved": false,
+  "k_values": [
+    1,
+    3
+  ],
+  "metric_mode": "descriptive_no_threshold",
+  "query_text": {
+    "structuring": "Признаки разбиения суммы на несколько операций",
+    "threshold": "Порог суммы операции обязательного контроля",
+    "threshold_breach": "Порог суммы операции обязательного контроля",
+    "kyc": "Идентификация клиента и обновление сведений",
+    "kyc_mismatch": "Идентификация клиента и обновление сведений",
+    "high_risk": "Юрисдикции с повышенным уровнем риска",
+    "high_risk_country": "Юрисдикции с повышенным уровнем риска",
+    "reporting": "Порядок представления сведений об операциях",
+    "velocity": "Частота операций клиента за период"
+  },
+  "query_source": {
+    "path": "src/runtime/retrieval.py",
+    "sha256": "367f3e930bbad8b7850a917bbc77805dbca3c9c7ad1d090612950a6fdaf74c6d"
+  },
+  "parent_manifest": {
+    "path": "qa/datasets/aml-v1/manifest.json",
+    "sha256": "0e9becd81965ca4344dc7041249489c0839fac22793a918ee11808fdd2f924cf"
+  },
+  "label_method": "Independent direct-topic labels and exact full-text spans frozen before model execution.",
+  "corpora": {
+    "base": {
+      "path": "corpora/base.json",
+      "source_path": "qa/datasets/aml-v1/fixtures/S01/rules.json",
+      "source_sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+    },
+    "editions": {
+      "path": "corpora/editions.json",
+      "source_path": "qa/datasets/aml-v1/fixtures/S04/rules.json",
+      "source_sha256": "a727497635f0562a7081756974b4ad5f690c0128c2d3c3f9aa9e208cef3b04c6"
+    }
+  },
+  "cases": [
+    {
+      "id": "R01",
+      "query": "structuring",
+      "corpus": "base",
+      "as_of": "2026-07-20T00:00:00Z",
+      "group": "structuring",
+      "primary": true,
+      "kind": "primary",
+      "relevant": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        }
+      ],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R02",
+      "query": "threshold",
+      "corpus": "base",
+      "as_of": "2026-07-20T00:00:00Z",
+      "group": "threshold",
+      "primary": true,
+      "kind": "primary",
+      "relevant": [
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        }
+      ],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R03",
+      "query": "kyc",
+      "corpus": "base",
+      "as_of": "2026-07-20T00:00:00Z",
+      "group": "kyc",
+      "primary": true,
+      "kind": "primary",
+      "relevant": [
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R04",
+      "query": "high_risk",
+      "corpus": "base",
+      "as_of": "2026-07-20T00:00:00Z",
+      "group": "high_risk",
+      "primary": true,
+      "kind": "primary",
+      "relevant": [
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        }
+      ],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R05",
+      "query": "reporting",
+      "corpus": "base",
+      "as_of": "2026-07-20T00:00:00Z",
+      "group": "reporting",
+      "primary": true,
+      "kind": "primary",
+      "relevant": [
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        }
+      ],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R06",
+      "query": "threshold_breach",
+      "corpus": "base",
+      "as_of": "2026-07-20T00:00:00Z",
+      "group": "threshold",
+      "primary": false,
+      "kind": "alias",
+      "relevant": [
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        }
+      ],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R07",
+      "query": "kyc_mismatch",
+      "corpus": "base",
+      "as_of": "2026-07-20T00:00:00Z",
+      "group": "kyc",
+      "primary": false,
+      "kind": "alias",
+      "relevant": [
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R08",
+      "query": "high_risk_country",
+      "corpus": "base",
+      "as_of": "2026-07-20T00:00:00Z",
+      "group": "high_risk",
+      "primary": false,
+      "kind": "alias",
+      "relevant": [
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        }
+      ],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R09",
+      "query": "threshold",
+      "corpus": "editions",
+      "as_of": "2026-07-19T23:59:59Z",
+      "group": "threshold",
+      "primary": false,
+      "kind": "edition",
+      "relevant": [
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        }
+      ],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R10",
+      "query": "threshold",
+      "corpus": "editions",
+      "as_of": "2026-07-20T00:00:00Z",
+      "group": "threshold",
+      "primary": false,
+      "kind": "edition",
+      "relevant": [
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "qa-2026-rev1",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-660bfb95ee1f0396b5b3450d6e26bb581969b798e38a80020a421638e00fe973",
+          "content_sha256": "4190236d8fda7016b59d91cace16596fa5f9c4f9ed37e771cffbc4d463dc7ef5"
+        }
+      ],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "qa-2026-rev1",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-660bfb95ee1f0396b5b3450d6e26bb581969b798e38a80020a421638e00fe973",
+          "content_sha256": "4190236d8fda7016b59d91cace16596fa5f9c4f9ed37e771cffbc4d463dc7ef5"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R11",
+      "query": "threshold",
+      "corpus": "editions",
+      "as_of": "2026-07-20T03:00:00+03:00",
+      "group": "threshold",
+      "primary": false,
+      "kind": "edition",
+      "relevant": [
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "qa-2026-rev1",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-660bfb95ee1f0396b5b3450d6e26bb581969b798e38a80020a421638e00fe973",
+          "content_sha256": "4190236d8fda7016b59d91cace16596fa5f9c4f9ed37e771cffbc4d463dc7ef5"
+        }
+      ],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "qa-2026-rev1",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-660bfb95ee1f0396b5b3450d6e26bb581969b798e38a80020a421638e00fe973",
+          "content_sha256": "4190236d8fda7016b59d91cace16596fa5f9c4f9ed37e771cffbc4d463dc7ef5"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R12",
+      "query": "velocity",
+      "corpus": "base",
+      "as_of": "2026-07-20T00:00:00Z",
+      "group": "velocity",
+      "primary": false,
+      "kind": "no_relevance",
+      "relevant": [],
+      "expected_active": [
+        {
+          "rule_id": "R-115-002",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.2",
+          "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+          "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+        },
+        {
+          "rule_id": "R-115-006",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.1",
+          "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+          "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+        },
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        {
+          "rule_id": "R-AML-015",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.4",
+          "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+          "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+        },
+        {
+          "rule_id": "R-115-007",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.7, п.1",
+          "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+          "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+        }
+      ]
+    },
+    {
+      "id": "R13",
+      "query": "threshold",
+      "corpus": "base",
+      "as_of": "2023-12-31T23:59:59Z",
+      "group": "threshold",
+      "primary": false,
+      "kind": "no_active",
+      "relevant": [],
+      "expected_active": []
+    }
+  ]
+}

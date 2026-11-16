@@ -1,0 +1,1394 @@
+{
+  "status": "PASS",
+  "qualified_at_utc": "2026-10-20T19:59:21.940381+00:00",
+  "scope": "Offline saved-evidence integrity and recomputation",
+  "collection_status": "PASS",
+  "check_count": 338,
+  "failed_checks": [],
+  "checks": [
+    {
+      "check": "registered_matrix",
+      "status": "PASS"
+    },
+    {
+      "check": "registered_parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "no_product_or_sme_acceptance",
+      "status": "PASS"
+    },
+    {
+      "check": "case_directories",
+      "status": "PASS"
+    },
+    {
+      "check": "measured_source_hashes_before_equals_after",
+      "status": "PASS",
+      "measured_files": 125
+    },
+    {
+      "check": "recomputation_sources_match_measured_versions",
+      "status": "PASS",
+      "postmeasurement_changes": [
+        {
+          "path": "qa/tools/run_llm.py",
+          "measured_sha256": "8ba69ee3af53d821f680fe8575a299bad519482d3d08b8f8225ecfe16602a125",
+          "current_sha256": "930648f38a7a28543863843d0012974d562e639da8fcbbb6e5e36fb31b2ac1a7"
+        },
+        {
+          "path": "tests/evaluator/test_qa_llm_runner.py",
+          "measured_sha256": "ba1e5a3f0397006f7c92275654d846f1df734cfbd93b53d7f73975e52de15821",
+          "current_sha256": "f8a88be6356af746abd1443d2997eeee16c6f88bbf29fe739d24f4d79b2461a3"
+        }
+      ]
+    },
+    {
+      "check": "all_185_product_and_frozen_files_preserved",
+      "status": "PASS",
+      "checked_files": 185,
+      "unchanged_files": 185,
+      "changed_paths": []
+    },
+    {
+      "check": "model_identity",
+      "status": "PASS"
+    },
+    {
+      "check": "frozen_catalog_revalidated",
+      "status": "PASS"
+    },
+    {
+      "check": "generation_budget",
+      "status": "PASS"
+    },
+    {
+      "check": "embedding_manifest_identity",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:1:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:2:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S01:3:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:1:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:2:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S02:3:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:1:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:2:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S03:3:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:1:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:2:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S04:3:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:1:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:2:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http:1:bytes_and_hash",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http:1:raw_text",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http:1:endpoint",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http:1:parameters",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http:1:messages",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http:1:recorded_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http:1:source_bound_prompt",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http:1:decoded_envelope",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http:1:strict_completion_metric",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http:1:timing_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:http:1:completion_metadata",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:draft_has_valid_raw_selection",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S14:3:raw_order_reaches_report",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S05:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S05:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S05:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S05:1:no_control_generation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S05:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S05:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S05:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S06:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S06:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S06:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S06:1:no_control_generation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S06:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S06:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S06:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S07:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S07:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S07:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S07:1:no_control_generation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S07:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S07:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S07:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S08:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S08:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S08:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S08:1:no_control_generation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S08:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S08:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S08:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S09:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S09:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S09:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S09:1:no_control_generation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S09:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S09:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S09:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S10:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S10:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S10:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S10:1:no_control_generation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S10:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S10:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S10:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S11:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S11:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S11:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S11:1:no_control_generation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S11:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S11:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S11:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S12:files",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S12:template_oracle",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S12:1:template_reference",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S12:1:no_control_generation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S12:1:recomputed_evaluation",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S12:1:http_call_count",
+      "status": "PASS"
+    },
+    {
+      "check": "QA-S12:1:load_state",
+      "status": "PASS"
+    },
+    {
+      "check": "recomputed_summary",
+      "status": "PASS"
+    },
+    {
+      "check": "controls_summary",
+      "status": "PASS"
+    },
+    {
+      "check": "template_failures_summary",
+      "status": "PASS"
+    },
+    {
+      "check": "full_collection_counts",
+      "status": "PASS"
+    },
+    {
+      "check": "raw_attempt_summary_strictly_recomputed",
+      "status": "PASS"
+    },
+    {
+      "check": "collection_status_consistent",
+      "status": "PASS"
+    }
+  ],
+  "qualification_source_sha256": "4a04352c6ae8d6b6d93a7bf26c93c106d0cebe54c8f75d6fa8a039a382c7d655",
+  "collector_code_postmeasurement_changes": [
+    {
+      "path": "qa/tools/run_llm.py",
+      "measured_sha256": "8ba69ee3af53d821f680fe8575a299bad519482d3d08b8f8225ecfe16602a125",
+      "current_sha256": "930648f38a7a28543863843d0012974d562e639da8fcbbb6e5e36fb31b2ac1a7"
+    },
+    {
+      "path": "tests/evaluator/test_qa_llm_runner.py",
+      "measured_sha256": "ba1e5a3f0397006f7c92275654d846f1df734cfbd93b53d7f73975e52de15821",
+      "current_sha256": "f8a88be6356af746abd1443d2997eeee16c6f88bbf29fe739d24f4d79b2461a3"
+    }
+  ],
+  "provenance_note": "The run belongs to source-hashes.json/source-hashes-after.json. Listed current collector/test changes were not exercised by the live batch. Raw HTTP evidence is independently parsed by this qualifier; product, frozen data and oracle must match.",
+  "product_acceptance": "INCOMPLETE",
+  "sme_acceptance": "pending"
+}

@@ -1,0 +1,1105 @@
+{
+  "$defs": {
+    "AnalysisWindow": {
+      "additionalProperties": false,
+      "properties": {
+        "start_inclusive": {
+          "format": "date-time",
+          "maxLength": 32,
+          "minLength": 20,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$",
+          "title": "Start Inclusive",
+          "type": "string"
+        },
+        "end_exclusive": {
+          "format": "date-time",
+          "maxLength": 32,
+          "minLength": 20,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$",
+          "title": "End Exclusive",
+          "type": "string"
+        },
+        "as_of": {
+          "format": "date-time",
+          "maxLength": 32,
+          "minLength": 20,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$",
+          "title": "As Of",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start_inclusive",
+        "end_exclusive",
+        "as_of"
+      ],
+      "title": "AnalysisWindow",
+      "type": "object"
+    },
+    "ApplicableRule": {
+      "additionalProperties": false,
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/RuleCitation"
+        },
+        "rule_text": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Rule Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "citation",
+        "rule_text"
+      ],
+      "title": "ApplicableRule",
+      "type": "object"
+    },
+    "CardRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "card_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Card Id",
+          "type": "string"
+        },
+        "client_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Client Id",
+          "type": "string"
+        },
+        "card_status": {
+          "enum": [
+            "active",
+            "blocked",
+            "closed"
+          ],
+          "title": "Card Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "card_id",
+        "client_id",
+        "card_status"
+      ],
+      "title": "CardRecord",
+      "type": "object"
+    },
+    "Case": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "independence_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Independence Id",
+          "type": "string"
+        },
+        "category": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "incident_id": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "expected_status": {
+          "enum": [
+            "draft",
+            "refusal",
+            "error"
+          ],
+          "title": "Expected Status",
+          "type": "string"
+        },
+        "expected_reason_code": {
+          "anyOf": [
+            {
+              "enum": [
+                "INSUFFICIENT_DATA",
+                "CONFLICTING_DATA",
+                "NO_APPLICABLE_RULE",
+                "AMBIGUOUS_RULE",
+                "UNTRUSTED_INPUT",
+                "POLICY_NOT_APPROVED",
+                "VALIDATION_FAILED"
+              ],
+              "type": "string"
+            },
+            {
+              "enum": [
+                "MISSING_INPUT",
+                "INVALID_INPUT_FORMAT",
+                "NOT_FOUND",
+                "UNAUTHORIZED",
+                "FORBIDDEN",
+                "VERSION_CONFLICT",
+                "IDEMPOTENCY_CONFLICT",
+                "INVALID_STATE",
+                "NOT_READY",
+                "DEADLINE_EXCEEDED",
+                "DEPENDENCY_UNAVAILABLE",
+                "INTERNAL_ERROR"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Reason Code"
+        },
+        "forbidden_outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Forbidden Outputs",
+          "type": "array"
+        },
+        "expected_retrieval": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Retrieval"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "context": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InvestigationContext"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "independence_id",
+        "category",
+        "incident_id",
+        "expected_status"
+      ],
+      "title": "Case",
+      "type": "object"
+    },
+    "ClientProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "client_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Client Id",
+          "type": "string"
+        },
+        "risk_category": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Risk Category",
+          "type": "string"
+        },
+        "kyc_status": {
+          "enum": [
+            "verified",
+            "pending",
+            "expired"
+          ],
+          "title": "Kyc Status",
+          "type": "string"
+        },
+        "client_since": {
+          "format": "date",
+          "maxLength": 10,
+          "minLength": 10,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "title": "Client Since",
+          "type": "string"
+        }
+      },
+      "required": [
+        "client_id",
+        "risk_category",
+        "kyc_status",
+        "client_since"
+      ],
+      "title": "ClientProfile",
+      "type": "object"
+    },
+    "Dataset": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "acceptance",
+            "synthetic_control"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "sme_acceptance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SMEAcceptance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "kind"
+      ],
+      "title": "Dataset",
+      "type": "object"
+    },
+    "Golden": {
+      "additionalProperties": false,
+      "properties": {
+        "fact_count": {
+          "minimum": 1,
+          "title": "Fact Count",
+          "type": "integer"
+        },
+        "transaction_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "not": {
+              "pattern": "[\r\n]"
+            },
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Transaction Ids",
+          "type": "array"
+        },
+        "sums": {
+          "items": {
+            "$ref": "#/$defs/GoldenSum"
+          },
+          "minItems": 1,
+          "title": "Sums",
+          "type": "array"
+        },
+        "rules": {
+          "items": {
+            "$ref": "#/$defs/ApplicableRule"
+          },
+          "minItems": 1,
+          "title": "Rules",
+          "type": "array"
+        }
+      },
+      "required": [
+        "fact_count",
+        "transaction_ids",
+        "sums",
+        "rules"
+      ],
+      "title": "Golden",
+      "type": "object"
+    },
+    "GoldenSum": {
+      "additionalProperties": false,
+      "properties": {
+        "currency": {
+          "maxLength": 3,
+          "minLength": 3,
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 80,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+          "title": "Value",
+          "type": "string"
+        },
+        "tx_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "not": {
+              "pattern": "[\r\n]"
+            },
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Tx Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "currency",
+        "value",
+        "tx_ids"
+      ],
+      "title": "GoldenSum",
+      "type": "object"
+    },
+    "InvestigationContext": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "incident_id": {
+          "maxLength": 10,
+          "minLength": 10,
+          "pattern": "^INC-[0-9]{6}$",
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "client_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Client Id",
+          "type": "string"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/Snapshot"
+        },
+        "window": {
+          "$ref": "#/$defs/AnalysisWindow"
+        },
+        "policy_version": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "not": {
+                "pattern": "[\r\n]"
+              },
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Policy Version"
+        },
+        "data_completeness": {
+          "enum": [
+            "full",
+            "partial",
+            "insufficient",
+            "unassessed"
+          ],
+          "title": "Data Completeness",
+          "type": "string"
+        },
+        "consistency": {
+          "enum": [
+            "consistent",
+            "conflicting",
+            "unassessed"
+          ],
+          "title": "Consistency",
+          "type": "string"
+        },
+        "missing_fields": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "not": {
+              "pattern": "[\r\n]"
+            },
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+            "type": "string"
+          },
+          "title": "Missing Fields",
+          "type": "array"
+        },
+        "client": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClientProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cards": {
+          "items": {
+            "$ref": "#/$defs/CardRecord"
+          },
+          "title": "Cards",
+          "type": "array"
+        },
+        "transactions": {
+          "items": {
+            "$ref": "#/$defs/TransactionRecord"
+          },
+          "title": "Transactions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "incident_id",
+        "client_id",
+        "snapshot",
+        "window",
+        "policy_version",
+        "data_completeness",
+        "consistency",
+        "missing_fields",
+        "client",
+        "cards",
+        "transactions"
+      ],
+      "title": "InvestigationContext",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "Retrieval": {
+      "additionalProperties": false,
+      "properties": {
+        "namespace": {
+          "enum": [
+            "rule_id",
+            "source_ref"
+          ],
+          "title": "Namespace",
+          "type": "string"
+        },
+        "ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "namespace",
+        "ids"
+      ],
+      "title": "Retrieval",
+      "type": "object"
+    },
+    "RuleCitation": {
+      "additionalProperties": false,
+      "properties": {
+        "rule_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "rule_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Rule Version",
+          "type": "string"
+        },
+        "source_ref": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "chunk_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Chunk Id",
+          "type": "string"
+        },
+        "content_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rule_id",
+        "rule_version",
+        "source_ref",
+        "chunk_id",
+        "content_sha256"
+      ],
+      "title": "RuleCitation",
+      "type": "object"
+    },
+    "SMEAcceptance": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "accepted",
+            "pending",
+            "rejected"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "reviewer_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "not": {
+                "pattern": "[\r\n]"
+              },
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewer Id"
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "maxLength": 32,
+              "minLength": 20,
+              "not": {
+                "pattern": "[\r\n]"
+              },
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewed At"
+        },
+        "evidence_references": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence References",
+          "type": "array"
+        },
+        "case_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "not": {
+              "pattern": "[\r\n]"
+            },
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+            "type": "string"
+          },
+          "title": "Case Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "SMEAcceptance",
+      "type": "object"
+    },
+    "Scenario": {
+      "additionalProperties": false,
+      "properties": {
+        "case": {
+          "$ref": "#/$defs/Case"
+        },
+        "title": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Title",
+          "type": "string"
+        },
+        "rationale": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Rationale",
+          "type": "string"
+        },
+        "split": {
+          "enum": [
+            "calibration",
+            "heldout"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "fixture": {
+          "pattern": "^fixtures/[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "title": "Fixture",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "demo",
+            "production"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "engine": {
+          "enum": [
+            "template",
+            "local-model"
+          ],
+          "title": "Engine",
+          "type": "string"
+        },
+        "dependency": {
+          "enum": [
+            "healthy",
+            "unavailable",
+            "invalid_selection"
+          ],
+          "title": "Dependency",
+          "type": "string"
+        },
+        "expected_model_calls": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Expected Model Calls",
+          "type": "integer"
+        },
+        "source_mutations": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "title": "Source Mutations",
+          "type": "array"
+        },
+        "independence_basis": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Independence Basis",
+          "type": "string"
+        },
+        "excluded_transaction_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "not": {
+              "pattern": "[\r\n]"
+            },
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+            "type": "string"
+          },
+          "title": "Excluded Transaction Ids",
+          "type": "array"
+        },
+        "forbidden_prompt_strings": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "title": "Forbidden Prompt Strings",
+          "type": "array"
+        },
+        "applicable_checks": {
+          "items": {
+            "enum": [
+              "behavior",
+              "facts",
+              "source_integrity",
+              "model_payload",
+              "rule_selection"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Applicable Checks",
+          "type": "array"
+        },
+        "golden": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Golden"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "case",
+        "title",
+        "rationale",
+        "split",
+        "fixture",
+        "mode",
+        "engine",
+        "dependency",
+        "expected_model_calls",
+        "source_mutations",
+        "independence_basis",
+        "excluded_transaction_ids",
+        "forbidden_prompt_strings",
+        "applicable_checks",
+        "golden"
+      ],
+      "title": "Scenario",
+      "type": "object"
+    },
+    "Snapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "snapshot_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "maxLength": 32,
+          "minLength": 20,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/SourceVersion"
+          },
+          "minItems": 1,
+          "title": "Sources",
+          "type": "array"
+        }
+      },
+      "required": [
+        "snapshot_id",
+        "captured_at",
+        "sources"
+      ],
+      "title": "Snapshot",
+      "type": "object"
+    },
+    "SourceVersion": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Source",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Version",
+          "type": "string"
+        },
+        "content_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "version",
+        "content_sha256"
+      ],
+      "title": "SourceVersion",
+      "type": "object"
+    },
+    "TransactionRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "tx_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Tx Id",
+          "type": "string"
+        },
+        "client_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Client Id",
+          "type": "string"
+        },
+        "card_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "not": {
+                "pattern": "[\r\n]"
+              },
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Card Id"
+        },
+        "amount": {
+          "maxLength": 80,
+          "minLength": 1,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+          "title": "Amount",
+          "type": "string"
+        },
+        "currency": {
+          "maxLength": 3,
+          "minLength": 3,
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "counterparty": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Counterparty",
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Purpose",
+          "type": "string"
+        },
+        "channel": {
+          "enum": [
+            "atm",
+            "pos",
+            "online",
+            "transfer"
+          ],
+          "title": "Channel",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "pending",
+            "declined"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "maxLength": 32,
+          "minLength": 20,
+          "not": {
+            "pattern": "[\r\n]"
+          },
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$",
+          "title": "Timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tx_id",
+        "client_id",
+        "card_id",
+        "amount",
+        "currency",
+        "counterparty",
+        "purpose",
+        "channel",
+        "status",
+        "timestamp"
+      ],
+      "title": "TransactionRecord",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "dataset_version": {
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "title": "Dataset Version",
+      "type": "string"
+    },
+    "dataset": {
+      "$ref": "#/$defs/Dataset"
+    },
+    "category_notes": {
+      "additionalProperties": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "pattern": "\\S",
+        "type": "string"
+      },
+      "propertyNames": {
+        "enum": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ]
+      },
+      "title": "Category Notes",
+      "type": "object"
+    },
+    "independence_policy": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Independence Policy",
+      "type": "string"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/Scenario"
+      },
+      "minItems": 2,
+      "title": "Cases",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "dataset_version",
+    "dataset",
+    "category_notes",
+    "independence_policy",
+    "cases"
+  ],
+  "title": "Catalog",
+  "type": "object"
+}

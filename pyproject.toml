@@ -1,8 +1,10 @@
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests/contracts", "tests/configuration", "tests/evaluator", "tests/eval", "tests/runtime", "tests/workflow", "tests/lab", "tests/release", "tests/dark_factory", "tests/dark_factory_cases", "tests/dark_guards", "tests/dark_retrieval", "tests/dark_compare", "tests/dark_adversarial", "tests/dark_cases_v3", "tests/dark_downstream", "tests/dark_editions", "tests/dark_factory_v3", "tests/dark_judge_injection", "tests/dark_isolation"]
+pythonpath = ["."]
 markers = [
     "llm: тесты, требующие запущенной локальной LLM (Ollama). Запуск: pytest -m llm",
     "eval: evaluation-тесты с прогонкой по Golden Dataset и расчётом quality gates.",
     "unit: быстрые детерминированные unit-тесты без внешних зависимостей.",
+    "integration: явные проверки legacy/runtime с локальными артефактами; нужен --run-integration.",
 ]
-addopts = "-ra --strict-markers"
+addopts = "-ra --strict-markers --strict-config"

@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "2.0.0-candidate.1",
+  "purpose": "synthetic_learning_only",
+  "split": "development",
+  "human_acceptance": "INCOMPLETE",
+  "source": "Independently authored synthetic examples using documented public contracts. No result from a model or service was used to determine expected values.",
+  "cases": [
+    {"id":"DF-C01","family":"identifier-missing","risk":"missing_input","kind":"identifier","input":{"value":null},"expected":"MISSING_INPUT"},
+    {"id":"DF-C02","family":"identifier-whitespace","risk":"invalid_input","kind":"identifier","input":{"value":" INC-000123"},"expected":"INVALID_INPUT_FORMAT"},
+    {"id":"DF-C03","family":"identifier-ascii","risk":"unicode_confusion","kind":"identifier","input":{"value":"INC-１２３４５６"},"expected":"INVALID_INPUT_FORMAT"},
+    {"id":"DF-C04","family":"identifier-length","risk":"invalid_input","kind":"identifier","input":{"value":"INC-12345"},"expected":"INVALID_INPUT_FORMAT"},
+    {"id":"DF-C05","family":"identifier-well-formed","risk":"input_acceptance","kind":"identifier","input":{"value":"INC-000001"},"expected":null},
+    {"id":"DF-C06","family":"window-start-boundary","risk":"window_semantics","kind":"window","input":{"start":"2026-07-01T00:00:00Z","end":"2026-07-20T00:00:00Z","as_of":"2026-07-20T00:00:00Z","timestamp":"2026-07-01T03:00:00+03:00"},"expected":true},
+    {"id":"DF-C07","family":"window-end-boundary","risk":"window_semantics","kind":"window","input":{"start":"2026-07-01T00:00:00Z","end":"2026-07-20T00:00:00Z","as_of":"2026-07-20T00:00:00Z","timestamp":"2026-07-19T20:00:00-04:00"},"expected":false},
+    {"id":"DF-C08","family":"window-before-start","risk":"window_semantics","kind":"window","input":{"start":"2026-07-01T00:00:00Z","end":"2026-07-20T00:00:00Z","as_of":"2026-07-20T00:00:00Z","timestamp":"2026-06-30T23:59:59Z"},"expected":false},
+    {"id":"DF-C09","family":"window-inside","risk":"window_semantics","kind":"window","input":{"start":"2026-07-01T00:00:00Z","end":"2026-07-20T00:00:00Z","as_of":"2026-07-20T00:00:00Z","timestamp":"2026-07-15T10:23:31Z"},"expected":true}
+  ],
+  "unexecuted_hypotheses": [
+    {"id":"DF-H01","risk":"no_relevant_source","intent":"Evaluate an unsupported search term against independently reviewed rule labels; refuse or flag insufficient evidence only after an explicit product contract exists."},
+    {"id":"DF-H02","risk":"multiple_relevant_rules","intent":"Check complete and correctly ordered citations when several rules apply; expert must establish relevance separately."},
+    {"id":"DF-H03","risk":"cross_currency","intent":"Validate exact per-currency sums; do not combine currencies or rely on floating point."},
+    {"id":"DF-H04","risk":"source_revision","intent":"Detect nonexistent, expired or conflicting rule editions without treating textual similarity as legal applicability."},
+    {"id":"DF-H05","risk":"prompt_injection","intent":"Verify separately whether a malicious synthetic document reaches the actual model and whether the output boundary holds."},
+    {"id":"DF-H06","risk":"judge_false_pass","intent":"Compare synthetic known defects against Judge, then calibrate independently against blinded human annotations."}
+  ]
+}

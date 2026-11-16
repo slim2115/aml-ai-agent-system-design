@@ -1,0 +1,22 @@
+[
+  {
+    "card_id": "CARD-1001",
+    "client_id": "C-00045",
+    "card_status": "active"
+  },
+  {
+    "card_id": "CARD-1002",
+    "client_id": "C-00055",
+    "card_status": "active"
+  },
+  {
+    "card_id": "CARD-1003",
+    "client_id": "C-00077",
+    "card_status": "active"
+  },
+  {
+    "card_id": "CARD-1004",
+    "client_id": "C-00066",
+    "card_status": "active"
+  }
+]

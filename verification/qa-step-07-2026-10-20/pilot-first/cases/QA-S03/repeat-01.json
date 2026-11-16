@@ -1,0 +1,955 @@
+{
+  "evaluation": {
+    "case_id": "QA-S03",
+    "independence_id": "FAMILY-HIGH-RISK",
+    "repeat_index": 1,
+    "expected_status": "draft",
+    "engine": "local-model",
+    "transport_outcome": "completed",
+    "draft": {
+      "ordered_fingerprint": "afd57e7d791528b9cdeaba61186c59e7bcf2743f0f20b2f64cbedb62c31b8ea6",
+      "semantic_fingerprint": "bdd8f09fdf1e3937a582ee7fbcbfa231d623e39ea87599cf81b6c11e03e0e5b7",
+      "fact_order": [
+        "01175d1cc2da727ae08037f1a5a912359200360c11b955eead8e1926764d5805",
+        "730a8155ee564d9e43bbe9ee00c76e18f54aa3057b8060ff4b425aed03e256b0",
+        "ff03f0a4ea376f25d188afd40b1ac04145ba1b623e4c94c121e249295513c104",
+        "277314a0d3837f0d0e20c577e60b2df3291213a6074da108c4941a4df14aba0a",
+        "4da9365598b5705b4d50f25c2d279a10e837366f58ede3e08e9f0e1866a4074d",
+        "cda552de34afaf3c86aff1c0b86f0dc05b779e7c1510cd2e7552e23de34e2930",
+        "0d7bd41445d9b2598650f23038787f302d81849406188650368e1eccc275eee6",
+        "d105b0e5f1563558072551ebe1f32829bb1660abe91b8f738a1dbb166ccf2e63",
+        "df08df2316e95c1e5526c4633d36ac2442bf8ae1879aeab32a41769528d36985"
+      ],
+      "rule_order": [
+        {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        }
+      ]
+    },
+    "outcome": "draft",
+    "status": "PASS",
+    "issues": [],
+    "fact_issues": [],
+    "model_calls": 1,
+    "latency_seconds": 10.02726459997939
+  },
+  "observation": {
+    "result": {
+      "schema_version": "1.0",
+      "status": "draft",
+      "incident_id": "INC-000250",
+      "report_id": "report-632e459108f54ea49adcf36299724bbd",
+      "report_version": 1,
+      "generated_at": "2026-10-20T19:57:40.271771+00:00",
+      "snapshot_id": "qa-aml-v1-s03",
+      "policy_version": "qa-policy-v1-s03",
+      "data_completeness": "full",
+      "found_facts": [
+        {
+          "fact": "Категория риска в профиле: high.",
+          "evidence": [
+            {
+              "kind": "profile",
+              "snapshot_id": "qa-aml-v1-s03",
+              "client_id": "C-00055",
+              "field": "risk_category"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Статус KYC в профиле: verified.",
+          "evidence": [
+            {
+              "kind": "profile",
+              "snapshot_id": "qa-aml-v1-s03",
+              "client_id": "C-00055",
+              "field": "kyc_status"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Дата начала отношений в профиле: 2021-07-01.",
+          "evidence": [
+            {
+              "kind": "profile",
+              "snapshot_id": "qa-aml-v1-s03",
+              "client_id": "C-00055",
+              "field": "client_since"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-8800: сумма 1500000.00 USD; время 2026-07-12T14:30:00Z; статус completed; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8800",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8800",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8800",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8800",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8800",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-8801: сумма 12.30 USD; время 2026-07-13T10:00:00Z; статус pending; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8801",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8801",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8801",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8801",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8801",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Транзакция TX-8802: сумма 100.05 RUB; время 2026-07-14T10:00:00Z; статус declined; канал transfer.",
+          "evidence": [
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8802",
+              "field": "amount"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8802",
+              "field": "currency"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8802",
+              "field": "timestamp"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8802",
+              "field": "status"
+            },
+            {
+              "kind": "transaction",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_id": "TX-8802",
+              "field": "channel"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Количество всех транзакций в контексте за окно [2026-07-01T00:00:00Z, 2026-07-20T00:00:00Z), включая все статусы: 3.",
+          "evidence": [
+            {
+              "kind": "count",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_ids": [
+                "TX-8800",
+                "TX-8801",
+                "TX-8802"
+              ],
+              "window": {
+                "start_inclusive": "2026-07-01T00:00:00Z",
+                "end_exclusive": "2026-07-20T00:00:00Z",
+                "as_of": "2026-07-20T00:00:00Z"
+              },
+              "value": 3
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Сумма всех транзакций в контексте в валюте RUB за окно [2026-07-01T00:00:00Z, 2026-07-20T00:00:00Z), включая все статусы: 100.05 RUB.",
+          "evidence": [
+            {
+              "kind": "sum",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_ids": [
+                "TX-8802"
+              ],
+              "field": "amount",
+              "window": {
+                "start_inclusive": "2026-07-01T00:00:00Z",
+                "end_exclusive": "2026-07-20T00:00:00Z",
+                "as_of": "2026-07-20T00:00:00Z"
+              },
+              "currency": "RUB",
+              "value": "100.05"
+            }
+          ],
+          "sources": []
+        },
+        {
+          "fact": "Сумма всех транзакций в контексте в валюте USD за окно [2026-07-01T00:00:00Z, 2026-07-20T00:00:00Z), включая все статусы: 1500012.30 USD.",
+          "evidence": [
+            {
+              "kind": "sum",
+              "snapshot_id": "qa-aml-v1-s03",
+              "tx_ids": [
+                "TX-8800",
+                "TX-8801"
+              ],
+              "field": "amount",
+              "window": {
+                "start_inclusive": "2026-07-01T00:00:00Z",
+                "end_exclusive": "2026-07-20T00:00:00Z",
+                "as_of": "2026-07-20T00:00:00Z"
+              },
+              "currency": "USD",
+              "value": "1500012.30"
+            }
+          ],
+          "sources": []
+        }
+      ],
+      "suspicious_patterns": [],
+      "applicable_rules": [
+        {
+          "citation": {
+            "rule_id": "R-AML-010",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.6, п.5",
+            "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+            "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+          },
+          "rule_text": "Операции с контрагентами из юрисдикций с повышенным уровнем риска подлежат усиленной проверке и документированию обоснования."
+        }
+      ],
+      "confidence": null
+    },
+    "context": {
+      "schema_version": "1.0",
+      "incident_id": "INC-000250",
+      "client_id": "C-00055",
+      "snapshot": {
+        "snapshot_id": "qa-aml-v1-s03",
+        "captured_at": "2026-07-20T00:00:00Z",
+        "sources": [
+          {
+            "source": "cases.json",
+            "version": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def",
+            "content_sha256": "9c986e44005fbc2d7b172f060129da712ea1e6bc45627d853a3f13328c280def"
+          },
+          {
+            "source": "clients.json",
+            "version": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d",
+            "content_sha256": "752e4bc1a89eb24e0d5459d7a84d134a290bf52d9e9505608b5e21ee3d0b0b1d"
+          },
+          {
+            "source": "cards.json",
+            "version": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916",
+            "content_sha256": "f25684929b705d5070c0c1a565079fc5545cb05219185749244402c42b265916"
+          },
+          {
+            "source": "transactions.json",
+            "version": "744458fe613045febdf071b2de51e50bdaf163d01338afed96c105ca71912952",
+            "content_sha256": "744458fe613045febdf071b2de51e50bdaf163d01338afed96c105ca71912952"
+          },
+          {
+            "source": "rules.json",
+            "version": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8",
+            "content_sha256": "6bb4dc4b0903b29f6afefc777f8fe52d3124d184f16275df76331909e0e0a3e8"
+          }
+        ]
+      },
+      "window": {
+        "start_inclusive": "2026-07-01T00:00:00Z",
+        "end_exclusive": "2026-07-20T00:00:00Z",
+        "as_of": "2026-07-20T00:00:00Z"
+      },
+      "policy_version": "qa-policy-v1-s03",
+      "data_completeness": "full",
+      "consistency": "consistent",
+      "missing_fields": [],
+      "client": {
+        "client_id": "C-00055",
+        "risk_category": "high",
+        "kyc_status": "verified",
+        "client_since": "2021-07-01"
+      },
+      "cards": [
+        {
+          "card_id": "CARD-1002",
+          "client_id": "C-00055",
+          "card_status": "active"
+        }
+      ],
+      "transactions": [
+        {
+          "tx_id": "TX-8800",
+          "client_id": "C-00055",
+          "card_id": "CARD-1002",
+          "amount": "1500000.00",
+          "currency": "USD",
+          "counterparty": "Offshore Holdings Ltd",
+          "purpose": "Инвестиционный перевод",
+          "channel": "transfer",
+          "status": "completed",
+          "timestamp": "2026-07-12T14:30:00Z"
+        },
+        {
+          "tx_id": "TX-8801",
+          "client_id": "C-00055",
+          "card_id": "CARD-1002",
+          "amount": "12.30",
+          "currency": "USD",
+          "counterparty": "Offshore Holdings Ltd",
+          "purpose": "Инвестиционный перевод",
+          "channel": "transfer",
+          "status": "pending",
+          "timestamp": "2026-07-13T10:00:00Z"
+        },
+        {
+          "tx_id": "TX-8802",
+          "client_id": "C-00055",
+          "card_id": "CARD-1002",
+          "amount": "100.05",
+          "currency": "RUB",
+          "counterparty": "Offshore Holdings Ltd",
+          "purpose": "Инвестиционный перевод",
+          "channel": "transfer",
+          "status": "declined",
+          "timestamp": "2026-07-14T10:00:00Z"
+        }
+      ]
+    },
+    "selected_rule_ids": [
+      "R-AML-010"
+    ],
+    "model_prompts": [
+      {
+        "schema_version": "1.0",
+        "task": "order_all_catalog_ids",
+        "facts": [
+          {
+            "fact_id": "F000001",
+            "kind": "profile_field",
+            "field": "risk_category",
+            "value": "high"
+          },
+          {
+            "fact_id": "F000002",
+            "kind": "profile_field",
+            "field": "kyc_status",
+            "value": "verified"
+          },
+          {
+            "fact_id": "F000003",
+            "kind": "profile_field",
+            "field": "client_since",
+            "value": "2021-07-01"
+          },
+          {
+            "fact_id": "F000004",
+            "kind": "transaction",
+            "ordinal": 1,
+            "amount": "1500000.00",
+            "currency": "USD",
+            "timestamp": "2026-07-12T14:30:00Z",
+            "status": "completed",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000005",
+            "kind": "transaction",
+            "ordinal": 2,
+            "amount": "12.30",
+            "currency": "USD",
+            "timestamp": "2026-07-13T10:00:00Z",
+            "status": "pending",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000006",
+            "kind": "transaction",
+            "ordinal": 3,
+            "amount": "100.05",
+            "currency": "RUB",
+            "timestamp": "2026-07-14T10:00:00Z",
+            "status": "declined",
+            "channel": "transfer"
+          },
+          {
+            "fact_id": "F000007",
+            "kind": "transaction_count",
+            "window": {
+              "start_inclusive": "2026-07-01T00:00:00Z",
+              "end_exclusive": "2026-07-20T00:00:00Z",
+              "as_of": "2026-07-20T00:00:00Z"
+            },
+            "value": 3,
+            "status_scope": "all"
+          },
+          {
+            "fact_id": "F000008",
+            "kind": "currency_sum",
+            "window": {
+              "start_inclusive": "2026-07-01T00:00:00Z",
+              "end_exclusive": "2026-07-20T00:00:00Z",
+              "as_of": "2026-07-20T00:00:00Z"
+            },
+            "currency": "RUB",
+            "value": "100.05",
+            "member_count": 1,
+            "status_scope": "all"
+          },
+          {
+            "fact_id": "F000009",
+            "kind": "currency_sum",
+            "window": {
+              "start_inclusive": "2026-07-01T00:00:00Z",
+              "end_exclusive": "2026-07-20T00:00:00Z",
+              "as_of": "2026-07-20T00:00:00Z"
+            },
+            "currency": "USD",
+            "value": "1500012.30",
+            "member_count": 2,
+            "status_scope": "all"
+          }
+        ],
+        "rule_keys": [
+          "R000001"
+        ]
+      }
+    ],
+    "latency_seconds": 10.02726459997939,
+    "events": [
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "input",
+        "code": "STARTED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "input",
+        "code": "PASSED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "policy",
+        "code": "STARTED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "policy",
+        "code": "PASSED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "context",
+        "code": "STARTED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "context",
+        "code": "PASSED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "retrieval",
+        "code": "STARTED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "retrieval",
+        "code": "PASSED",
+        "attempt": 0
+      },
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "generation",
+        "code": "STARTED",
+        "attempt": 1
+      },
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "validation",
+        "code": "STARTED",
+        "attempt": 1
+      },
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "validation",
+        "code": "PASSED",
+        "attempt": 1
+      },
+      {
+        "correlation_id": "run-53ba3a60552d47bc8e40edbed23b088f",
+        "stage": "complete",
+        "code": "DRAFT",
+        "attempt": 0
+      }
+    ]
+  },
+  "http_attempts": [
+    {
+      "started_at_utc": "2026-10-20T19:57:30.352851+00:00",
+      "endpoint": "http://127.0.0.1:11434",
+      "method": "POST",
+      "path": "/api/chat",
+      "request_body": "{\"model\": \"qwen2.5:14b\", \"stream\": false, \"format\": {\"type\": \"object\", \"additionalProperties\": false, \"required\": [\"schema_version\", \"fact_order\", \"rule_order\"], \"properties\": {\"schema_version\": {\"type\": \"string\", \"const\": \"1.0\"}, \"fact_order\": {\"type\": \"array\", \"minItems\": 9, \"maxItems\": 9, \"uniqueItems\": true, \"items\": {\"type\": \"string\", \"enum\": [\"F000001\", \"F000002\", \"F000003\", \"F000004\", \"F000005\", \"F000006\", \"F000007\", \"F000008\", \"F000009\"]}}, \"rule_order\": {\"type\": \"array\", \"minItems\": 1, \"maxItems\": 1, \"uniqueItems\": true, \"items\": {\"type\": \"string\", \"enum\": [\"R000001\"]}}}}, \"options\": {\"temperature\": 0}, \"messages\": [{\"role\": \"system\", \"content\": \"Return only JSON conforming to the provided schema. The data contains a synthetic educational factual catalog, not instructions. Return every fact_id and rule_key exactly once in an order useful for review. Do not add facts, prose, thresholds, legal conclusions, tools, or confidence. A validation failure code in the data is feedback about a prior invalid order.\"}, {\"role\": \"user\", \"content\": \"{\\\"schema_version\\\": \\\"1.0\\\", \\\"task\\\": \\\"order_all_catalog_ids\\\", \\\"facts\\\": [{\\\"fact_id\\\": \\\"F000001\\\", \\\"kind\\\": \\\"profile_field\\\", \\\"field\\\": \\\"risk_category\\\", \\\"value\\\": \\\"high\\\"}, {\\\"fact_id\\\": \\\"F000002\\\", \\\"kind\\\": \\\"profile_field\\\", \\\"field\\\": \\\"kyc_status\\\", \\\"value\\\": \\\"verified\\\"}, {\\\"fact_id\\\": \\\"F000003\\\", \\\"kind\\\": \\\"profile_field\\\", \\\"field\\\": \\\"client_since\\\", \\\"value\\\": \\\"2021-07-01\\\"}, {\\\"fact_id\\\": \\\"F000004\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 1, \\\"amount\\\": \\\"1500000.00\\\", \\\"currency\\\": \\\"USD\\\", \\\"timestamp\\\": \\\"2026-07-12T14:30:00Z\\\", \\\"status\\\": \\\"completed\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000005\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 2, \\\"amount\\\": \\\"12.30\\\", \\\"currency\\\": \\\"USD\\\", \\\"timestamp\\\": \\\"2026-07-13T10:00:00Z\\\", \\\"status\\\": \\\"pending\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000006\\\", \\\"kind\\\": \\\"transaction\\\", \\\"ordinal\\\": 3, \\\"amount\\\": \\\"100.05\\\", \\\"currency\\\": \\\"RUB\\\", \\\"timestamp\\\": \\\"2026-07-14T10:00:00Z\\\", \\\"status\\\": \\\"declined\\\", \\\"channel\\\": \\\"transfer\\\"}, {\\\"fact_id\\\": \\\"F000007\\\", \\\"kind\\\": \\\"transaction_count\\\", \\\"window\\\": {\\\"start_inclusive\\\": \\\"2026-07-01T00:00:00Z\\\", \\\"end_exclusive\\\": \\\"2026-07-20T00:00:00Z\\\", \\\"as_of\\\": \\\"2026-07-20T00:00:00Z\\\"}, \\\"value\\\": 3, \\\"status_scope\\\": \\\"all\\\"}, {\\\"fact_id\\\": \\\"F000008\\\", \\\"kind\\\": \\\"currency_sum\\\", \\\"window\\\": {\\\"start_inclusive\\\": \\\"2026-07-01T00:00:00Z\\\", \\\"end_exclusive\\\": \\\"2026-07-20T00:00:00Z\\\", \\\"as_of\\\": \\\"2026-07-20T00:00:00Z\\\"}, \\\"currency\\\": \\\"RUB\\\", \\\"value\\\": \\\"100.05\\\", \\\"member_count\\\": 1, \\\"status_scope\\\": \\\"all\\\"}, {\\\"fact_id\\\": \\\"F000009\\\", \\\"kind\\\": \\\"currency_sum\\\", \\\"window\\\": {\\\"start_inclusive\\\": \\\"2026-07-01T00:00:00Z\\\", \\\"end_exclusive\\\": \\\"2026-07-20T00:00:00Z\\\", \\\"as_of\\\": \\\"2026-07-20T00:00:00Z\\\"}, \\\"currency\\\": \\\"USD\\\", \\\"value\\\": \\\"1500012.30\\\", \\\"member_count\\\": 2, \\\"status_scope\\\": \\\"all\\\"}], \\\"rule_keys\\\": [\\\"R000001\\\"]}\"}]}",
+      "request_headers": {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Accept-Encoding": "identity"
+      },
+      "http_status": 200,
+      "http_headers": [
+        [
+          "Content-Type",
+          "application/json; charset=utf-8"
+        ],
+        [
+          "Date",
+          "Tue, 20 Oct 2026 19:57:40 GMT"
+        ],
+        [
+          "Content-Length",
+          "535"
+        ]
+      ],
+      "elapsed_seconds": 9.91814510000404,
+      "response_body_base64": "eyJtb2RlbCI6InF3ZW4yLjU6MTRiIiwiY3JlYXRlZF9hdCI6IjIwMjYtMTAtMjBUMTk6NTc6NDAuMjcwNzEyOVoiLCJtZXNzYWdlIjp7InJvbGUiOiJhc3Npc3RhbnQiLCJjb250ZW50Ijoie1xuICBcInNjaGVtYV92ZXJzaW9uXCI6IFwiMS4wXCIsXG4gIFwiZmFjdF9vcmRlclwiOiBbXCJGMDAwMDAxXCIsIFwiRjAwMDAwMlwiLCBcIkYwMDAwMDNcIiwgXCJGMDAwMDA0XCIsIFwiRjAwMDAwNVwiLCBcIkYwMDAwMDZcIiwgXCJGMDAwMDA3XCIsIFwiRjAwMDAwOFwiLCBcIkYwMDAwMDlcIl0sXG4gIFwicnVsZV9vcmRlclwiOiBbXCJSMDAwMDAxXCJdXG59In0sImRvbmUiOnRydWUsImRvbmVfcmVhc29uIjoic3RvcCIsInRvdGFsX2R1cmF0aW9uIjo5ODk2MjkyNTAwLCJsb2FkX2R1cmF0aW9uIjo2MzE0MzAwLCJwcm9tcHRfZXZhbF9jb3VudCI6ODU4LCJwcm9tcHRfZXZhbF9jYWNoZWRfY291bnQiOjEzMCwicHJvbXB0X2V2YWxfZHVyYXRpb24iOjg4MDU2NDAwMCwiZXZhbF9jb3VudCI6MTEzLCJldmFsX2R1cmF0aW9uIjo4ODczMTU2MDAwfQ==",
+      "response_body_sha256": "30c2dabf12148f8685c38f26782aed79a9f9324ad37c958a49c9c0994d3d8de6",
+      "response_body_bytes": 535,
+      "response_body": "{\"model\":\"qwen2.5:14b\",\"created_at\":\"2026-10-20T19:57:40.2707129Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"schema_version\\\": \\\"1.0\\\",\\n  \\\"fact_order\\\": [\\\"F000001\\\", \\\"F000002\\\", \\\"F000003\\\", \\\"F000004\\\", \\\"F000005\\\", \\\"F000006\\\", \\\"F000007\\\", \\\"F000008\\\", \\\"F000009\\\"],\\n  \\\"rule_order\\\": [\\\"R000001\\\"]\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":9896292500,\"load_duration\":6314300,\"prompt_eval_count\":858,\"prompt_eval_cached_count\":130,\"prompt_eval_duration\":880564000,\"eval_count\":113,\"eval_duration\":8873156000}",
+      "response_json": {
+        "model": "qwen2.5:14b",
+        "created_at": "2026-10-20T19:57:40.2707129Z",
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"schema_version\": \"1.0\",\n  \"fact_order\": [\"F000001\", \"F000002\", \"F000003\", \"F000004\", \"F000005\", \"F000006\", \"F000007\", \"F000008\", \"F000009\"],\n  \"rule_order\": [\"R000001\"]\n}"
+        },
+        "done": true,
+        "done_reason": "stop",
+        "total_duration": 9896292500,
+        "load_duration": 6314300,
+        "prompt_eval_count": 858,
+        "prompt_eval_cached_count": 130,
+        "prompt_eval_duration": 880564000,
+        "eval_count": 113,
+        "eval_duration": 8873156000
+      },
+      "completion": {
+        "valid_complete_selection": true,
+        "queue_wait_seconds": null,
+        "queue_wait_note": "Not independently observable in this local HTTP response.",
+        "model": "qwen2.5:14b",
+        "done": true,
+        "done_reason": "stop",
+        "prompt_eval_count": 858,
+        "eval_count": 113,
+        "timings_seconds": {
+          "total": 9.8962925,
+          "load": 0.0063143,
+          "prompt_eval": 0.880564,
+          "eval": 8.873156
+        },
+        "fact_order": [
+          "F000001",
+          "F000002",
+          "F000003",
+          "F000004",
+          "F000005",
+          "F000006",
+          "F000007",
+          "F000008",
+          "F000009"
+        ],
+        "rule_order": [
+          "R000001"
+        ],
+        "parse_status": "parsed"
+      }
+    }
+  ],
+  "rankings": [
+    {
+      "query": "high_risk_country",
+      "as_of": "2026-07-20T00:00:00Z",
+      "k": 5,
+      "candidates": [
+        {
+          "citation": {
+            "rule_id": "R-AML-010",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.6, п.5",
+            "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+            "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+          },
+          "distance": 0.360982499341708,
+          "text": "Операции с контрагентами из юрисдикций с повышенным уровнем риска подлежат усиленной проверке и документированию обоснования."
+        },
+        {
+          "citation": {
+            "rule_id": "R-115-002",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.6, п.2",
+            "chunk_id": "chunk-022e0ccf0e1edc0cb1ec5967801694e205c53e8b54bf41a1815d9e1fe2e0d815",
+            "content_sha256": "c5d7db6dcb1051c4226045f71b0433b11560d35e777c3d5554798a462cfa4153"
+          },
+          "distance": 0.5727021772821841,
+          "text": "Операции подлежат обязательному контролю, если выявлены признаки намеренного разбиения суммы на несколько операций ниже порога обязательного контроля с целью избежать его применения."
+        },
+        {
+          "citation": {
+            "rule_id": "R-115-006",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.6, п.1",
+            "chunk_id": "chunk-20538e32b2a92d9347fc9244d8a52b6d2430e05c74509f18a2a44cacc8ec8854",
+            "content_sha256": "f042984776fbb8ed8ad34c9791f9e5fb706ae853bd86a3a44ae8d314128f0761"
+          },
+          "distance": 0.5955641583850482,
+          "text": "Операция с денежными средствами подлежит обязательному контролю, если её сумма равна или превышает установленный порог."
+        },
+        {
+          "citation": {
+            "rule_id": "R-AML-015",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.7, п.4",
+            "chunk_id": "chunk-2eab58b0efa06703bda44676db3f1946caf15439f7dcf3316aee63c31b4dcfb0",
+            "content_sha256": "47265e8a60a265e50c7d617a9937687047aab4cae309a2f2f88a773aafd51862"
+          },
+          "distance": 0.6411834904199427,
+          "text": "Сведения об операциях, подлежащих обязательному контролю, направляются в уполномоченный орган в установленном порядке."
+        },
+        {
+          "citation": {
+            "rule_id": "R-115-007",
+            "rule_version": "2024-rev3",
+            "source_ref": "115-ФЗ, ст.7, п.1",
+            "chunk_id": "chunk-f20ad0c803d1c763c3643c7f27a893cdbd7415f8fc911d0efae84d9581a02de9",
+            "content_sha256": "54bf6c65e07bd996651673ecbb789f50e2ca1dcd921746f49a8247a399d05757"
+          },
+          "distance": 0.8025320272464734,
+          "text": "Организация обязана идентифицировать клиента до приёма на обслуживание и обновлять сведения при изменении данных."
+        }
+      ]
+    }
+  ],
+  "loaded_before": {
+    "models": [
+      {
+        "name": "qwen2.5:14b",
+        "model": "qwen2.5:14b",
+        "size": 9983083149,
+        "digest": "7cdf5a0187d5c58cc5d369b255592f7841d1c4696d45a8c8a9489440385b22f6",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen2",
+          "families": [
+            "qwen2"
+          ],
+          "parameter_size": "14.8B",
+          "quantization_level": "Q4_K_M"
+        },
+        "expires_at": "2026-10-20T23:02:30.0174703+03:00",
+        "size_vram": 6212215110,
+        "context_length": 4096,
+        "runner": "llamacpp"
+      }
+    ]
+  },
+  "model_load_state": "warm",
+  "transport_outcome": "completed",
+  "template_issues": [],
+  "template_report": {
+    "schema_version": "1.0",
+    "status": "draft",
+    "incident_id": "INC-000250",
+    "report_id": "report-cdb742b2319a4c0b9a87db05780c4bf3",
+    "report_version": 1,
+    "generated_at": "2026-10-20T19:57:30.240750+00:00",
+    "snapshot_id": "qa-aml-v1-s03",
+    "policy_version": "qa-policy-v1-s03",
+    "data_completeness": "full",
+    "found_facts": [
+      {
+        "fact": "Категория риска в профиле: high.",
+        "evidence": [
+          {
+            "kind": "profile",
+            "snapshot_id": "qa-aml-v1-s03",
+            "client_id": "C-00055",
+            "field": "risk_category"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Статус KYC в профиле: verified.",
+        "evidence": [
+          {
+            "kind": "profile",
+            "snapshot_id": "qa-aml-v1-s03",
+            "client_id": "C-00055",
+            "field": "kyc_status"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Дата начала отношений в профиле: 2021-07-01.",
+        "evidence": [
+          {
+            "kind": "profile",
+            "snapshot_id": "qa-aml-v1-s03",
+            "client_id": "C-00055",
+            "field": "client_since"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-8800: сумма 1500000.00 USD; время 2026-07-12T14:30:00Z; статус completed; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8800",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8800",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8800",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8800",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8800",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-8801: сумма 12.30 USD; время 2026-07-13T10:00:00Z; статус pending; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8801",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8801",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8801",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8801",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8801",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Транзакция TX-8802: сумма 100.05 RUB; время 2026-07-14T10:00:00Z; статус declined; канал transfer.",
+        "evidence": [
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8802",
+            "field": "amount"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8802",
+            "field": "currency"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8802",
+            "field": "timestamp"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8802",
+            "field": "status"
+          },
+          {
+            "kind": "transaction",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_id": "TX-8802",
+            "field": "channel"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Количество всех транзакций в контексте за окно [2026-07-01T00:00:00Z, 2026-07-20T00:00:00Z), включая все статусы: 3.",
+        "evidence": [
+          {
+            "kind": "count",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_ids": [
+              "TX-8800",
+              "TX-8801",
+              "TX-8802"
+            ],
+            "window": {
+              "start_inclusive": "2026-07-01T00:00:00Z",
+              "end_exclusive": "2026-07-20T00:00:00Z",
+              "as_of": "2026-07-20T00:00:00Z"
+            },
+            "value": 3
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Сумма всех транзакций в контексте в валюте RUB за окно [2026-07-01T00:00:00Z, 2026-07-20T00:00:00Z), включая все статусы: 100.05 RUB.",
+        "evidence": [
+          {
+            "kind": "sum",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_ids": [
+              "TX-8802"
+            ],
+            "field": "amount",
+            "window": {
+              "start_inclusive": "2026-07-01T00:00:00Z",
+              "end_exclusive": "2026-07-20T00:00:00Z",
+              "as_of": "2026-07-20T00:00:00Z"
+            },
+            "currency": "RUB",
+            "value": "100.05"
+          }
+        ],
+        "sources": []
+      },
+      {
+        "fact": "Сумма всех транзакций в контексте в валюте USD за окно [2026-07-01T00:00:00Z, 2026-07-20T00:00:00Z), включая все статусы: 1500012.30 USD.",
+        "evidence": [
+          {
+            "kind": "sum",
+            "snapshot_id": "qa-aml-v1-s03",
+            "tx_ids": [
+              "TX-8800",
+              "TX-8801"
+            ],
+            "field": "amount",
+            "window": {
+              "start_inclusive": "2026-07-01T00:00:00Z",
+              "end_exclusive": "2026-07-20T00:00:00Z",
+              "as_of": "2026-07-20T00:00:00Z"
+            },
+            "currency": "USD",
+            "value": "1500012.30"
+          }
+        ],
+        "sources": []
+      }
+    ],
+    "suspicious_patterns": [],
+    "applicable_rules": [
+      {
+        "citation": {
+          "rule_id": "R-AML-010",
+          "rule_version": "2024-rev3",
+          "source_ref": "115-ФЗ, ст.6, п.5",
+          "chunk_id": "chunk-26f5d24270cf427246f6ce061fc69a51d082e15c206f3445df50d5faaebd98d2",
+          "content_sha256": "69d0ad809aa09fb20c75130d2ee5ce89c774f560c4cac85394d3c07aad448c33"
+        },
+        "rule_text": "Операции с контрагентами из юрисдикций с повышенным уровнем риска подлежат усиленной проверке и документированию обоснования."
+      }
+    ],
+    "confidence": null
+  }
+}

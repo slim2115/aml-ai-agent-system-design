@@ -1,0 +1,168 @@
+{
+  "schema_version": "1.0",
+  "map_id": "dark-factory-impact-v1",
+  "version": "1.0",
+  "catalog_sha256": "42f01970be5e3cd324668e8581feeb357dbe17aedccf36473bf134c4d628398a",
+  "components": [
+    {
+      "id": "foundation",
+      "paths": ["src/contracts/", "contracts/", "src/config.py", "src/schemas.py", "src/__init__.py", "config/", "requirements/", "requirements.txt", "requirements-contracts.txt", ".env.example", ".gitattributes", ".gitignore", ".github/", "pyproject.toml", ".rebuild/origin.json", ".rebuild/release-version.json", "scripts/rebuild/", "scripts/release/"],
+      "depends_on": [],
+      "requirements": ["DFR-001", "DFR-002", "DFR-003", "DFR-004", "DFR-005", "DFR-006", "DFR-007", "DFR-008", "DFR-009", "DFR-010", "DFR-011", "DFR-012"],
+      "profiles": ["full_regression", "requirements", "ui_cli", "browser", "retrieval", "llm", "judge", "live_integration", "mapping_review"],
+      "reason": "Общие контракты, настройки, зависимости и подготовка поставки могут изменить поведение всех потребителей; требуется полный набор требований и пересмотр применимости карты."
+    },
+    {
+      "id": "qa_infrastructure",
+      "paths": ["qa/requirements/", "qa/impact/", "qa/execution/", "qa/qualification/", "qa/environments/", "qa/reporting.py", "qa/conftest.py", "qa/pytest.ini", "qa/requirements-browser.lock", "qa/requirements-metrics.lock", "qa/tools/", "src/qa_profile.py", "tests/conftest.py", "tests/dark_factory/test_execution_adapters.py", "tests/dark_factory/test_execution_processes.py", "tests/dark_factory/test_execution_provenance.py", "tests/dark_factory/test_execution_runner.py", "tests/dark_factory/test_qualification_controls.py", "tests/dark_factory/test_qualification_runner.py", "tests/dark_factory/test_environment_models.py", "tests/dark_factory/test_environment_runner.py", "scripts/ci/", "scripts/qa/", "scripts/diagnostics/"],
+      "depends_on": ["foundation"],
+      "requirements": ["DFR-001", "DFR-002", "DFR-003", "DFR-004", "DFR-005", "DFR-006", "DFR-007", "DFR-008", "DFR-009", "DFR-010", "DFR-011", "DFR-012"],
+      "profiles": ["full_regression", "requirements", "ui_cli", "browser", "retrieval", "llm", "judge", "live_integration", "mapping_review"],
+      "reason": "Изменение запуска, изоляции, идентичности модели или обработки свидетельств влияет на достоверность проверок, даже если код сервиса не менялся."
+    },
+    {
+      "id": "normative_docs",
+      "paths": ["qa/strategy/", "docs/rebuild/", "docs/adr/", "docs/brs.md", "docs/srs.md", "docs/data-model.md", "docs/traceability-matrix.md", "docs/risks-and-security.md", "docs/evaluation-plan.md", "docs/eval-report.md", "docs/diagrams/"],
+      "depends_on": [],
+      "requirements": ["DFR-001", "DFR-002", "DFR-003", "DFR-004", "DFR-005", "DFR-006", "DFR-007", "DFR-008", "DFR-009", "DFR-010", "DFR-011", "DFR-012"],
+      "profiles": ["full_regression", "requirements", "documentation", "mapping_review"],
+      "reason": "Изменение политики, спецификации или архитектурного основания требует сверки всех ожиданий с каталогом; существование документа не подтверждает его семантическую согласованность."
+    },
+    {
+      "id": "documentation",
+      "paths": ["README.md", "qa/README.md", "docs/operator/", "docs/publication/", "docs/publication.md", "lab/README.md", "lab/desktop/README.md"],
+      "depends_on": [],
+      "requirements": [],
+      "profiles": ["documentation"],
+      "reason": "Изменены инструкции, ссылки или состав публикации. Требуется проверка документации; такое совпадение пути не доказывает отсутствие других изменений."
+    },
+    {
+      "id": "model_llm",
+      "paths": [],
+      "depends_on": [],
+      "requirements": ["DFR-004", "DFR-010", "DFR-011", "DFR-012"],
+      "profiles": ["llm", "judge", "mapping_review"],
+      "reason": "Явно заявлена смена LLM вне файлов проекта. Нужны новые измерения генерации и Judge с сохранением идентичности; планировщик самостоятельно состояние Ollama не обнаруживает."
+    },
+    {
+      "id": "model_embedding",
+      "paths": [],
+      "depends_on": [],
+      "requirements": ["DFR-003", "DFR-005", "DFR-012"],
+      "profiles": ["retrieval", "mapping_review"],
+      "reason": "Явно заявлена смена embedding-модели вне файлов проекта. Нужны новые измерения retrieval и его потребителей; наличие прежних результатов не удостоверяет новую модель."
+    },
+    {
+      "id": "data_context",
+      "paths": ["src/data_access/", "src/runtime/context.py", "src/runtime/policy.py", "data/demo-v1/", "data/synthetic/", "scripts/generate_synthetic_data.py"],
+      "depends_on": ["foundation"],
+      "requirements": ["DFR-003", "DFR-004", "DFR-005", "DFR-010"],
+      "profiles": ["requirements", "retrieval", "llm"],
+      "reason": "Снимок, правила и построение контекста задают разрешённые факты, источники и временные границы для поиска и генерации."
+    },
+    {
+      "id": "retrieval",
+      "paths": ["src/runtime/retrieval.py", "src/retrieval/", "config/embedding-files.json"],
+      "depends_on": ["foundation", "data_context", "model_embedding"],
+      "requirements": ["DFR-003", "DFR-005"],
+      "profiles": ["requirements", "retrieval"],
+      "reason": "Изменение индекса, embedding или рецепта поиска затрагивает редакции и цитаты. Ранжирование требует живого измерения и проверки последующих результатов."
+    },
+    {
+      "id": "llm_protocol",
+      "paths": ["src/runtime/transport.py", "prompts/", "src/agent/prompt_loader.py"],
+      "depends_on": ["foundation", "model_llm"],
+      "requirements": ["DFR-004", "DFR-010"],
+      "profiles": ["requirements", "llm"],
+      "reason": "Активный SYSTEM_PROMPT и транспорт находятся в src/runtime/transport.py. Наследуемые prompts и prompt_loader также требуют проверки совместимости; изменение только их путей не доказывает изменение активного промпта."
+    },
+    {
+      "id": "generation",
+      "paths": ["src/runtime/generation.py", "src/generation/", "src/guardrails/"],
+      "depends_on": ["foundation", "data_context", "retrieval", "llm_protocol"],
+      "requirements": ["DFR-003", "DFR-004", "DFR-010"],
+      "profiles": ["requirements", "llm"],
+      "reason": "Построение и проверка черновика связывают полный каталог фактов, точные суммы и разрешённые ссылки с ответом модели; результат используется в workflow и оценке."
+    },
+    {
+      "id": "runtime_service",
+      "paths": ["src/runtime/service.py", "src/runtime/events.py", "src/runtime/io_budget.py", "src/runtime/__init__.py", "src/workflow/bounded_http.py", "src/agent/graph.py", "src/agent/__init__.py", "src/agent/nodes.py", "src/agent/tools.py", "scripts/run_investigation.py", "scripts/run_workflow.py"],
+      "depends_on": ["foundation", "generation"],
+      "requirements": ["DFR-001", "DFR-002", "DFR-004"],
+      "profiles": ["requirements", "llm", "live_integration"],
+      "reason": "Оркестрация, события и бюджет I/O определяют завершение анализа и передачу результата. Фасады и CLI входят в ту же проверяемую цепочку совместимости."
+    },
+    {
+      "id": "workflow_storage",
+      "paths": ["src/workflow/store.py", "src/workflow/auth.py"],
+      "depends_on": ["foundation", "runtime_service"],
+      "requirements": ["DFR-001", "DFR-006", "DFR-007"],
+      "profiles": ["requirements", "ui_cli", "live_integration"],
+      "reason": "Состояние заданий, серверная атрибуция и версии решений сохраняются в SQLite и используются допуском, экспортом, API и интерфейсом."
+    },
+    {
+      "id": "workflow",
+      "paths": ["src/workflow/controller.py", "src/workflow/worker.py", "src/workflow/lease.py", "src/workflow/__init__.py"],
+      "depends_on": ["foundation", "runtime_service", "workflow_storage"],
+      "requirements": ["DFR-001", "DFR-002"],
+      "profiles": ["requirements", "ui_cli", "live_integration"],
+      "reason": "Подготовка, допуск, отмена и дедлайны обработчика влияют на API-задания, Kafka-инициированный анализ и действия оператора."
+    },
+    {
+      "id": "sources",
+      "paths": ["src/workflow/sources.py"],
+      "depends_on": ["foundation", "data_context", "retrieval", "generation"],
+      "requirements": ["DFR-003", "DFR-004", "DFR-005"],
+      "profiles": ["requirements", "ui_cli"],
+      "reason": "Подтверждение источников сверяет факты и редакции с исходным снимком; ошибка этой границы затрагивает решение оператора и экспорт."
+    },
+    {
+      "id": "delivery",
+      "paths": ["src/workflow/delivery.py"],
+      "depends_on": ["foundation", "workflow_storage", "sources"],
+      "requirements": ["DFR-006", "DFR-007"],
+      "profiles": ["requirements", "ui_cli", "live_integration"],
+      "reason": "Локальная доставка должна ссылаться на конкретную одобренную версию и сохранять результат; её состояние отображается API и оператору."
+    },
+    {
+      "id": "lab_api",
+      "paths": ["src/lab/api.py", "src/lab/database.py", "src/lab/config.py", "src/lab/__init__.py", "src/lab/kafka/api.py", "src/lab/kafka/analysis_api.py", "lab/sql/", "lab/api/", "scripts/lab/"],
+      "depends_on": ["foundation", "runtime_service", "workflow", "delivery"],
+      "requirements": ["DFR-001", "DFR-002", "DFR-006", "DFR-007", "DFR-008", "DFR-009"],
+      "profiles": ["requirements", "live_integration"],
+      "reason": "HTTP-маршруты и PostgreSQL связывают задания, решения и событийную очередь. Kafka HTTP-router намеренно относится и к API, и к Kafka-компоненту."
+    },
+    {
+      "id": "kafka",
+      "paths": ["src/lab/kafka/", "src/workflow/remote.py", "lab/kafka/", "scripts/kafka/", "qa/pipeline/", "qa/integration/"],
+      "depends_on": ["foundation", "lab_api"],
+      "requirements": ["DFR-008", "DFR-009"],
+      "profiles": ["requirements", "live_integration"],
+      "reason": "Контракты событий, durable inbox, offset commit и повторы должны проверяться с живыми зависимостями. WorkflowClient из remote.py используется также Kafka-обработчиком; потеря HTTP-подтверждения не должна создавать повторное задание."
+    },
+    {
+      "id": "ui",
+      "paths": ["src/ui/", "src/workflow/remote.py", "qa/e2e/", "qa/browser_backend.py"],
+      "depends_on": ["foundation", "workflow", "sources", "delivery", "lab_api", "kafka"],
+      "requirements": ["DFR-001", "DFR-002", "DFR-003", "DFR-006", "DFR-007"],
+      "profiles": ["requirements", "ui_cli", "browser"],
+      "reason": "Пошаговая форма и удалённый клиент отображают готовность, источники, решение и доставку; нужны AppTest/CLI и браузерные проверки с явным профилем зависимостей."
+    },
+    {
+      "id": "evaluator",
+      "paths": ["src/evaluation/", "qa/judge/", "qa/model_eval/", "qa/retrieval_checks.py", "qa/retrieval_dataset.py", "qa/metamorphic_checks.py", "qa/scenario_checks.py", "qa/scenarios.py", "qa/datasets/", "tests/golden_dataset.json", "scripts/run_evaluation.py"],
+      "depends_on": ["foundation", "retrieval", "generation", "llm_protocol"],
+      "requirements": ["DFR-004", "DFR-005", "DFR-011", "DFR-012"],
+      "profiles": ["requirements", "retrieval", "llm", "judge", "mapping_review"],
+      "reason": "Метрики, наборы случаев, протокол Judge и программные gates задают смысл оценки; смена входов требует новой квалификации, а не переноса прежнего PASS."
+    },
+    {
+      "id": "qa_factory",
+      "paths": ["qa/dark_adversarial/", "qa/dark_compare/", "qa/dark_downstream/", "qa/dark_editions/", "qa/dark_factory/", "qa/dark_guards/", "qa/dark_isolation/", "qa/dark_judge_injection/", "qa/dark_retrieval/"],
+      "depends_on": ["foundation", "qa_infrastructure", "evaluator"],
+      "requirements": ["DFR-011", "DFR-012"],
+      "profiles": ["full_regression", "requirements", "retrieval", "llm", "judge", "live_integration", "mapping_review"],
+      "reason": "Эксперименты Dark Factory и их сводки используют протокол оценщиков и инструментарий QA; обнаружение дефекта, полнота измерения и допуск кандидата должны оставаться раздельными. Изменение UI само по себе не требует новых модельных измерений."
+    }
+  ]
+}
