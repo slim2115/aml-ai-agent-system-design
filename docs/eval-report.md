@@ -1,5 +1,7 @@
 # Evaluation Report — AML / Anti-Fraud Copilot
 
+> **Исторический документ.** Архив оценки от 13 августа 2026 года на четырёх примерах. Старые 100% и PASSED не относятся к текущему rebuild, производственному качеству или независимой приёмке. Для действующей версии используйте [основную инструкцию](operator/service-and-lab.md).
+
 - **Дата:** 2026-08-13 14:04 UTC
 - **Модель:** qwen2.5:14b (Ollama, on-premise)
 - **Golden Dataset:** 4 кейсов
@@ -27,7 +29,7 @@
 
 ## Отложенные метрики
 
-- **M-02 RAG Faithfulness (≥90%)** — требует LLM-судью (LLM-as-a-judge); реализуется в `tests/eval/llm_judge.py`.
+- **M-02 RAG Faithfulness (≥90%)** — в исходном отчёте планировалась реализация LLM-судьи в `tests/eval/llm_judge.py`. Такого файла в текущем наборе нет; отдельная учебная реализация находится в `qa/judge` и запускается через `qa/tools/run_judge.py`.
 - **M-03 Answer Relevance (≥90%)** — требует LLM-судью.
 - **M-08 Draft Acceptance Rate (≥80%)** — ручной review оператором/SME.
 

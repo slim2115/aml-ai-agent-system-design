@@ -1,5 +1,7 @@
 # Модель данных и словарь данных (Data Model & Data Dictionary)
 
+> **Исторический документ.** Логическая модель исходного PoC. Текущие SQL-схемы определяются файлами lab/sql и lab/kafka, состояние workflow — src/workflow. AML читает фиксированный JSON-снимок. Для действующей версии используйте [основную инструкцию](operator/service-and-lab.md).
+
 **Версия:** v0.1 (Final)
 **PoC: AML / Anti-Fraud Copilot**
 **Базовые документы:** BRS v0.4 (Final), SRS v0.2 (Final)

@@ -1,6 +1,5 @@
-```plantuml
 @startuml AML_Data_Model
-title AML / Anti-Fraud Copilot — Логическая модель данных (синтетический контур)
+title История PoC: логическая модель; актуальные SQL-схемы в lab/sql и lab/kafka
 
 skinparam linetype ortho
 hide circle

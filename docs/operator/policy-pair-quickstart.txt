@@ -1,0 +1,40 @@
+Dark Factory. Проверка ошибки учебной политики
+
+1. Откройте папку своей копии проекта в VS Code и терминал PowerShell 7. Проверьте, что вы в корне проекта:
+
+Get-Item .\scripts\rebuild\Enter-LocalEnvironment.ps1
+
+2. На авторском стенде можно сразу прочитать готовый результат. В свежем клоне перейдите к шагу 4, чтобы создать собственные результаты.
+
+$run = 'var/qa/dark-downstream/policy-pair-20261031-01'
+$report = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $run 'summary.json') | ConvertFrom-Json
+$report | Select-Object measurement_status,baseline_status,candidate_status,mutation_check
+$report.pairs | Select-Object case_id,same_full_search,@{n='Baseline';e={$_.baseline.decision}},@{n='Candidate';e={$_.candidate.decision}},@{n='Extra';e={$_.candidate.extra.rule_id -join ', '}}
+
+Ожидаемый итог: measurement_status=PASS, baseline_status=PASS, candidate_status=FAIL, mutation_check=PASS.
+В двух черновиках оценщик обнаружил лишнее правило MATRIX-02. В случае без обязательного правила обе политики дали отказ.
+
+3. Если хотите заново сверить сохранённые файлы, выполните:
+
+.\.venv\Scripts\python.exe -I -B qa/dark_downstream/policy_pair.py --replay $run
+
+Для этого учебного прогона код 1 ожидаем: он означает, что проверяемая политика получила FAIL. Код 2 указывает на ошибку проверки или неполные данные.
+
+4. Чтобы провести эксперимент с нуля, сначала установите зависимости и MiniLM по README. Выполните команды по одной в том же терминале. Каждый этап записывает отдельный каталог.
+
+.\scripts\rebuild\Enter-LocalEnvironment.ps1
+$stamp = Get-Date -Format yyyyMMdd-HHmmss
+$matrix = "var/qa/dark-retrieval/matrix-$stamp"
+$baselineRun = "var/qa/dark-downstream/decision-$stamp"
+$run = "var/qa/dark-downstream/policy-pair-$stamp"
+.\.venv\Scripts\python.exe -I -B qa/dark_retrieval/live_matrix.py --output-dir $matrix --timeout-seconds 300
+Get-Content -Raw "$matrix/summary.json" | ConvertFrom-Json | Select-Object measurement_status
+.\.venv\Scripts\python.exe -I -B qa/dark_downstream/live_decision.py --matrix-run $matrix --output-dir $baselineRun --timeout-seconds 300
+Get-Content -Raw "$baselineRun/summary.json" | ConvertFrom-Json | Select-Object measurement_status,decision_status
+.\.venv\Scripts\python.exe -I -B qa/dark_downstream/policy_pair.py --baseline-run $baselineRun --output-dir $run --timeout-seconds 300
+
+После завершения прочитайте новый summary.json командами из шага 2, начиная со строки $report = ... (сохраните новое значение $run).
+
+Переходите к следующему этапу только после measurement_status=PASS у предыдущего. Если итоговое сравнение вернуло код 1, сверьте candidate_status и mutation_check, как в шаге 2. Код 2 требует разбора неполного измерения.
+
+Чтобы открыть полное руководство в VS Code, нажмите Ctrl+P, введите docs/operator/dark-factory-qa-quickstart.md и нажмите Enter.

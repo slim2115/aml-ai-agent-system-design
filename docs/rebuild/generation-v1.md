@@ -1,0 +1,23 @@
+# Constrained factual generation in block 4
+
+The rebuilt runtime prepares a **synthetic demonstration factual draft**. The local model may reorder a complete catalog of facts and policy-vetted rule chunks. It cannot create prose, select a convenient subset, add a suspicious pattern, assign legal applicability, or manufacture a confidence score. This intentionally narrows the legacy arbitrary-narrative behavior until expert-approved AML policies and independent semantic acceptance evidence exist.
+
+`prepare_generation(context, rules)` first revalidates v1 wire values, including nested lists, ownership, time window, context completeness and consistency. The orchestrator must already establish policy authorization, a coherent source snapshot and applicable rules. A non-null policy version alone is not an approval. A retrieval candidate alone is not an applicable rule. The generation module checks exact rule-text SHA-256, rejects empty or duplicate rule catalogs and rejects simultaneous editions of the same rule. Its checks do not prove that a source is authoritative law.
+
+The server constructs all mandatory facts:
+
+- The three typed profile fields: risk category, KYC status and relationship start date, each with profile evidence. They are observations from the snapshot, not eligibility or risk conclusions.
+- Every transaction in the context: exact decimal-string amount, currency, timestamp, status and channel, each with the corresponding transaction-field evidence.
+- A count of every transaction and a separate exact sum for every currency. Membership covers the entire context window and includes all statuses, explicitly stated in the prose. No FX conversion, currency rounding, threshold, country risk or KYC rule is inferred.
+
+Decimal arithmetic uses sufficient explicit precision for bounded inputs. If a sum cannot fit the Money wire contract, the request fails instead of rounding, truncating or dropping members. More than 1,000 transactions or 128 rule chunks fails with a budget code; callers must not interpret that as a completed partial report.
+
+The model receives only generated opaque fact IDs, typed fact values, and opaque rule keys. Incident/client/transaction/card identifiers, counterparty, payment purpose, names, PAN, rule text, titles and references are absent from this prompt projection. Free text is not screened by a keyword blacklist: benign and adversarial payment purposes are both excluded because this model operation does not need them. Exact vetted rule text remains in `applicable_rules` for review and must still be escaped when displayed in an HTML interface.
+
+The response is exactly `{"schema_version":"1.0","fact_order":[...],"rule_order":[...]}`. Both arrays must be permutations of their entire catalogs. JSON duplicate keys, NaN/Infinity, unknown or missing IDs, duplicates, extra fields, markdown wrappers and responses larger than 128 KiB are rejected. The module does not normalize model prose, repair semantic content or retain/log a raw response. Errors expose constant codes only.
+
+The immutable request stores validated input snapshots as strings. Public projection properties return detached copies. Rendering reconstructs and revalidates the inputs, creates deterministic facts and exact citations, then applies `validate_generated_report`. This publication guard checks complete catalog equality, not just the existence of evidence IDs. A fabricated amount/KYC statement with a valid transaction/profile ID, an incomplete but arithmetically correct sum, an altered source reference, invented suspicion or injected confidence is rejected. Lists mutated after Pydantic validation are revalidated as well. The orchestrator remains responsible for invoking the guard at its publication boundary and binding the result to its active request/job.
+
+`confidence` is required but `null` for this renderer: no calibrated measurement exists. `suspicious_patterns` is empty because no expert-approved structured pattern policy is supplied. Observational facts have no legal citations; the separate applicable rule list preserves exact policy-approved references. The draft is not a production AML decision, an expert-accepted report, a semantic faithfulness score, proof of complete upstream ledgers, or a replacement for the pending held-out and SME evaluation.
+
+The tests in `tests/runtime/test_generation.py` are synthetic mechanical controls. They cover exact decimal aggregation, complete membership, immutable snapshots, strict JSON, source-text prompt injection surfaces and post-render factual/citation tampering. They do not establish business effect or legal correctness.

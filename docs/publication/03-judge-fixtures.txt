@@ -1,0 +1,5 @@
+verification/qa-step-07-2026-10-20/pilot-first/cases/QA-S01/repeat-01.json
+verification/qa-step-07-2026-10-20/pilot-first/cases/QA-S03/repeat-01.json
+verification/qa-step-07-2026-10-20/pilot-first/cases/QA-S04/repeat-01.json
+verification/qa-step-07-2026-10-20/pilot-first/qualification.json
+verification/qa-step-07-2026-10-20/pilot-first/result.json

@@ -1,5 +1,5 @@
 @startuml AML_Copilot_ReAct_Sequence
-title AML / Anti-Fraud Copilot — Цикл ReAct (SR-01…SR-22)
+title История PoC: цикл ReAct / LangGraph; текущий rebuild использует runtime + workflow
 
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
