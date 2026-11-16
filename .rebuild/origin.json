@@ -1,0 +1,13 @@
+{
+  "created_at_utc": "2026-09-22T14:46:41.9991163+00:00",
+  "source_commit": "535940fd645c2b41d1ec167e8a98d58597adadf0",
+  "copied_files": 79,
+  "source_snapshot": "D:\\work\\aml-ai-agent-system-design-audit\\step-02\\source",
+  "source_archive": "D:\\work\\aml-ai-agent-system-design-audit\\step-02\\source-535940f.zip",
+  "archive_sha256": "7407d6ef6246143c266409de25f1029e4fc933f15b5528ae944bd1eac7d6b4c7",
+  "project_root": "D:\\work\\aml-ai-agent-system-rebuild",
+  "git_initialized": false,
+  "source_env_or_venv_copied": false,
+  "status": "baseline_copied_not_remediated",
+  "note": "Only archived tracked files reused. Original project, audit and remote repository are not modified. Source runtime defects remain until later blocks."
+}

@@ -19,38 +19,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Set
+from typing import TYPE_CHECKING, Dict, List, Optional, Set
 
-import chromadb
-from chromadb.utils import embedding_functions
+from src.config import get_settings, resolve_project_path
+from src.retrieval.embedding import build_embedding_function
 
-from src.config import get_settings
-from src.schemas import Rule
-
-#: Мультиязычная embedding-модель для корректной работы с русскоязычными
-#: регламентами (on-premise, NFR-10). Требует: pip install sentence-transformers.
-_RU_EMBEDDING_MODEL = "paraphrase-multilingual-MiniLM-L12-v2"
+if TYPE_CHECKING:
+    from src.schemas import Rule
 
 
 def _build_embedding_function():
-    """Возвращает мультиязычную embedding-функцию.
-
-    Явно сообщает, какая модель используется, и падает с понятной ошибкой,
-    если sentence-transformers не установлен или модель недоступна
-    (вместо тихого отката на англоязычную модель).
-    """
-    try:
-        fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name=_RU_EMBEDDING_MODEL
-        )
-        print(f"[knowledge_base] embedding: {_RU_EMBEDDING_MODEL} (multilingual)")
-        return fn
-    except Exception as exc:  # noqa: BLE001
-        raise RuntimeError(
-            f"Не удалось загрузить мультиязычную модель '{_RU_EMBEDDING_MODEL}'. "
-            "Установите зависимости: pip install sentence-transformers. "
-            f"Причина: {exc}"
-        ) from exc
+    """Build the configured embedding from its verified offline artifact."""
+    return build_embedding_function(get_settings())
 
 
 @dataclass(frozen=True)
@@ -127,7 +107,11 @@ class KnowledgeBase:
     ) -> None:
         settings = get_settings()
         self._collection_name = collection_name or settings.vector_store.collection_name
-        self._persist_dir = persist_dir or settings.vector_store.persist_dir
+        self._persist_dir = resolve_project_path(
+            settings.vector_store.persist_dir if persist_dir is None else persist_dir,
+            root=settings.project_root,
+            key="CHROMA_PERSIST_DIR",
+        )
         self._chunks: List[RuleChunk] = [RuleChunk.from_rule(rule) for rule in rules]
         self._known_regulation_refs: Set[str] = {rule.regulation_ref for rule in rules}
         self._known_rule_ids: Set[str] = {rule.rule_id for rule in rules}
@@ -136,10 +120,14 @@ class KnowledgeBase:
     def _get_collection(self):
         """Создаёт/открывает коллекцию ChromaDB с мультиязычной embedding-функцией."""
         if self._collection is None:
+            embedding_function = _build_embedding_function()
+
+            import chromadb
+
             client = chromadb.PersistentClient(path=self._persist_dir)
             self._collection = client.get_or_create_collection(
                 name=self._collection_name,
-                embedding_function=_build_embedding_function(),
+                embedding_function=embedding_function,
             )
         return self._collection
 

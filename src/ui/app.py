@@ -1,330 +1,443 @@
-"""Streamlit-интерфейс AML / Anti-Fraud Copilot (BR-06, SR-15, SR-16).
-
-Лёгкий UI PoC (BRS In-Scope: «легковесный веб-интерфейс или CLI»):
-  - выбор инцидента и запуск агента (read-only, BR-07);
-  - отображение черновика с цитированием (source_ref, BR-04) и
-    доказательствами (evidence_ref, BR-05);
-  - подсветка фрагментов транзакционных логов, на которые ссылаются выводы (BR-06);
-  - маскирование ПДн в профиле клиента (NFR-09, 152-ФЗ);
-  - Human-in-the-Loop: одобрение/подписание отчёта оператором (BRULE-01),
-    после чего экспорт в Case Management выполняется автоматически (SR-22).
-
-Запуск:
-    streamlit run src/ui/app.py
-"""
-from __future__ import annotations
-
-import sys
-from pathlib import Path
-
-# Корень проекта для импортов `from src.*`
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-if str(_PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(_PROJECT_ROOT))
-
-import streamlit as st
-
-from src.agent import AMLAgent
-from src.data_access import CaseRepository, InvestigationContextBuilder
-from src.schemas import AMLInvestigationDraft, Transaction, validate_draft
-
-# ---------------------------------------------------------------------------
-# Стили: подсветка доказательств (BR-06) и статусные бейджи
-# ---------------------------------------------------------------------------
-_CSS = """
-<style>
-  .evidence-hl {
-    background-color: #fff3cd;
-    border-bottom: 2px solid #f0ad4e;
-    font-weight: 600;
-    padding: 0 3px;
-    border-radius: 3px;
-  }
-  .badge { display:inline-block; padding:3px 12px; border-radius:14px;
-           font-size:0.8rem; font-weight:700; margin-bottom:8px; }
-  .badge-draft   { background:#d4edda; color:#155724; }
-  .badge-refusal { background:#f8d7da; color:#721c24; }
-  .badge-error   { background:#e2e3e5; color:#383d41; }
-  table.tx-table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
-  table.tx-table th, table.tx-table td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
-  table.tx-table th { background:#f5f6f7; }
-</style>
-"""
-
-#: Поля транзакции, отображаемые в логе (соответствуют TransactionField, SR-14).
-_TX_FIELDS = ["amount", "currency", "counterparty", "purpose", "channel", "status", "timestamp"]
+"""Guided local workflow; decisions and delivery remain server-validated."""
 
 
-# ---------------------------------------------------------------------------
-# Кэшированные зависимости (инициализация дорогая)
-# ---------------------------------------------------------------------------
+def main():
+    import atexit
+    import os
+    from pathlib import Path
+    import re
+    import sys
+    from uuid import uuid4
 
-@st.cache_resource
-def _get_agent() -> AMLAgent:
-    return AMLAgent()
+    root = Path(__file__).resolve().parents[2]
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    import streamlit as st
+    from src.config import get_demo_paths
+    from src.qa_profile import get_qa_profile
+    from src.contracts.v1 import CreateJobRequest, DecisionRequest, DeliveryRequest
+    from src.runtime.policy import load_demo_policy
+    from src.ui.presentation import (STAGES, READINESS, JOB_LABELS, DECISIONS, CONSEQUENCES,
+                                     EVENT_STAGES, EVENT_CODES, date_label, history_label, render_report)
+    from src.workflow.auth import trusted_local_principal
+    from src.workflow.controller import WorkflowService
+    from src.workflow.remote import RemoteWorkflowService
+    from src.workflow.delivery import DeliveryService
+    from src.workflow.sources import resolve_report_sources
+    from src.workflow.store import WorkflowError
 
+    profile = get_qa_profile()
+    st.set_page_config(page_title='AML — пошаговая проверка', layout='wide')
+    st.title('AML — пошаговая проверка')
+    st.caption('Локальный учебный оператор · синтетические данные · учебная политика без AML-утверждения.')
+    if profile is not None:
+        st.info('QA-стенд · ' + profile.run_id + ' · отдельные задания, решения и данные проверки.')
+    with st.expander('Границы учебного сервиса'):
+        st.info('Решения и доставка сохраняются локально. Одобрение отчёта не закрывает банковский кейс. Внешняя CMS, юридическая подпись, реальные получатели и уведомления не подключены.')
 
-@st.cache_resource
-def _get_case_repo() -> CaseRepository:
-    return CaseRepository()
+    @st.cache_resource
+    def workflow(backend, qa_run_id=None):
+        if backend not in ('local', 'api'):
+            raise WorkflowError('NOT_READY')
+        service = RemoteWorkflowService() if backend == 'api' else WorkflowService()
+        atexit.register(service.close)
+        return service
 
+    def show_error(exc):
+        code = exc.code if isinstance(exc, WorkflowError) else 'INVALID_INPUT_FORMAT'
+        messages = {
+            'NOT_READY': 'Действие сейчас недоступно. Проверьте готовность обработчика и источников.',
+            'VERSION_CONFLICT': 'Решение не сохранено: версия изменилась. Перечитайте сохранённое решение перед повтором.',
+            'IDEMPOTENCY_CONFLICT': 'Повтор относится к другим данным. Обновите состояние и проверьте выбранное задание.',
+            'INVALID_STATE': 'Действие недоступно в текущем состоянии. Обновите состояние; принятое к экспорту решение изменить нельзя.',
+            'FORBIDDEN': 'Нет полномочий для этого действия.', 'NOT_FOUND': 'Запись не найдена. Проверьте выбранное задание.',
+            'UNAUTHORIZED': 'Ключ учебного API не принят. Проверьте локальную настройку стенда.',
+            'INVALID_INPUT_FORMAT': 'Проверьте формат и обязательные поля.',
+            'DEADLINE_EXCEEDED': 'Время обработки истекло. Проверьте причину в терминале; затем повторите подготовку.',
+            'INTERNAL_ERROR': 'Операция не завершена. Обновите состояние и сохраните код ошибки для разбора.'}
+        st.error(messages.get(code, 'Операция не завершена. Сохраните код ошибки для разбора.') + ' Код: ' + code)
 
-@st.cache_resource
-def _get_context_builder() -> InvestigationContextBuilder:
-    return InvestigationContextBuilder()
+    def read_or_stop(operation, *args):
+        try:
+            return operation(*args)
+        except WorkflowError as exc:
+            show_error(exc)
+            st.stop()
 
+    def go(step):
+        st.session_state.step = STAGES[step]
 
-# ---------------------------------------------------------------------------
-# Хелперы
-# ---------------------------------------------------------------------------
+    def clear_view():
+        for key in ('active_job', 'view_binding', 'notice', 'delivery_warning'):
+            st.session_state.pop(key, None)
 
-def _available_incidents() -> list[str]:
-    """Список доступных инцидентов для быстрого выбора (демо)."""
-    cases = _get_case_repo().find_all()
-    return [f"{c.incident_id} · {c.alert_type.value}" for c in cases]
+    def input_changed(name):
+        st.session_state[name] = st.session_state['_' + name]
+        clear_view()
 
+    def stage_changed():
+        st.session_state.step = st.session_state._stage
 
-def _incident_from_option(option: str) -> str:
-    return option.split(" · ")[0]
+    for key, value in {'step': STAGES[0], 'incident': 'INC-000123', 'demo': False,
+                       'engine': 'template', 'review_drafts': {}}.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
+    try:
+        backend = os.environ.get('AML_WORKFLOW_BACKEND', 'local')
+        service = workflow(backend, profile.run_id if profile else None)
+        store = service.store
+        deliveries = DeliveryService(store)
+        principal = trusted_local_principal()
+    except WorkflowError as exc:
+        show_error(exc)
+        st.stop()
 
-
-def _collect_evidence(draft: AMLInvestigationDraft) -> set[tuple[str, str]]:
-    """Множество (tx_id, field) из всех evidence_ref черновика (SR-15)."""
-    refs: set[tuple[str, str]] = set()
-    for fact in draft.found_facts:
-        refs.add((fact.evidence_ref.tx_id, fact.evidence_ref.field.value))
-    for pattern in draft.suspicious_patterns:
-        if pattern.evidence_ref:
-            refs.add((pattern.evidence_ref.tx_id, pattern.evidence_ref.field.value))
-    return refs
-
-
-def _transactions_html(
-    transactions: list[Transaction],
-    evidence: set[tuple[str, str]],
-) -> str:
-    """HTML-таблица транзакций с подсветкой полей из evidence_ref (BR-06)."""
-    header = "<tr><th>tx_id</th>" + "".join(f"<th>{f}</th>" for f in _TX_FIELDS) + "</tr>"
-    rows = []
-    for tx in transactions:
-        cells = [f"<td><code>{tx.tx_id}</code></td>"]
-        for field in _TX_FIELDS:
-            value = getattr(tx, field)
-            value = value.value if hasattr(value, "value") else value
-            if (tx.tx_id, field) in evidence:
-                cells.append(f'<td><span class="evidence-hl">{value}</span></td>')
+    state = service.readiness()
+    if backend == 'api':
+        st.info('Интегрированный режим: общая история с API и Kafka. Подготовку поиска и запуск анализа выполняет учебный API; проверка отчёта и решение остаются за оператором.')
+        if not service.api_available:
+            if profile is not None:
+                st.warning('QA API сейчас недоступен. Сохранённая QA-история открывается локально. Проверьте состояние этого QA-запуска и обновите страницу.')
             else:
-                cells.append(f"<td>{value}</td>")
-        rows.append("<tr>" + "".join(cells) + "</tr>")
-    return f"<table class='tx-table'>{header}{''.join(rows)}</table>"
-
-def _mask_name(full_name: str) -> str:
-    """Маскирование ФИО до фамилии и инициалов (NFR-09)."""
-    parts = full_name.split()
-    if len(parts) <= 1:
-        return full_name
-    return parts[0] + " " + " ".join(p[0] + "." for p in parts[1:] if p)
-
-def _group_by_text(items: list, text_attr: str) -> list[dict]:
-    """Группирует элементы с одинаковым текстом, собирая все evidence_ref.
-
-    Нормализатор разворачивает массивы tx_id в отдельные факты/паттерны
-    (для валидности схемы), что приводит к дублированию текста.
-    Группировка на уровне UI восстанавливает читаемость без изменения payload.
-    """
-    groups: dict[str, dict] = {}
-    order: list[str] = []
-    for item in items:
-        text = getattr(item, text_attr)
-        if text not in groups:
-            groups[text] = {"text": text, "item": item, "evidences": []}
-            order.append(text)
-        ev = getattr(item, "evidence_ref", None)
-        if ev:
-            groups[text]["evidences"].append(ev)
-    return [groups[t] for t in order]
-
-# ---------------------------------------------------------------------------
-# Рендер результатов
-# ---------------------------------------------------------------------------
-
-def _render_draft(payload: dict, incident_id: str) -> None:
-    """Отображает черновик: отчёт, исходные данные с подсветкой, трейс, HITL."""
-    draft = validate_draft(payload)
-    context = _get_context_builder().build(incident_id)
-    evidence = _collect_evidence(draft)
-
-    st.markdown(
-        '<span class="badge badge-draft">ЧЕРНОВИК · требуется одобрение оператора</span>',
-        unsafe_allow_html=True,
-    )
-
-    # --- Ключевые показатели ---
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Уверенность", f"{draft.confidence:.0%}")
-    m2.metric("Транзакций", len(context.transactions))
-    m3.metric("Найдено фактов", len(draft.found_facts))
-    m4.metric("Применимых правил", len(draft.applicable_rules))
-
-    tab_report, tab_data, tab_trace = st.tabs(
-        ["📋 Отчёт", "🗂️ Исходные данные", "🧠 Цепочка рассуждений"]
-    )
-
-    with tab_report:
-        st.subheader("Найденные факты")
-        for group in _group_by_text(draft.found_facts, "fact"):
-            fact = group["item"]
-            evidences = group["evidences"]
-            src = f" · источник: {fact.source_ref}" if fact.source_ref else ""
-            if len(evidences) > 1:
-                ev_list = ", ".join(f"`{e.tx_id}.{e.field.value}`" for e in evidences)
-                st.markdown(
-                    f"- {fact.fact}  \n"
-                    f"  _доказательства ({len(evidences)}): {ev_list}{src}_"
-                )
-            else:
-                e = evidences[0]
-                st.markdown(
-                    f"- {fact.fact}  \n"
-                    f"  _доказательство: `{e.tx_id}.{e.field.value}`{src}_"
-                )
-
-        st.subheader("Подозрительные паттерны")
-        patterns_grouped = _group_by_text(draft.suspicious_patterns, "pattern")
-        if patterns_grouped:
-            for group in patterns_grouped:
-                p = group["item"]
-                evidences = group["evidences"]
-                ev_note = ""
-                if evidences:
-                    ev_list = ", ".join(f"`{e.tx_id}.{e.field.value}`" for e in evidences)
-                    ev_note = f"  \n  _доказательства ({len(evidences)}): {ev_list}_"
-                st.markdown(f"- {p.pattern}{ev_note}  \n  _обоснование: {p.source_ref}_")
-        else:
-            st.caption("Подозрительные паттерны не выявлены.")
-
-        st.subheader("Применимые правила")
-        for r in draft.applicable_rules:
-            st.markdown(f"- **{r.rule_id}** — {r.rule_text}  \n  _{r.source_ref}_")
-
-    with tab_data:
-        st.subheader("Профиль клиента")
-        c = context.client
-        st.markdown(
-            f"- **ID:** `{c.client_id}`  \n"
-            f"- **ФИО:** {_mask_name(c.full_name)}  \n"
-            f"- **Категория риска:** {c.risk_category.value}  \n"
-            f"- **KYC:** {c.kyc_status.value}  \n"
-            f"- **Клиент с:** {c.client_since.isoformat()}"
-        )
-        st.caption("ФИО и ИНН маскируются (NFR-09, 152-ФЗ).")
-
-        st.subheader("Транзакционный лог")
-        st.markdown("Подсвечены поля, на которые ссылаются выводы отчёта (evidence_ref, BR-06):")
-        st.markdown(
-            _transactions_html(context.transactions, evidence),
-            unsafe_allow_html=True,
-        )
-
-    with tab_trace:
-        st.subheader("Цепочка рассуждений (audit trail, NFR-11)")
-        for step in draft.reasoning_trace:
-            st.markdown(f"- {step}")
-
-    _render_hitl()
-
-
-def _render_hitl() -> None:
-    """Human-in-the-Loop: одобрение/подписание или отклонение (BRULE-01)."""
-    st.divider()
-    st.subheader("✅ Решение оператора (Human-in-the-Loop)")
-
-    hitl = st.session_state.get("hitl")
-    if hitl == "approved":
-        st.success(
-            "Отчёт одобрен и подписан. Экспорт в Case Management выполнен "
-            "автоматически (SR-22). Кейс закрыт."
-        )
-        return
-    if hitl == "rejected":
-        st.warning("Отчёт отклонён. Кейс возвращён в очередь ручной обработки.")
-        return
-
-    c1, c2 = st.columns(2)
-    with c1:
-        if st.button("✔ Одобрить и подписать", type="primary", use_container_width=True):
-            st.session_state["hitl"] = "approved"
-            st.rerun()
-    with c2:
-        if st.button("✖ Отклонить", use_container_width=True):
-            st.session_state["hitl"] = "rejected"
-            st.rerun()
-
-
-def _render_refusal(result: dict) -> None:
-    """Отображает явный отказ (BRULE-03)."""
-    st.markdown(
-        '<span class="badge badge-refusal">ЯВНЫЙ ОТКАЗ · кейс передан в ручную обработку</span>',
-        unsafe_allow_html=True,
-    )
-    st.error(f"**Причина:** {result.get('refusal_reason', 'не указана')}")
-    with st.expander("Цепочка рассуждений"):
-        for step in result.get("reasoning_trace", []):
-            st.markdown(f"- {step}")
-
-
-def _render_error(result: dict) -> None:
-    """Отображает ошибку обработки."""
-    st.markdown(
-        '<span class="badge badge-error">ОШИБКА ОБРАБОТКИ</span>',
-        unsafe_allow_html=True,
-    )
-    st.error(result.get("error", "Неизвестная ошибка"))
-
-
-# ---------------------------------------------------------------------------
-# Главный экран
-# ---------------------------------------------------------------------------
-
-def main() -> None:
-    st.set_page_config(page_title="AML / Anti-Fraud Copilot", page_icon="🛡️", layout="wide")
-    st.markdown(_CSS, unsafe_allow_html=True)
-
-    st.title("🛡️ AML / Anti-Fraud Copilot")
-    st.caption(
-        "Ассистент первичного расследования комплаенс-инцидентов · "
-        "Read-Only · Human-in-the-Loop. Все данные синтетические."
-    )
-
-    col_input, col_btn = st.columns([3, 1])
-    options = _available_incidents()
-    with col_input:
-        option = st.selectbox("Инцидент для расследования", options, index=0)
-    with col_btn:
-        st.write("")
-        run_clicked = st.button("🔍 Расследовать", type="primary", use_container_width=True)
-
-    incident_id = _incident_from_option(option)
-
-    if run_clicked:
-        with st.spinner(f"Агент анализирует инцидент {incident_id}…"):
-            result = _get_agent().run(incident_id)
-        st.session_state["result"] = result
-        st.session_state["incident_id"] = incident_id
-        st.session_state.pop("hitl", None)
-
-    result = st.session_state.get("result")
-    if result is None:
-        st.info("Выберите инцидент и нажмите «Расследовать».")
-        return
-
-    status = result.get("status")
-    if status == "draft":
-        _render_draft(result, st.session_state["incident_id"])
-    elif status == "refusal":
-        _render_refusal(result)
+                st.warning('Учебный API сейчас недоступен. Сохранённая история открывается локально. Запустите scripts/lab/Start-Lab.ps1 в отдельном терминале и обновите состояние.')
     else:
-        _render_error(result)
+        st.caption('Автономный режим: отдельная история сервиса. Для заданий из Kafka запустите scripts/rebuild/Start-IntegratedUI.ps1.')
+    if state['state'] in ('ready', 'busy'):
+        st.session_state.pop('prepare_requested', None)
+    preparation_started = False
+    history = read_or_stop(store.list_jobs, principal)[:50]
+
+    def load_history(job_id=None):
+        selected = read_or_stop(store.get_job, job_id or st.session_state._history_job, principal)
+        clear_view()
+        st.session_state.incident = selected['incident_id']
+        st.session_state.engine = store.get_engine_internal(selected['job_id'])
+        st.session_state.demo = True
+        st.session_state.active_job = selected['job_id']
+        st.session_state.view_binding = (selected['incident_id'], True, st.session_state.engine)
+        go(2)
+
+    with st.sidebar:
+        st.subheader('Вернуться к заданию')
+        st.caption('Последние 50 заданий. История доступна без подготовки модели.')
+        if history:
+            jobs_by_id = {job['job_id']: job for job in history}
+            st.selectbox('Сохранённые задания', list(jobs_by_id), key='_history_job',
+                         format_func=lambda value: history_label(jobs_by_id[value]))
+
+            st.button('Открыть сохранённое задание', on_click=load_history)
+        else:
+            st.caption('Сохранённых заданий пока нет.')
+        st.button('Новая проверка', on_click=lambda: (clear_view(), go(1)))
+        if backend == 'api':
+            with st.expander('Запросы AML из Kafka'):
+                st.caption('Последние 20 запросов. Готовый черновик ещё не означает одобрение оператором.')
+                if not service.api_available:
+                    st.caption('Для просмотра очереди нужен работающий учебный API.')
+                else:
+                    try:
+                        requests = service.client.analysis_requests()['items']
+                        if not requests:
+                            st.caption('Запросов анализа из Kafka пока нет.')
+                        request_labels = {'queued': 'Ожидает запуска анализа', 'submitted': 'Задание принято обработчиком',
+                            'succeeded': 'Черновик готов к проверке', 'refused': 'Анализ завершён отказом',
+                            'failed': 'Анализ не завершён', 'timed_out': 'Время обработки истекло',
+                            'cancelled': 'Задание отменено', 'rejected': 'Запрос отклонён'}
+                        for item in requests:
+                            with st.container(border=True):
+                                st.text(item.get('incident_id', '') + ' · ' + request_labels.get(item.get('status'), 'Состояние неизвестно'))
+                                st.text('Событие: ' + item.get('event_id', ''))
+                                if item.get('last_error_code'):
+                                    st.text('Код: ' + item['last_error_code'])
+                                if item.get('job_id'):
+                                    st.text('Задание: ' + item['job_id'])
+                                    st.button('Открыть задание из Kafka', key='kafka-' + item['event_id'],
+                                              on_click=load_history, args=(item['job_id'],))
+                    except WorkflowError as exc:
+                        show_error(exc)
+
+    left, right = st.columns([3, 1])
+    with left:
+        st.text('Обработчик: ' + READINESS.get(state['state'], 'Состояние неизвестно'))
+    with right:
+        st.button('Обновить состояние')
+    if state['state'] == 'preparing':
+        st.info('Загружаются поиск и индекс. Состояние обновляется автоматически. На подготовку отведено до 3 минут; процент готовности не измеряется.')
+    elif state['state'] == 'busy':
+        st.info('Обработчик выполняет задание. Можно открыть сохранённое задание; новый запуск доступен после завершения.')
+    elif state['state'] == 'not_ready' and st.session_state.get('prepare_requested'):
+        show_error(WorkflowError(state['code']))
+        st.caption('Подготовка не завершилась. Проверьте сообщение в терминале сервера, устраните причину и повторите подготовку на первом этапе.')
+
+    st.session_state._stage = st.session_state.step
+    st.radio('Этап работы', STAGES, key='_stage', horizontal=True, on_change=stage_changed)
+    step = STAGES.index(st.session_state.step)
+    notice = st.session_state.pop('notice', None)
+    if notice:
+        st.success(notice)
+    delivery_warning = st.session_state.pop('delivery_warning', None)
+    if delivery_warning:
+        st.warning(delivery_warning)
+
+    job_id = st.session_state.get('active_job')
+    binding = (st.session_state.incident, st.session_state.demo, st.session_state.engine)
+    job = read_or_stop(store.get_job, job_id, principal) if job_id and st.session_state.get('view_binding') == binding else None
+    reference, latest, sources, report = None, None, None, None
+    locked = False
+    if job and step >= 2:
+        st.subheader(job['incident_id'] + ' · ' + JOB_LABELS.get(job['status'], job['status']))
+        st.caption('Принято: ' + date_label(job['accepted_at']) + ' · срок обработки: ' + date_label(job['deadline_at']))
+        if job['status'] == 'succeeded':
+            report = job['result']
+            reference = read_or_stop(store.report_ref, report['report_id'], report['report_version'], principal)
+            review = read_or_stop(store.report_review_state, report['report_id'], report['report_version'], principal)
+            latest, locked = review['latest_decision'], review['decision_locked']
+            try:
+                sources = resolve_report_sources(report)
+            except WorkflowError:
+                st.error('Исходные значения или редакция правила сейчас не подтверждены. Решение и экспорт заблокированы; доступна локальная учебная очередь. Код: NOT_READY')
+            st.caption('Отчёт: ' + report['report_id'] + ' · версия ' + str(report['report_version']) + ' · снимок: ' + report['snapshot_id'])
+
+    if step == 0:
+        st.subheader('Подготовьте поиск один раз перед созданием задания')
+        st.write('Подготовка загружает модель поиска и индекс. Она нужна и для проверяемого шаблона. Сохранённые отчёты можно открыть сразу в истории слева.')
+        st.caption('Ollama нужен только для дополнительного режима «Локальная модель: порядок фактов»; сервис сам его не запускает.')
+        if st.button('Подготовить поиск', disabled=state['state'] in ('preparing', 'busy', 'ready', 'closed')):
+            try:
+                service.prepare()
+                st.session_state.prepare_requested = True
+                preparation_started = True
+            except WorkflowError as exc:
+                show_error(exc)
+        if state['ready']:
+            st.success('Поиск готов. Перейдите к выбору инцидента.')
+        st.button('Перейти к инциденту', on_click=go, args=(1,))
+
+    elif step == 1:
+        st.subheader('Проверьте условия учебного анализа')
+        # Canonical values survive the cleanup of hidden Streamlit widgets.
+        for name in ('incident', 'demo', 'engine'):
+            st.session_state['_' + name] = st.session_state[name]
+        incident = st.text_input('Идентификатор инцидента', key='_incident', on_change=input_changed, args=('incident',),
+                                help='Формат: INC- и шесть цифр. Учебный пример: INC-000123.')
+        valid_incident = bool(re.fullmatch(r'INC-\d{6}', incident, flags=re.ASCII))
+        if not valid_incident:
+            st.error('Введите идентификатор в формате INC-000123: INC- и шесть цифр.')
+        try:
+            policy = load_demo_policy(get_demo_paths(root)[0])
+        except (ValueError, OSError):
+            st.error('Учебная политика недоступна. Проверьте конфигурацию сервиса. Код: NOT_READY')
+            st.stop()
+        st.text('Период: ' + date_label(policy.window.start_inclusive) + ' — ' + date_label(policy.window.end_exclusive))
+        st.caption('Начало включается, конец не включается. Состояние данных на ' + date_label(policy.window.as_of) + '. Это исторический учебный набор.')
+        st.checkbox('Использовать учебную политику и синтетический снимок', key='_demo', on_change=input_changed, args=('demo',))
+        with st.expander('Способ формирования', expanded=st.session_state.engine != 'template'):
+            st.selectbox('Формирование', ['template', 'local-model'], key='_engine', on_change=input_changed, args=('engine',),
+                         format_func=lambda value: {'template': 'Проверяемый шаблон (без LLM)', 'local-model': 'Локальная модель: порядок фактов'}[value])
+            st.caption('Для первого знакомства выберите шаблон. Локальная модель лишь упорядочивает проверенные факты и требует Ollama с qwen2.5:14b.')
+        missing = []
+        if not valid_incident:
+            missing.append('исправьте идентификатор')
+        if not st.session_state.demo:
+            missing.append('подтвердите учебный режим')
+        if not state['ready']:
+            missing.append('дождитесь завершения задания' if state['state'] == 'busy' else 'подготовьте поиск на первом этапе')
+        if missing:
+            st.info('Для создания задания: ' + '; '.join(missing) + '.')
+        if st.button('Создать задание', disabled=bool(missing), type='primary'):
+            try:
+                request = CreateJobRequest(schema_version='1.0', incident_id=incident, window=policy.window)
+                accepted = service.submit(request, principal, 'ui-' + uuid4().hex, engine=st.session_state.engine)
+                clear_view()
+                st.session_state.active_job = accepted['job_id']
+                st.session_state.view_binding = binding
+                go(2)
+                st.rerun()
+            except (WorkflowError, ValueError) as exc:
+                show_error(exc)
+
+    elif job is None:
+        st.info('Сначала создайте задание на этапе «Инцидент» или откройте сохранённое задание в истории слева.')
+        st.button('Выбрать инцидент', on_click=go, args=(1,))
+
+    elif job['status'] in ('queued', 'running'):
+        st.info('Обработка продолжается. После завершения появится отчёт или причина отказа. Состояние обновляется автоматически.')
+        if st.button('Отменить задание'):
+            try:
+                service.cancel(job['job_id'], principal, 'cancel-' + uuid4().hex)
+                st.rerun()
+            except WorkflowError as exc:
+                show_error(exc)
+
+    elif step == 2:
+        if report:
+            st.caption('Проверьте факты ниже, затем переходите к решению. Источники доступны и на следующем этапе.')
+            st.button('Перейти к решению', on_click=go, args=(3,), disabled=sources is None, type='primary')
+            render_report(st, report, sources)
+        else:
+            st.warning('Готового отчёта нет. Прочитайте причину; принимать решение по отчёту и экспортировать его нельзя.')
+            result = job.get('result') or {}
+            st.text(result.get('reason', result.get('message', JOB_LABELS.get(job['status'], job['status']))))
+            if result.get('reason_code') or result.get('code'):
+                st.caption('Код: ' + result.get('reason_code', result.get('code', '')))
+            st.caption('Для нового запуска после отмены или таймаута при необходимости повторите подготовку поиска.')
+        st.button('Перейти к сохранению и очереди', on_click=go, args=(4,))
+
+    elif step == 3:
+        if not report:
+            st.info('Решение недоступно: готового отчёта нет.')
+            st.button('Открыть причину завершения', on_click=go, args=(2,))
+        else:
+            st.subheader('Выберите решение по проверенному отчёту')
+            if latest:
+                st.text('Сохранённое решение: ' + DECISIONS[latest['action']] + ' · ревизия ' + str(latest['revision']))
+                st.text(latest['reason'])
+            if locked:
+                st.info('Учебный экспорт уже принят. Решение по этой версии доступно только для просмотра; скачивание и повтор доставки находятся на пятом этапе.')
+            draft_key = (reference.report_id, reference.report_version, reference.content_sha256)
+            draft = st.session_state.review_drafts.setdefault(draft_key, {
+                'action': None, 'reason': '', 'expected_revision': latest['revision'] if latest else 0})
+            current_revision = latest['revision'] if latest else 0
+            conflict = draft['expected_revision'] != current_revision
+
+            def draft_changed(field):
+                draft[field] = st.session_state['_decision_' + field]
+
+            def acknowledge_revision():
+                draft['expected_revision'] = current_revision
+
+            if conflict and not locked:
+                st.warning('Сохранённое решение изменилось. Выше показана текущая ревизия. Ваш текст оставлен как несохранённый ввод; перечитайте решение перед повтором.')
+                st.button('Перечитать сохранённое решение', on_click=acknowledge_revision)
+            st.session_state._decision_action = latest['action'] if locked and latest else draft['action']
+            st.session_state._decision_reason = latest['reason'] if locked and latest else draft['reason']
+            blocked = locked or sources is None or conflict
+            st.selectbox('Решение', list(DECISIONS), index=None, placeholder='Выберите решение', key='_decision_action',
+                         format_func=DECISIONS.get, disabled=blocked, on_change=draft_changed, args=('action',))
+            if draft['action'] and not locked:
+                st.info(CONSEQUENCES[draft['action']])
+            st.text_area('Обоснование решения', key='_decision_reason', max_chars=4000, disabled=blocked,
+                         placeholder='Что проверено → что обнаружено → почему выбран этот исход', on_change=draft_changed, args=('reason',))
+            if locked:
+                st.caption('В полях показано сохранённое решение. Редактирование заблокировано после принятия экспорта.')
+            else:
+                st.caption('Ввод сохраняется при переходах между этапами в текущем сеансе. До нажатия кнопки он не записан в историю; перезагрузка браузера может его сбросить.')
+            incomplete = not draft['action'] or not draft['reason'].strip()
+            if incomplete and not blocked:
+                st.caption('Для сохранения выберите решение и заполните обоснование.')
+            if st.button('Сохранить учебное решение', disabled=blocked or incomplete, type='primary'):
+                try:
+                    request = DecisionRequest(schema_version='1.0', report=reference,
+                        expected_revision=draft['expected_revision'], action=draft['action'], reason=draft['reason'])
+                    saved = store.create_decision(reference.report_id, request, principal, 'decision-' + uuid4().hex)
+                    draft['expected_revision'] = saved['revision']
+                    st.session_state.notice = 'Учебное решение сохранено. Проверьте следующее действие.'
+                    go(4)
+                    st.rerun()
+                except (WorkflowError, ValueError) as exc:
+                    show_error(exc)
+            st.button('Вернуться к проверке', on_click=go, args=(2,))
+            with st.expander('Отчёт и основания рядом с решением', expanded=True):
+                render_report(st, report, sources)
+
+    elif step == 4:
+        st.subheader('Сохранённый результат и следующее действие')
+        if latest:
+            st.text('Сохранено: ' + DECISIONS[latest['action']] + ' · ревизия ' + str(latest['revision']))
+            st.text(latest['reason'])
+        elif report:
+            st.info('Решение пока не сохранено. Для экспорта сначала проверьте отчёт и сохраните одобрение.')
+        else:
+            st.info('Готового отчёта нет. Можно зарегистрировать запись в локальной учебной очереди.')
+        existing = read_or_stop(deliveries.list_for_job, job['job_id'], principal)
+        exports = [d for d in existing if d.operation == 'export' and latest and d.decision_id == latest['decision_id']]
+        if locked:
+            st.info('Экспорт принят: изменение решения по этой версии заблокировано. Скачайте файл из подтверждённой доставки или повторите незавершённую доставку ниже.')
+        operation = None
+        if latest and latest['action'] == 'approve' and not exports and not locked:
+            st.text(f"Экспорт: {job['incident_id']} · отчёт {reference.report_id} · версия {reference.report_version} · решение {latest['decision_id']}")
+            confirmed = st.checkbox('Понимаю: после принятия экспорта решение по этой версии изменить нельзя', key='export-confirm-' + latest['decision_id'])
+            st.caption('Будет сохранён локальный учебный JSON-файл. Во внешнюю систему ничего не отправляется.')
+            if st.button('Экспортировать в локальный симулятор', disabled=sources is None or not confirmed, type='primary'):
+                operation = 'export'
+        elif latest and latest['action'] != 'approve':
+            st.info('Для сохранённого решения экспорт недоступен. ' + CONSEQUENCES[latest['action']])
+        st.caption('Локальная учебная очередь создаёт запись для ручного разбора. Реальный получатель не назначается; сообщение коллеге не отправляется.')
+        if st.button('Зарегистрировать в локальной учебной очереди'):
+            operation = 'manual_queue'
+        if operation:
+            try:
+                request = DeliveryRequest(schema_version='1.0', job_id=job['job_id'], report=reference,
+                    decision_id=latest['decision_id'] if operation == 'export' else None,
+                    destination='simulator-export' if operation == 'export' else 'simulator-manual-queue', operation=operation)
+                pending = deliveries.create(request, principal, 'delivery-' + uuid4().hex)
+                outcome = deliveries.dispatch(pending.delivery_id, principal, pending.revision)
+                if outcome.status == 'delivered':
+                    st.session_state.notice = 'Локальный симулятор подтвердил сохранение.'
+                else:
+                    st.session_state.delivery_warning = 'Доставка не подтверждена. Запись сохранена; проверьте её состояние и повторите доставку ниже.'
+                st.rerun()
+            except (WorkflowError, ValueError) as exc:
+                show_error(exc)
+                st.info('Если запись доставки уже создана, обновите состояние и повторите именно её ниже.')
+        for delivery in existing:
+            label = 'Учебный экспорт' if delivery.operation == 'export' else 'Запись в локальной очереди'
+            status = {'pending': 'Ожидает подтверждения', 'failed': 'Попытка не завершена', 'delivered': 'Сохранение подтверждено'}[delivery.status]
+            with st.container(border=True):
+                st.text(label + ' · ' + status)
+                st.caption('Доставка: ' + delivery.delivery_id)
+                if delivery.status in ('pending', 'failed'):
+                    stale_decision = delivery.operation == 'export' and (not latest or delivery.decision_id != latest['decision_id'])
+                    if stale_decision:
+                        st.caption('Эта доставка относится к прежнему решению. Повтор недоступен; для нового одобрения создайте новый экспорт выше.')
+                    else:
+                        st.caption('Повтор использует ту же запись доставки и не создаёт новую.')
+                    if st.button('Повторить локальную доставку', key='retry-' + delivery.delivery_id,
+                                 disabled=stale_decision or (delivery.operation == 'export' and sources is None)):
+                        try:
+                            outcome = deliveries.dispatch(delivery.delivery_id, principal, delivery.revision)
+                            if outcome.status != 'delivered':
+                                st.session_state.delivery_warning = 'Доставка по-прежнему не подтверждена. Проверьте состояние и код ошибки в сведениях доставки.'
+                            st.rerun()
+                        except WorkflowError as exc:
+                            show_error(exc)
+                if delivery.status == 'delivered' and delivery.operation == 'export':
+                    st.download_button('Скачать сохранённый учебный отчёт', read_or_stop(deliveries.export_artifact, delivery.delivery_id, principal),
+                                       file_name=delivery.delivery_id + '.json', mime='application/json', key='download-' + delivery.delivery_id)
+                with st.expander('Квитанция и технические сведения'):
+                    st.json(delivery.model_dump(mode='json'))
+        if report:
+            st.button('Открыть решение', on_click=go, args=(3,))
+
+    if job and step >= 2:
+        with st.expander('Ход обработки и сведения для разбора'):
+            st.caption('Только реально полученные события. Время означает сохранение события; при остановке процесса журнал может быть неполным.')
+            events = read_or_stop(store.list_runtime_events, job['job_id'], principal)
+            if events:
+                st.dataframe([{'№': e['sequence'], 'Время': date_label(e['received_at']),
+                               'Этап': EVENT_STAGES.get(e['event']['stage'], e['event']['stage']),
+                               'Результат': EVENT_CODES.get(e['event']['code'], e['event']['code'])}
+                              for e in events], hide_index=True, use_container_width=True)
+            else:
+                st.caption('События обработки пока не записаны.')
+            st.text('Идентификатор задания: ' + job['job_id'])
+            st.json(job)
+
+    # Observe job publication too, independently of worker cleanup/readiness.
+    polling = state['state'] in ('preparing', 'busy') or (job and job['status'] in ('queued', 'running'))
+    @st.fragment(run_every=1.0 if polling else None)
+    def watch_progress():
+        changed = service.readiness() != state
+        if job and job['status'] in ('queued', 'running'):
+            current = read_or_stop(store.get_job, job['job_id'], principal)
+            changed = changed or current['revision'] != job['revision']
+        if changed:
+            st.rerun()
+    if preparation_started:
+        st.rerun()
+    watch_progress()
 
 
-main()
+# Windows spawn must not render UI or acquire another controller lease.
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,10 @@
+# Direct runtime dependencies for the rebuilt Windows / Python 3.12 profile.
+# Resolve updates deliberately; install the generated hash lock for repeatability.
+pydantic==2.13.4
+requests==2.34.2
+chromadb==1.5.9
+langgraph==1.2.10
+streamlit==1.60.0
+sentence-transformers==5.7.0
+transformers==5.14.1
+torch==2.13.0

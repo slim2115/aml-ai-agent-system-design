@@ -1,0 +1,60 @@
+name: aml-kafka-lab
+
+services:
+  kafka:
+    image: apache/kafka:4.3.1
+    hostname: kafka
+    labels:
+      aml.lab.owner: aml-ai-agent-system-rebuild:kafka:v1
+    ports:
+      - "127.0.0.1:9092:9092"
+    environment:
+      CLUSTER_ID: "o2BmF8tBQvWtE5G_a6iKng"
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_LISTENERS: "HOST://:9092,INTERNAL://:19092,CONTROLLER://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "HOST://127.0.0.1:9092,INTERNAL://kafka:19092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "HOST:PLAINTEXT,INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: "3"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_SHARE_COORDINATOR_STATE_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_SHARE_COORDINATOR_STATE_TOPIC_MIN_ISR: "1"
+      KAFKA_DEFAULT_REPLICATION_FACTOR: "1"
+      KAFKA_MIN_INSYNC_REPLICAS: "1"
+      KAFKA_NUM_PARTITIONS: "3"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      KAFKA_LOG_RETENTION_HOURS: "168"
+      KAFKA_LOG_RETENTION_BYTES: "134217728"
+      KAFKA_LOG_SEGMENT_BYTES: "16777216"
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: "60000"
+      KAFKA_HEAP_OPTS: "-Xms512m -Xmx1g"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    mem_limit: 2g
+    cpus: 2
+    stop_grace_period: 30s
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "KAFKA_HEAP_OPTS='-Xms64m -Xmx256m' /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:19092 --list >/dev/null 2>&1"
+      start_period: 30s
+      interval: 10s
+      timeout: 10s
+      retries: 12
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  kafka-data:
+    labels:
+      aml.lab.owner: aml-ai-agent-system-rebuild:kafka:v1

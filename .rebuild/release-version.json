@@ -1,0 +1,7 @@
+{
+  "version": "0.1.0-local.1",
+  "kind": "source",
+  "target": "existing Windows x64 / Python 3.12 local installation",
+  "automatic_deployment": false,
+  "database_migration": false
+}

@@ -1,4 +1,4 @@
-"""Слой оркестрации агента (LangGraph, ADR-0001)."""
+"""Public v1 runtime entrypoint; constructor performs no I/O."""
 from src.agent.graph import AMLAgent, AgentState
 
 __all__ = ["AMLAgent", "AgentState"]

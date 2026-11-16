@@ -1,0 +1,3 @@
+# Optional Kafka client, CPython 3.12 / Windows x64. No transitive runtime dependencies.
+# Wheel from PyPI; downloaded and hashed on 2026-10-01.
+confluent-kafka==2.15.0 --hash=sha256:2cc8d01a77c534669bb896f731c8917cd63b787618081fdd0d1420d58cd6815b

@@ -1,0 +1,90 @@
+{
+  "registry_version": "1.0",
+  "status": "pending",
+  "purpose": "Открытые предметные и процессные решения, влияющие на контракты v1; не исполняемая конфигурация и не утверждённая нормативная политика.",
+  "scope": "Ограниченный реестр блока 2. Не заменяет полный перечень R-01…R-16 и не закрывает пункты аудита.",
+  "source": "D:/work/aml-ai-agent-system-design-audit/step-12/scope-and-decisions.md",
+  "approval": null,
+  "policies": [
+    {
+      "id": "investigation_time_window",
+      "status": "pending",
+      "audit_refs": ["R-05", "FIX-05"],
+      "owner_roles": ["AML SME", "Владелец данных", "Владелец требований"],
+      "decision_required": "Утвердить момент as_of, длительность и назначение окна операций, timezone исходных данных и способ миграции timestamp без зоны. Техническое представление v1 использует aware RFC 3339 и границы [start, end).",
+      "approved_value": null
+    },
+    {
+      "id": "snapshot_freshness_consistency",
+      "status": "pending",
+      "audit_refs": ["R-05", "FIX-05"],
+      "owner_roles": ["Владелец данных", "Владелец требований"],
+      "decision_required": "Утвердить допустимую свежесть, состав целостного снимка, согласованность версий источников, правила обновления и обработки незавершённого обновления.",
+      "approved_value": null
+    },
+    {
+      "id": "data_sufficiency_conflicts",
+      "status": "pending",
+      "audit_refs": ["R-05", "R-15", "FIX-03"],
+      "owner_roles": ["AML SME", "Владелец данных"],
+      "decision_required": "Утвердить обязательные сведения KYC, различие partial и insufficient, таблицу конфликтов, основания отказа и существенную полноту фактов. Nullable INN нельзя запретить без отдельного решения.",
+      "approved_value": null
+    },
+    {
+      "id": "currency_thresholds_applicability",
+      "status": "pending",
+      "audit_refs": ["R-05", "R-06"],
+      "owner_roles": ["AML SME", "Владелец нормативного корпуса"],
+      "decision_required": "Утвердить пороги, валюты, округление, пересчёт, дату курса, юрисдикцию и применимость редакций правил. Десятичная строка суммы не задаёт эти нормативные значения.",
+      "approved_value": null
+    },
+    {
+      "id": "evidence_granularity_aggregates",
+      "status": "pending",
+      "audit_refs": ["R-06", "R-15"],
+      "owner_roles": ["AML SME", "Аналитик", "Владелец данных"],
+      "decision_required": "Утвердить гранулярность фактов, допустимые агрегаты, состав их оснований, достаточность evidence и нормативные последствия расширения SR-14 профильными и агрегатными ссылками.",
+      "approved_value": null
+    },
+    {
+      "id": "latency_measurement_boundary",
+      "status": "pending",
+      "audit_refs": ["R-01", "FIX-20"],
+      "owner_roles": ["Владелец продукта", "Владелец процесса", "QA"],
+      "decision_required": "Согласовать требования BRS к каждому запуску и SRS к p95, начало и конец измерения, очередь, warmup/readiness и условия нагрузки. Не заменять исходные пороги новым значением.",
+      "approved_value": null
+    },
+    {
+      "id": "operator_authority_final_status",
+      "status": "pending",
+      "audit_refs": ["R-07", "FIX-17", "FIX-18"],
+      "owner_roles": ["Владелец процесса", "ИБ", "Владелец интеграций"],
+      "decision_required": "Утвердить роли и полномочия решения, подписания, экспорта и финального статуса кейса. Одобрение версии отчёта не приравнивается к разрешению закрыть кейс.",
+      "approved_value": null
+    },
+    {
+      "id": "external_delivery_signature_receipts",
+      "status": "pending",
+      "audit_refs": ["R-07", "FIX-18"],
+      "owner_roles": ["Владелец интеграций", "Владелец процесса", "ИБ"],
+      "decision_required": "Утвердить CMS/queue API и payload, подпись, доверенные квитанции, аутентификацию, идемпотентность, retry, ошибки и разрешённые переходы статуса после подтверждения внешней системы.",
+      "approved_value": null
+    },
+    {
+      "id": "source_access_privacy_audit",
+      "status": "pending",
+      "audit_refs": ["R-10", "R-11", "R-13", "FIX-17"],
+      "owner_roles": ["ИБ", "Владелец данных", "Эксплуатация"],
+      "decision_required": "Утвердить read-only роли источников, доступные инструменты, контур, каналы маскирования и хранение наблюдаемых событий решений. Аудит требует проверяемого обоснования, не скрытых рассуждений модели.",
+      "approved_value": null
+    },
+    {
+      "id": "approved_corpus_templates_glossary",
+      "status": "pending",
+      "audit_refs": ["R-02", "R-06", "R-12"],
+      "owner_roles": ["AML SME", "Владелец нормативного корпуса", "Оператор"],
+      "decision_required": "Получить утверждённые редакции корпуса, шаблоны и глоссарий; согласовать применимость и достаточность нормативного основания. Наличие RuleCitation не заменяет экспертной проверки.",
+      "approved_value": null
+    }
+  ]
+}

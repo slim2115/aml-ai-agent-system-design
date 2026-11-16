@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "policy_id": "synthetic-demo-2026-07-v1",
+  "purpose": "synthetic_learning_only",
+  "expert_approved": false,
+  "assumed_naive_timezone": "UTC",
+  "snapshot_id": "demo-de73d2a245ca4ba7cd221975",
+  "snapshot_manifest_sha256": "8e479353ad648bd18864f9afae20e3798592795fb72a7e9a965124ea89324723",
+  "window": {
+    "start_inclusive": "2026-07-01T00:00:00Z",
+    "end_exclusive": "2026-07-20T00:00:00Z",
+    "as_of": "2026-07-20T00:00:00Z"
+  },
+  "max_snapshot_age_seconds": 0,
+  "currency_scales": {
+    "RUB": 2,
+    "USD": 2
+  },
+  "applicability": {
+    "structuring": [
+      "R-115-002"
+    ],
+    "high_risk_country": [
+      "R-AML-010"
+    ],
+    "threshold_breach": [
+      "R-115-006"
+    ],
+    "kyc_mismatch": [
+      "R-115-007"
+    ],
+    "velocity": []
+  }
+}

@@ -1,0 +1,84 @@
+# Requests for Swagger or a compatible REST Client.
+# Never paste real credentials into this tracked example.
+@base = http://127.0.0.1:8765
+@labKey = {{$processEnv AML_LAB_API_KEY}}
+@noteId = REPLACE_WITH_ID_FROM_EXERCISE_5
+
+### 1a. Public HTTP liveness: 200
+GET {{base}}/health
+
+### 1b. Missing key: 401
+GET {{base}}/lab/clients
+
+### 1c. PostgreSQL connection: 200
+GET {{base}}/lab/status
+X-Lab-Key: {{labKey}}
+
+### 2. Second page: 200
+GET {{base}}/lab/clients?limit=2&offset=2
+X-Lab-Key: {{labKey}}
+
+### 3a. Client's cards
+GET {{base}}/lab/cards?client_id=C-00045
+X-Lab-Key: {{labKey}}
+
+### 3b. Client's incidents
+GET {{base}}/lab/incidents?client_id=C-00045
+X-Lab-Key: {{labKey}}
+
+### 3c. Synthetic rules and versions
+GET {{base}}/lab/rules
+X-Lab-Key: {{labKey}}
+
+### 4. Incident client, exact amount, inclusive start / exclusive end
+GET {{base}}/lab/transactions?incident_id=INC-000123&currency=RUB&min_amount=95000.00&max_amount=95000.00&start_inclusive=2026-07-10T09:00:00Z&end_exclusive=2026-07-11T10:00:00Z
+X-Lab-Key: {{labKey}}
+
+### 5a. Create: 201; copy returned id into noteId above
+POST {{base}}/lab/notes
+X-Lab-Key: {{labKey}}
+Content-Type: application/json
+
+{"incident_id":"INC-000123","body":"Учебная заметка: проверяю HTTP и SQL."}
+
+### 5b. Read created note
+GET {{base}}/lab/notes/{{noteId}}
+X-Lab-Key: {{labKey}}
+
+### 6. Update: first request 200/revision 2; repeat 409
+PATCH {{base}}/lab/notes/{{noteId}}
+X-Lab-Key: {{labKey}}
+Content-Type: application/json
+
+{"body":"Учебная заметка обновлена.","expected_revision":1}
+
+### 7a. Invalid pagination: 400
+GET {{base}}/lab/transactions?limit=101
+X-Lab-Key: {{labKey}}
+
+### 7b. Missing timezone: 400
+GET {{base}}/lab/transactions?start_inclusive=2026-07-10T09:00:00
+X-Lab-Key: {{labKey}}
+
+### 7c. Excess amount precision: 400
+GET {{base}}/lab/transactions?min_amount=0.001
+X-Lab-Key: {{labKey}}
+
+### 7d. Unknown incident (on original teaching dataset): 400
+POST {{base}}/lab/notes
+X-Lab-Key: {{labKey}}
+Content-Type: application/json
+
+{"incident_id":"INC-999999","body":"Проверка внешнего ключа."}
+
+### 8a. Stale delete: 409
+DELETE {{base}}/lab/notes/{{noteId}}?expected_revision=1
+X-Lab-Key: {{labKey}}
+
+### 8b. Current delete: 204
+DELETE {{base}}/lab/notes/{{noteId}}?expected_revision=2
+X-Lab-Key: {{labKey}}
+
+### 8c. Read deleted note: 404
+GET {{base}}/lab/notes/{{noteId}}
+X-Lab-Key: {{labKey}}

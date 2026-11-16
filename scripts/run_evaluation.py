@@ -1,238 +1,140 @@
-"""Запуск evaluation и генерация отчёта (Evaluation Plan, раздел 6).
-
-Прогоняет агента по Golden Dataset, вычисляет code-based метрики
-(M-01, M-04, M-05, M-06, M-07, M-09) и генерирует eval-report.md
-с фактическими значениями и статусами quality gates.
-
-LLM-as-a-judge метрики (M-02 Faithfulness, M-03 Relevance) и ручной review
-(M-08 Draft Acceptance Rate) требуют LLM-судью/SME и в отчёте помечены
-как отложенные.
-
-Запуск:
-    python -m scripts.run_evaluation              # полный прогон (нужна Ollama)
-    python -m scripts.run_evaluation --no-llm     # только детерминированные кейсы
-    python -m scripts.run_evaluation --output docs/eval-report.md
-"""
+"""Offline replay CLI. No product, model, database or network imports."""
 from __future__ import annotations
-
 import argparse
 import json
-import time
-from datetime import datetime, timezone
 from pathlib import Path
+import sys
 
-from src.agent import AMLAgent
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if __package__ in (None, ''):
+    sys.path.insert(0, str(PROJECT_ROOT))
+from src.evaluation import BundleInputError, evaluate_bundle, quality_gates
 from src.config import get_settings
-from src.data_access import TransactionRepository
-from src.data_access.rule_repository import RuleRepository
-from src.retrieval import KnowledgeBase
-from src.schemas import validate_draft
 
-GOLDEN_DATASET_PATH = Path("tests/golden_dataset.json")
+EXIT_CODES = {'PASS': 0, 'FAIL': 1, 'INCOMPLETE': 2, 'ERROR': 3}
 
 
-# =============================================================================
-# Прогон и метрики
-# =============================================================================
+def generate_report(report):
+    """Render safe metadata, never rejected payloads or exceptions."""
+    lines = ['# Evaluation report', '', f"Verdict: **{report['verdict']}**", '',
+             'Supplied replay evidence only; the product is not invoked.', '']
+    if report.get('error_code'):
+        lines.extend([f"Error: `{report['error_code']}`", ''])
+    lines.extend(['| Gate | Value | Threshold | Status |', '| --- | ---: | ---: | --- |'])
+    for item in report.get('gates', []):
+        value = 'not_measured' if item['value'] is None else repr(item['value'])
+        threshold = '' if item['threshold'] is None else f"{item['op']} {item['threshold']}"
+        lines.append(f"| {item['name']} | {value} | {threshold} | {item['status']} |")
+    lines.extend(['', '| Metric | Numerator | Denominator | Measurement |', '| --- | ---: | ---: | --- |'])
+    for name, metric in report.get('metrics', {}).items():
+        lines.append(f"| {name} | {metric.get('numerator')} | {metric['denominator']} | {metric['status']} |")
+    lines.extend(['', '| Case | Expected | Actual | Issues / missing measurements |', '| --- | --- | --- | --- |'])
+    for row in report.get('cases', []):
+        issues = ', '.join([*row['issues'], *row['missing_measurements']]) or 'none'
+        lines.append(f"| {row['case_id']} | {row['expected_status']} | {row['actual_status']} | {issues} |")
+    lines.extend(['', 'Limitations:', ''])
+    lines.extend(f'- {item}' for item in report.get('limitations', []))
+    return '\n'.join(lines) + '\n'
 
-def load_golden_dataset(no_llm: bool) -> list[dict]:
-    cases = json.loads(GOLDEN_DATASET_PATH.read_text(encoding="utf-8"))
-    if no_llm:
-        cases = [c for c in cases if not c.get("requires_llm")]
-    return cases
+
+def _same_path(first, second):
+    return first == second or (first.exists() and second.exists() and first.samefile(second))
 
 
-def run_case(agent: AMLAgent, case: dict) -> dict:
-    start = time.perf_counter()
-    result = agent.run(case["input"]["incident_id"])
-    latency = time.perf_counter() - start
-    return {"case": case, "result": result, "latency": latency}
-
-
-def compute_metrics(outcomes: list[dict], kb: KnowledgeBase, tx_repo) -> dict:
-    """Вычисляет code-based метрики (Evaluation Plan, раздел 3)."""
-    schema_total = schema_ok = 0
-    trace_total = trace_ok = 0
-    refusal_total = refusal_ok = 0
-    evidence_total = evidence_ok = 0
-    rag_total = rag_ok = 0
-    latencies: list[float] = []
-
-    for o in outcomes:
-        case, result = o["case"], o["result"]
-        latencies.append(o["latency"])
-        status = result.get("status")
-
-        # M-05: корректность отказа / поведения.
-        if case["expected_behavior"] in ("refusal", "error"):
-            refusal_total += 1
-            refusal_ok += int(status == case["expected_behavior"])
-            continue
-
-        # M-01: Schema Match.
-        schema_total += 1
+def _output_paths(value, input_path=None):
+    project = PROJECT_ROOT.resolve()
+    report_root = project / 'var' / 'evaluation'
+    # A redirected report directory must not broaden the permitted write area.
+    if report_root.resolve() != report_root:
+        raise BundleInputError('UNSAFE_OUTPUT_PATH')
+    path = Path(value)
+    path = project / path if not path.is_absolute() else path
+    if path.suffix.lower() != '.md':
+        raise BundleInputError('OUTPUT_MUST_BE_MARKDOWN')
+    destinations = (path.resolve(), path.with_suffix('.json').resolve())
+    for destination, suffix in zip(destinations, ('.md', '.json')):
         try:
-            draft = validate_draft(result)
-            schema_ok += 1
-        except Exception:  # noqa: BLE001
-            continue  # невалидная схема — остальные метрики неприменимы
-
-        # M-04: Traceability.
-        refs = [r.source_ref for r in draft.applicable_rules]
-        refs += [f.source_ref for f in draft.found_facts if f.source_ref]
-        trace_total += len(refs)
-        trace_ok += sum(1 for r in refs if kb.validate_source_ref(r))
-
-        # M-06: Evidence Grounding.
-        evidences = [f.evidence_ref for f in draft.found_facts]
-        evidences += [p.evidence_ref for p in draft.suspicious_patterns if p.evidence_ref]
-        evidence_total += len(evidences)
-        evidence_ok += sum(1 for e in evidences if tx_repo.get_by_id(e.tx_id) is not None)
-
-        # M-07: RAG Recall.
-        expected = set(case.get("expected_applicable_rules", []))
-        if expected:
-            actual = {r.source_ref for r in draft.applicable_rules}
-            rag_total += len(expected)
-            rag_ok += len(expected & actual)
-
-    def ratio(ok: int, total: int) -> float:
-        return (ok / total) if total else 1.0
-
-    return {
-        "M-01 Schema Match": ratio(schema_ok, schema_total),
-        "M-04 Traceability Ratio": ratio(trace_ok, trace_total),
-        "M-05 Refusal Correctness": ratio(refusal_ok, refusal_total),
-        "M-06 Evidence Grounding": ratio(evidence_ok, evidence_total),
-        "M-07 RAG Recall": ratio(rag_ok, rag_total),
-        "M-09 Max Latency (s)": round(max(latencies), 1) if latencies else 0.0,
-    }
+            relative = destination.relative_to(report_root)
+        except ValueError:
+            raise BundleInputError('OUTPUT_OUTSIDE_EVALUATION_DIRECTORY') from None
+        if (not relative.parts or destination.suffix.lower() != suffix
+                or any(part.lower() in {'.git', '.env', '.agents', '.codex'} for part in relative.parts)):
+            raise BundleInputError('UNSAFE_OUTPUT_PATH')
+        if input_path is not None and _same_path(destination, input_path.resolve()):
+            raise BundleInputError('OUTPUT_OVERLAPS_INPUT')
+        if destination.exists() and destination.stat().st_nlink > 1:
+            raise BundleInputError('UNSAFE_OUTPUT_PATH')
+    if _same_path(*destinations):
+        raise BundleInputError('UNSAFE_OUTPUT_PATH')
+    return destinations
 
 
-def quality_gates(metrics: dict, settings) -> list[dict]:
-    """Сопоставляет метрики с порогами (quality gates)."""
-    th = settings.thresholds
-    spec = [
-        ("M-01 Schema Match", th.schema_match, ">=", False),
-        ("M-04 Traceability Ratio", th.traceability, ">=", False),
-        ("M-05 Refusal Correctness", th.refusal_correctness, ">=", False),
-        ("M-06 Evidence Grounding", 1.0, ">=", False),
-        ("M-07 RAG Recall", 1.0, ">=", False),
-        ("M-09 Max Latency (s)", settings.performance.generation_timeout_sec, "<=", True),
-    ]
-    gates = []
-    for name, threshold, op, is_time in spec:
-        value = metrics[name]
-        passed = value <= threshold if op == "<=" else value >= threshold
-        gates.append(
-            {"name": name, "value": value, "threshold": threshold,
-             "op": op, "passed": passed, "is_time": is_time}
-        )
-    return gates
+class _SafeArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        # argparse's default error includes rejected argument values.
+        raise BundleInputError('INVALID_ARGUMENTS')
 
 
-# =============================================================================
-# Генерация отчёта
-# =============================================================================
-
-def _fmt(value: float, is_time: bool) -> str:
-    return f"{value:.1f} s" if is_time else f"{value:.0%}"
+def _error(code):
+    print(f'ERROR: {code}', file=sys.stderr)
+    return EXIT_CODES['ERROR']
 
 
-def generate_report(outcomes: list[dict], gates: list[dict], settings, no_llm: bool) -> str:
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    all_passed = all(g["passed"] for g in gates)
-    verdict = "✅ PASSED" if all_passed else "❌ FAILED"
-
-    lines: list[str] = []
-    lines.append("# Evaluation Report — AML / Anti-Fraud Copilot")
-    lines.append("")
-    lines.append(f"- **Дата:** {now}")
-    lines.append(f"- **Модель:** {settings.llm.model_name} (Ollama, on-premise)")
-    lines.append(f"- **Golden Dataset:** {len(outcomes)} кейсов"
-                 + (" (только детерминированные, --no-llm)" if no_llm else ""))
-    lines.append(f"- **Вердикт quality gates:** {verdict}")
-    lines.append("")
-
-    lines.append("## Сводные метрики")
-    lines.append("")
-    lines.append("| Метрика | Значение | Порог | Статус |")
-    lines.append("| :--- | :---: | :---: | :---: |")
-    for g in gates:
-        status = "✅" if g["passed"] else "❌"
-        lines.append(
-            f"| {g['name']} | {_fmt(g['value'], g['is_time'])} "
-            f"| {g['op']} {_fmt(g['threshold'], g['is_time'])} | {status} |"
-        )
-    lines.append("")
-
-    lines.append("## Результаты по кейсам")
-    lines.append("")
-    lines.append("| Кейс | Категория | Ожидание | Факт | Latency (s) | Статус |")
-    lines.append("| :--- | :--- | :---: | :---: | :---: | :---: |")
-    for o in outcomes:
-        case, result = o["case"], o["result"]
-        expected = case["expected_behavior"]
-        actual = result.get("status", "?")
-        status = "✅" if actual == expected else "❌"
-        lines.append(
-            f"| {case['id']} | {case['category']} | {expected} | {actual} "
-            f"| {o['latency']:.1f} | {status} |"
-        )
-    lines.append("")
-
-    lines.append("## Отложенные метрики")
-    lines.append("")
-    lines.append("- **M-02 RAG Faithfulness (≥90%)** — требует LLM-судью (LLM-as-a-judge); "
-                 "реализуется в `tests/eval/llm_judge.py`.")
-    lines.append("- **M-03 Answer Relevance (≥90%)** — требует LLM-судью.")
-    lines.append("- **M-08 Draft Acceptance Rate (≥80%)** — ручной review оператором/SME.")
-    lines.append("")
-    lines.append("---")
-    lines.append("*Отчёт сгенерирован автоматически `scripts/run_evaluation.py`. "
-                 "Все данные синтетические.*")
-    return "\n".join(lines)
+def _reject_constant(_):
+    raise ValueError('NONFINITE_JSON')
 
 
-# =============================================================================
-# main
-# =============================================================================
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Запуск evaluation и генерация отчёта")
-    parser.add_argument("--no-llm", action="store_true",
-                        help="Пропустить кейсы, требующие генерации (Ollama)")
-    parser.add_argument("--output", default="docs/eval-report.md",
-                        help="Путь к файлу отчёта")
-    args = parser.parse_args()
-
-    settings = get_settings()
-    cases = load_golden_dataset(args.no_llm)
-
-    print(f"Запуск агента по {len(cases)} кейсам Golden Dataset...")
-    agent = AMLAgent()
-    outcomes = [run_case(agent, case) for case in cases]
-
-    kb = KnowledgeBase(RuleRepository().find_all())
-    kb.index()
-    tx_repo = TransactionRepository()
-
-    metrics = compute_metrics(outcomes, kb, tx_repo)
-    gates = quality_gates(metrics, settings)
-    report = generate_report(outcomes, gates, settings, args.no_llm)
-
-    output_path = Path(args.output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(report, encoding="utf-8")
-
-    all_passed = all(g["passed"] for g in gates)
-    print(f"\nОтчёт сохранён: {output_path}")
-    print(f"Quality gates: {'PASSED' if all_passed else 'FAILED'}")
-    for g in gates:
-        mark = "✓" if g["passed"] else "✗"
-        print(f"  [{mark}] {g['name']}: {_fmt(g['value'], g['is_time'])} "
-              f"({g['op']} {_fmt(g['threshold'], g['is_time'])})")
+def _unique_object(pairs):
+    obj = {}
+    for key, value in pairs:
+        if key in obj:
+            raise ValueError('DUPLICATE_JSON_KEY')
+        obj[key] = value
+    return obj
 
 
-if __name__ == "__main__":
-    main()
+def main(argv=None):
+    parser = _SafeArgumentParser(description=__doc__)
+    parser.add_argument('--input', help='Strict replay bundle JSON 1.0')
+    parser.add_argument('--output', default='var/evaluation/report.md', help='Markdown output inside var/evaluation')
+    parser.add_argument('--no-llm', action='store_true', help='Without input produces INCOMPLETE')
+    try:
+        args = parser.parse_args(argv)
+    except BundleInputError:
+        return _error('INVALID_ARGUMENTS')
+    except SystemExit as exc:
+        return 0 if exc.code == 0 else _error('INVALID_ARGUMENTS')
+    try:
+        input_path = Path(args.input) if args.input else None
+        output, json_output = _output_paths(args.output, input_path)
+    except BundleInputError as exc:
+        return _error(str(exc))
+    except (OSError, ValueError, RuntimeError):
+        return _error('INVALID_OUTPUT_PATH')
+    try:
+        if input_path is not None:
+            bundle = json.loads(input_path.read_text(encoding='utf-8'),
+                                parse_constant=_reject_constant, object_pairs_hook=_unique_object)
+        else:
+            bundle = {'schema_version': '1.0', 'dataset': {'id': 'no-input', 'kind': 'synthetic_control'},
+                      'cases': [], 'outcomes': []}
+        report = evaluate_bundle(bundle, settings=get_settings())
+    except BundleInputError:
+        report = {'schema_version': '1.0', 'verdict': 'ERROR', 'error_code': 'INVALID_REPLAY_BUNDLE'}
+    except Exception:
+        report = {'schema_version': '1.0', 'verdict': 'ERROR', 'error_code': 'INPUT_READ_OR_EVALUATION_ERROR'}
+    try:
+        markdown = generate_report(report)
+        serialized = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + '\n'
+        output.parent.mkdir(parents=True, exist_ok=True)
+        json_output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(markdown, encoding='utf-8')
+        json_output.write_text(serialized, encoding='utf-8')
+    except Exception:
+        return _error('REPORT_WRITE_FAILED')
+    print(f"Evaluation: {report['verdict']}")
+    return EXIT_CODES[report['verdict']]
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
