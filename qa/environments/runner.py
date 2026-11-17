@@ -19,6 +19,19 @@ from src.workflow import store as workflow_store
 CATALOG = 'qa/environments/catalog-v1.json'
 CANARIES = ('drop_step', 'alter_state', 'break_invariant')
 EXIT = {'PASS': 0, 'FAIL': 1, 'ERROR': 2, 'INCOMPLETE': 3}
+TRACE_ACTION_CALLS = {
+    'receive': {'db.enqueue', 'db.receipt', 'offset.attempt', 'offset.ack',
+                'dlq.publish', 'dlq.ack'},
+    'tick': {'db.read.submitted', 'db.read.queued', 'db.project', 'db.projection.receipt',
+             'db.defer', 'http.submit', 'http.get', 'sqlite.admission.receipt', 'clock.expired'},
+    'finish': {'sqlite.terminal.refused'}, 'restart': set(),
+}
+FAULT_PREDECESSORS = {
+    'db_unavailable': {'db.enqueue'}, 'offset_ack_lost': {'offset.attempt'},
+    'dlq_unavailable': {'dlq.publish'}, 'http_ack_lost': {'sqlite.admission.receipt'},
+    'projection_unavailable': {'db.project'}, 'budget_after_admission': {'sqlite.admission.receipt'},
+    'get_not_found': {'http.get'}, 'protocol_error': {'sqlite.admission.receipt', 'http.get'},
+}
 
 
 class EnvironmentRunError(ValueError):
@@ -39,6 +52,101 @@ def load_catalog(root=ROOT):
 def rate(numerator, denominator):
     return {'numerator': numerator, 'denominator': denominator,
             'value': numerator / denominator if denominator else None}
+
+
+def assess_trace(definition, value):
+    """Check normalized evidence independently of the model's reported flags.
+
+    This checks ordering and projection consistency, not authenticity of logs or
+    raw idempotency keys/job IDs (which remain the model's SQLite-level check).
+    """
+    trace = value['trace']
+    require(type(trace) is list and 0 < len(trace) <= 512, 'ENVIRONMENT_TRACE')
+    require(all(type(item) is dict and set(item) == {'step', 'call'}
+                and type(item['step']) is int and 0 <= item['step'] < len(definition['steps'])
+                and type(item['call']) is str for item in trace), 'ENVIRONMENT_TRACE')
+    indices = [item['step'] for item in trace]
+    require(indices == sorted(indices) and set(indices) == set(range(len(definition['steps']))),
+            'ENVIRONMENT_TRACE_STEP_ORDER')
+    durable, bounded, stable, consistent = True, True, True, True
+    totals = Counter()
+    for number, step in enumerate(definition['steps']):
+        calls = [item['call'] for item in trace if item['step'] == number]
+        marker = 'action.' + step['action']
+        allowed = TRACE_ACTION_CALLS[step['action']] | {marker}
+        if step.get('fault'):
+            allowed.add('fault.' + step['fault'])
+        require(calls[0] == marker and calls.count(marker) == 1 and set(calls) <= allowed,
+                'ENVIRONMENT_TRACE_CALL')
+        fault = step.get('fault')
+        require(sum(call.startswith('fault.') for call in calls) == int(fault is not None),
+                'ENVIRONMENT_TRACE_FAULT')
+        consistent &= len(calls) == len(set(calls))
+        for index, call in enumerate(calls):
+            prior = calls[:index]
+            if call.startswith('fault.'):
+                consistent &= index > 0 and calls[index - 1] in FAULT_PREDECESSORS[fault]
+            if call == 'offset.attempt':
+                durable &= ('dlq.ack' if step.get('invalid', False) else 'db.receipt') in prior
+            if call == 'clock.expired':
+                consistent &= 'fault.budget_after_admission' in prior
+                bounded &= not any(later.startswith(('db.', 'http.', 'sqlite.admission'))
+                                   for later in calls[index + 1:])
+            predecessors = {
+                'db.receipt': {'db.enqueue'}, 'offset.ack': {'offset.attempt'},
+                'dlq.ack': {'dlq.publish'}, 'http.submit': {'db.read.queued'},
+                'http.get': {'db.read.submitted'}, 'sqlite.admission.receipt': {'http.submit'},
+                'db.project': {'http.submit', 'http.get'},
+                'db.projection.receipt': {'db.project'}, 'db.defer': {'http.submit', 'http.get'},
+                'db.read.queued': {'db.read.submitted'},
+            }
+            if call in predecessors:
+                consistent &= bool(set(prior) & predecessors[call])
+            if call == 'db.project' and 'http.submit' in prior:
+                consistent &= 'sqlite.admission.receipt' in prior
+        if step['action'] == 'receive':
+            forbidden = {'db.enqueue', 'db.receipt'} if step.get('invalid', False) else {'dlq.publish', 'dlq.ack'}
+            consistent &= not set(calls) & forbidden
+        for failed, receipt in (('db_unavailable', 'db.receipt'), ('offset_ack_lost', 'offset.ack'),
+                                ('dlq_unavailable', 'dlq.ack'), ('projection_unavailable', 'db.projection.receipt')):
+            if fault == failed:
+                consistent &= receipt not in calls
+        if fault == 'budget_after_admission':
+            consistent &= 'clock.expired' in calls
+        if step['action'] == 'finish':
+            consistent &= calls == [marker, 'sqlite.terminal.refused']
+        totals.update(calls)
+        # Missing or ill-typed projections are handled by exact step comparison;
+        # never erase a missing step from the planned denominator here.
+        actual = value['steps'][number] if number < len(value['steps']) else None
+        if (type(actual) is dict and type(actual.get('outcome')) is list
+                and all(type(outcome) is str for outcome in actual['outcome'])):
+            # A terminal projection cannot be justified by final state alone:
+            # the acknowledged persistence operations must exist in this step.
+            required_calls = {
+                'queued': {'db.enqueue', 'db.receipt', 'offset.attempt', 'offset.ack'},
+                'duplicate': {'db.enqueue', 'db.receipt', 'offset.attempt', 'offset.ack'},
+                'dead_lettered': {'dlq.publish', 'dlq.ack', 'offset.attempt', 'offset.ack'},
+                'submitted': {'http.submit', 'sqlite.admission.receipt', 'db.project', 'db.projection.receipt'},
+                'projected': {'http.get', 'db.project', 'db.projection.receipt'},
+            }
+            for outcome in actual['outcome']:
+                consistent &= required_calls.get(outcome, set()) <= set(calls)
+                if outcome.startswith('deferred:'):
+                    consistent &= 'db.defer' in calls
+        counters = ('job_count', 'key_count', 'submit_calls', 'offset_acks', 'dlq_acks')
+        if type(actual) is dict and all(type(actual.get(key)) is int for key in counters):
+            stable &= (0 <= actual['job_count'] <= 1 and 0 <= actual['key_count'] <= 1)
+            consistent &= (actual['submit_calls'] == totals['http.submit']
+                           and actual['offset_acks'] == totals['offset.ack']
+                           and actual['dlq_acks'] == totals['dlq.ack']
+                           and actual['key_count'] == int(totals['http.submit'] > 0)
+                           and actual['job_count'] == int(totals['sqlite.admission.receipt'] > 0))
+    return {'consistent': bool(consistent), 'invariants': [
+        {'id': 'durable_receipt_before_offset', 'passed': bool(durable)},
+        {'id': 'stable_idempotency', 'passed': bool(stable)},
+        {'id': 'no_admission_after_budget', 'passed': bool(bounded)},
+    ]}
 
 
 def assess(catalog, observations):
@@ -89,12 +197,10 @@ def assess(catalog, observations):
                 require(exact(value['dependencies'], {'real': list(models.REAL_DEPENDENCIES),
                                                       'modeled': list(models.MODELED_DEPENDENCIES)}),
                         'ENVIRONMENT_DEPENDENCIES')
-                require(type(value['trace']) is list and 0 < len(value['trace']) <= 256, 'ENVIRONMENT_TRACE')
-                require(all(type(item) is dict and set(item) == {'step', 'call'}
-                            and type(item['step']) is int and 0 <= item['step'] < len(definition['steps'])
-                            and type(item['call']) is str and bool(item['call']) for item in value['trace']),
-                        'ENVIRONMENT_TRACE')
-                row.update(observed_steps=len(steps), invariants=deepcopy(invariants))
+                trace_result = assess_trace(definition, value)
+                row.update(observed_steps=len(steps), invariants=deepcopy(invariants),
+                           trace_consistency=trace_result['consistent'],
+                           trace_invariants=trace_result['invariants'])
                 states = []
                 for index, expected in enumerate(definition['expected']):
                     actual = steps[index] if index < len(steps) else None
@@ -109,6 +215,10 @@ def assess(catalog, observations):
                 if any(not item['passed'] for item in invariants):
                     states.append('FAIL')
                     row['issues'].append('INVARIANT_VIOLATION')
+                if (not trace_result['consistent']
+                        or any(not item['passed'] for item in trace_result['invariants'])):
+                    states.append('FAIL')
+                    row['issues'].append('TRACE_CONTRADICTION')
                 row['status'] = combine(states)
             except (ValueError, OverflowError):
                 row.update(status='ERROR', issues=['INVALID_SCENARIO_OBSERVATION'])

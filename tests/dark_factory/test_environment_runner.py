@@ -28,7 +28,11 @@ def observations(catalog):
     return [{'id': row['id'], 'observation': {
         'steps': deepcopy(row['expected']),
         'invariants': [{'id': name, 'passed': True} for name in runner.models.REQUIRED_INVARIANTS],
-        'trace': [{'step': 0, 'call': 'queue.receive'}, {'step': 1, 'call': 'workflow.submit'}],
+        'trace': [{'step': number, 'call': call} for number, calls in enumerate((
+            ('action.receive', 'db.enqueue', 'db.receipt', 'offset.attempt', 'offset.ack'),
+            ('action.tick', 'db.read.submitted', 'db.read.queued', 'http.submit',
+             'sqlite.admission.receipt', 'db.project', 'db.projection.receipt'),
+        )) for call in calls],
         'dependencies': {'real': list(runner.models.REAL_DEPENDENCIES),
                          'modeled': list(runner.models.MODELED_DEPENDENCIES)}}}
         for row in catalog['scenarios']]
@@ -135,6 +139,96 @@ def test_malformed_observation_is_error_without_including_raw_values(catalog, de
     assert result['matrix'][0]['issues'] == ['INVALID_SCENARIO_OBSERVATION']
     assert 'secret-that-must-not-appear' not in json.dumps(result)
     assert result['metrics']['planned_steps'] == 4
+
+
+@pytest.mark.parametrize('defect', ['unknown_call', 'wrong_action', 'reordered_steps',
+                                  'missing_marker', 'duplicate_marker', 'missing_step', 'unexpected_fault'])
+def test_trace_vocabulary_actions_and_step_order_are_closed(catalog, defect):
+    rows = observations(catalog)
+    trace = rows[0]['observation']['trace']
+    if defect == 'unknown_call':
+        trace[1]['call'] = 'unregistered.operation'
+    elif defect == 'wrong_action':
+        trace[1]['call'] = 'http.submit'
+    elif defect == 'reordered_steps':
+        trace[:] = trace[5:] + trace[:5]
+    elif defect == 'missing_marker':
+        trace.pop(0)
+    elif defect == 'duplicate_marker':
+        trace.insert(1, deepcopy(trace[0]))
+    elif defect == 'missing_step':
+        trace[:] = [row for row in trace if row['step'] == 0]
+    else:
+        trace.insert(2, {'step': 0, 'call': 'fault.db_unavailable'})
+    result = runner.assess(catalog, rows)
+    assert result['status'] == 'ERROR'
+    assert result['matrix'][0]['issues'] == ['INVALID_SCENARIO_OBSERVATION']
+    assert result['metrics']['planned_steps'] == 4
+
+
+@pytest.mark.parametrize('defect', ['offset_before_receipt', 'ack_before_attempt',
+                                  'missing_ack', 'missing_admission', 'admission_before_submit',
+                                  'duplicate_http', 'missing_project', 'missing_projection_receipt',
+                                  'missing_projection_pair', 'project_before_admission'])
+def test_trace_contradiction_cannot_hide_behind_matching_steps_and_true_flags(catalog, defect):
+    rows = observations(catalog)
+    trace = rows[0]['observation']['trace']
+    index = {row['call']: number for number, row in enumerate(trace)}
+    swap = {'offset_before_receipt': ('offset.attempt', 'db.receipt'),
+            'ack_before_attempt': ('offset.ack', 'offset.attempt'),
+            'admission_before_submit': ('sqlite.admission.receipt', 'http.submit'),
+            'project_before_admission': ('sqlite.admission.receipt', 'db.project')}
+    if defect in swap:
+        first, second = (index[name] for name in swap[defect])
+        trace[first], trace[second] = trace[second], trace[first]
+    elif defect == 'missing_ack':
+        trace.pop(index['offset.ack'])
+    elif defect == 'missing_admission':
+        trace.pop(index['sqlite.admission.receipt'])
+    elif defect == 'missing_project':
+        trace.pop(index['db.project'])
+    elif defect == 'missing_projection_receipt':
+        trace.pop(index['db.projection.receipt'])
+    elif defect == 'missing_projection_pair':
+        trace[:] = [row for row in trace if row['call'] not in {'db.project', 'db.projection.receipt'}]
+    else:
+        trace.insert(index['http.submit'], deepcopy(trace[index['http.submit']]))
+    result = runner.assess(catalog, rows)
+    assert result['status'] == 'FAIL'
+    assert result['metrics']['matched_steps'] == result['metrics']['planned_steps'] == 4
+    assert all(row['passed'] for row in result['matrix'][0]['invariants'])
+    assert result['matrix'][0]['issues'] == ['TRACE_CONTRADICTION']
+    if defect == 'offset_before_receipt':
+        assert result['matrix'][0]['trace_invariants'][0] == {
+            'id': 'durable_receipt_before_offset', 'passed': False}
+
+
+def test_actual_catalog_trace_and_expired_budget_are_checked_independently(tmp_path, monkeypatch):
+    catalog = runner.load_catalog()
+    monkeypatch.setattr(runner.workflow_store, 'WORKFLOW_ROOT', tmp_path / 'workflow')
+    rows = []
+    for definition in catalog['scenarios']:
+        workspace = tmp_path / 'workflow' / 'environment-models' / definition['id']
+        workspace.mkdir(parents=True)
+        rows.append({'id': definition['id'], 'observation': runner.models.execute(definition, workspace)})
+    baseline = runner.assess(catalog, rows)
+    assert baseline['status'] == 'PASS'
+    assert baseline['metrics']['matched_scenarios'] == 9
+    altered = deepcopy(rows)
+    budget = next(row['observation'] for row in altered if row['id'] == 'budget-reconcile')
+    trace = budget['trace']
+    expired = next(index for index, row in enumerate(trace) if row['call'] == 'clock.expired')
+    trace.insert(expired + 1, {'step': trace[expired]['step'], 'call': 'db.defer'})
+    result = runner.assess(catalog, altered)
+    assert result['status'] == 'FAIL'
+    broken = next(row for row in result['matrix'] if row['id'] == 'budget-reconcile')
+    assert all(row['passed'] for row in broken['invariants'])
+    assert broken['trace_invariants'][2] == {'id': 'no_admission_after_budget', 'passed': False}
+    assert broken['issues'] == ['TRACE_CONTRADICTION']
+    assert result['metrics']['matched_steps'] == baseline['metrics']['planned_steps']
+    # The declared fault itself must remain visible, even when other counters match.
+    budget['trace'] = [row for row in trace if row['call'] != 'fault.budget_after_admission']
+    assert runner.assess(catalog, altered)['status'] == 'ERROR'
 
 
 def test_three_canaries_detect_observation_corruption_without_mutating_baseline(catalog):
