@@ -1,108 +1,148 @@
-# Как владельцу опубликовать rebuild в main
+# Как опубликовать дополнение этапа 5 в main
 
-Работайте в PowerShell 7 из VS Code. Предусмотрены **четыре коммита и три push** в `main`. Первый отправляет правила Git, второй — совместимую версию сервиса и тестов двумя коммитами, третий — документацию. Каждый commit и push выполняет владелец. Выполняйте команды по одной и останавливайтесь при первой ошибке.
+**Актуально на 17 ноября 2026 года.** Основная версия сервиса и исходники учебного стенда уже опубликованы. База сравнения — ecf3817daa1af95b2c8cbe326572786f99e72d54. Следующая отправка состоит из **двух коммитов и двух push**: проверки сценариев окружения, затем инструкции. Commit и push выполняет владелец после завершения локальных проверок текущей версии.
 
-Кратко о составе обновления: [что добавить и что заменить](publication/what-to-update.md), [все новые файлы](publication/added-files.txt), [все заменяемые файлы](publication/updated-files.txt).
+План первой публикации из четырёх коммитов уже выполнен. Повторный коммит runtime, добавление пяти входов Judge и удаление tests/pytest.ini не требуются.
 
-## Состав поставки
+## Состав обновления
 
-| Блок | Что попадёт в GitHub | Точные пути для git add |
+| Коммит | Что обновляем | Источник путей |
 | --- | --- | --- |
-| 1 | Правила исключений и сохранения байтов тестовых наборов | [01-git.txt](publication/01-git.txt) |
-| 2 | AML, UI, PostgreSQL, Swagger, SQL-упражнения, Kafka, DBeaver, промпты, синтетические исходные данные, контракты, версии зависимостей, скрипты установки | [02-service.txt](publication/02-service.txt) |
-| 3 | QA, Playwright, тесты моделей, Dark Factory, каталог требований, анализ влияния, единый запуск, квалификация оценщиков и сценарии окружения, CI, инструмент копирования. Удаляется унаследованный `tests/pytest.ini`, настройки тестов теперь в корне | [03-qa.txt](publication/03-qa.txt) |
-| 3, исключения | Пять синтетических входов Judge, используемых тестами с проверкой хэшей | [03-judge-fixtures.txt](publication/03-judge-fixtures.txt) |
-| 4 | README, справочные материалы, инструкция оператора, этот порядок отправки и списки файлов | [04-docs.txt](publication/04-docs.txt) |
+| 1. QA и подготовка публикации | Проверка trace и инвариантов сценариев окружения, её тесты, базовый SHA помощника копирования | Изменившиеся файлы из [03-qa.txt](publication/03-qa.txt) |
+| 2. Инструкции | Порядок отправки, раздел 11 руководства, перечни добавлений/замен | Изменившиеся файлы из [04-docs.txt](publication/04-docs.txt) |
 
-Сопоставление с базовым `main`, обновлённое 16 ноября 2026 года, даёт следующий состав. «Без изменения» означает, что файл есть в проверенном списке, но Git не создаст для него новый diff.
+Точный состав: [что добавить и заменить](publication/what-to-update.md), [добавления](publication/added-files.txt), [замены](publication/updated-files.txt). Полные пять списков содержат **633 файла**; они описывают всю поставку, а не размер очередного diff. С сохранённым reports/iteration_log.md итоговое Git-дерево содержит **634 файла**. Новых файлов и удалений в этом дополнении нет.
 
-| Список | Новых файлов | Заменяемых файлов | Без изменения |
-| --- | ---: | ---: | ---: |
-| `01-git` | 1 | 1 | 0 |
-| `02-service` | 129 | 13 | 37 |
-| `03-qa` | 376 | 4 | 5 |
-| `03-judge-fixtures` | 5 | 0 | 0 |
-| `04-docs` | 45 | 17 | 0 |
-| **Всего в списках: 633** | **556** | **35** | **42** |
+Локально остаются var/, рабочие PostgreSQL/SQLite, сообщения Kafka и Docker volumes, DBeaver workspace, модели/индексы, окружения Python, секреты, .env, логи и результаты занятий. Из verification/ в Git уже входят только пять явно перечисленных синтетических входов Judge; новые результаты проверок не публикуются. Из .rebuild/ публикуются только origin.json и release-version.json. Личный файл портфолио и незакоммиченные изменения исходного checkout автоматически не включаются.
 
-В сервисном блоке заменяются конфигурация, зависимости, фасад агента, UI, загрузчик базы знаний и прежние синтетические данные. Новыми добавляются runtime/workflow, контракты v1 и исходники SQL/API/Kafka/DBeaver. В QA-блоке обновляются workflow GitHub Actions, конфигурация/проверки прежнего оценщика и добавляется новый QA-контур. В документации обновляются README и 16 исходных спецификаций/диаграмм; их исторический статус теперь обозначен явно.
+## 1. Подготовить терминал
 
-Отдельно удаляется только `tests/pytest.ini`. Унаследованный `reports/iteration_log.md` сохраняется без изменения и не добавляется заново. Итоговое дерево Git содержит 634 файлов. Точный перечень изменений каждого блока виден в `git diff --cached --name-status` перед соответствующим коммитом.
-
-**Остаются у владельца**: весь `var/` (базы PostgreSQL/SQLite, рабочее пространство DBeaver, роли и ключи, модели и индексы, логи, результаты упражнений), Docker volumes и сообщения Kafka, окружения Python, `.env`, ярлыки, `qa/progress.json`, исходный аудит, архивы и результаты прогонов из `verification/` кроме указанных пяти файлов. Из `.rebuild/` отправляются только `origin.json` и `release-version.json`. Исходники стенда нужны в GitHub, чтобы другой инженер смог развернуть собственную базу и брокер. Уже существующие в истории GitHub материалы этим порядком не удаляются, за исключением указанного файла pytest.
-
-## Подготовить отдельный клон
-
-Пути ниже относятся к машине владельца. Оставьте исходный checkout и рабочий стенд в их каталогах. Для отправки нужен новый каталог. Сохраните переменные в одном терминале до окончания публикации.
+Используйте PowerShell 7.3+ в VS Code. Выполняйте по одному блоку, останавливайтесь при первой ошибке. Дождитесь завершения доработок и проверки текущего rebuild перед копированием; во время переноса источник не редактируйте.
 
 ```powershell
+if ($PSVersionTable.PSVersion -lt [version]'7.3') { throw 'Нужен PowerShell 7.3 или новее' }
+$ErrorActionPreference = 'Stop'
+$PSNativeCommandUseErrorActionPreference = $true
 $src = 'D:\work\aml-ai-agent-system-rebuild'
-$pub = 'D:\work\aml-ai-agent-system-publish'
-$lists = Join-Path $src 'docs\publication'
-if (Test-Path -LiteralPath $pub) { throw 'Для публикации требуется новый каталог. Проверьте предыдущую копию.' }
+$pub = 'D:\work\publication-stage5\aml-ai-agent-system-publish'
+$base = 'ecf3817daa1af95b2c8cbe326572786f99e72d54'
+$python = Join-Path $src '.venv\Scripts\python.exe'
+if (-not (Test-Path -LiteralPath $python)) { throw 'Не найден Python стенда' }
+& $python -I -B "$src\scripts\release\publication_files.py" check
+git --version
+git config --get user.name
+git config --get user.email
+```
+
+check проверяет допустимость полных перечней и наличие файлов. user.name и user.email станут автором коммитов; при отсутствии настройте свои значения до продолжения. Выбран новый каталог внутри publication-stage5; существующий клон и учебный стенд сохраняются.
+
+## 2. Создать чистый клон и скопировать поставку
+
+```powershell
+if (Test-Path -LiteralPath $pub) { throw 'Каталог публикации уже существует: разберите предыдущую попытку' }
+$publicationParent = Split-Path -Parent $pub
+if (-not (Test-Path -LiteralPath $publicationParent)) { New-Item -ItemType Directory -Path $publicationParent | Out-Null }
 git clone --branch main --single-branch https://github.com/slim2115/aml-ai-agent-system-design.git $pub
 Set-Location -LiteralPath $pub
 git status --short --branch
 git remote -v
 git log -1 --oneline
-& "$src\.venv\Scripts\python.exe" -I -B "$src\scripts\release\publication_files.py" copy-to $pub
-if ($LASTEXITCODE -ne 0) { throw 'Перенос не выполнен. Проверьте сообщение перед продолжением.' }
+if ((git rev-parse HEAD) -ne $base) { throw 'Main изменился: нужна повторная сверка' }
+if ((git rev-parse origin/main) -ne $base) { throw 'origin/main отличается от проверенной базы' }
+& $python -I -B "$src\scripts\release\publication_files.py" copy-to $pub
+$lists = Join-Path $pub 'docs\publication'
+git status --short
 ```
 
-Помощник проверяет чистый клон, имя каталога, ветку, origin и базовый коммит `535940fd645c2b41d1ec167e8a98d58597adadf0`. Если удалённая ветка уже продвинулась, сначала сопоставьте новые изменения с rebuild и пересмотрите списки. При прерванном копировании сохраните проблемный каталог для разбора и начните с чистого клона. Помощник только копирует перечисленные файлы и сверяет их байты. Из-за ограничений защиты веток GitHub при отказе в push потребуется решение владельца репозитория.
+Помощник проверяет имя каталога, origin, ветку main, чистоту клона и оба базовых SHA, затем копирует только согласованные пути и сверяет байты. Он не удаляет файлы и не создаёт коммиты. Если main продвинулся после 17 ноября, сначала сопоставьте новую базу с rebuild. После частичного копирования сохраните каталог для разбора; не повторяйте copy-to поверх грязного клона.
 
-## Коммит 1 и push 1. Правила Git
-
-В этом push меняются только правила Git. Новый workflow появится после push 2; первый push не является проверкой нового CI.
+## 3. Проверить полноту переноса и состав diff
 
 ```powershell
-git --literal-pathspecs add --pathspec-from-file="$lists\01-git.txt"
-git diff --cached --name-status
-git diff --cached
-git commit -m "chore(git): исключить локальный стенд и сохранить байты тестовых наборов"
-git push origin main
+$groups = @('01-git', '02-service', '03-qa', '03-judge-fixtures', '04-docs')
+$paths = @($groups | ForEach-Object { Get-Content -LiteralPath (Join-Path $lists "$_.txt") })
+if ($paths.Count -ne 633 -or @($paths | Sort-Object -Unique).Count -ne $paths.Count) { throw 'Неверный состав полных перечней' }
+foreach ($relative in $paths) {
+    $sourceFile = Join-Path $src $relative
+    $copiedFile = Join-Path $pub $relative
+    if (-not (Test-Path -LiteralPath $copiedFile -PathType Leaf)) { throw "Не перенесён файл: $relative" }
+    if ((Get-FileHash -LiteralPath $sourceFile -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath $copiedFile -Algorithm SHA256).Hash) {
+        throw "Различаются байты: $relative"
+    }
+}
+$added = @(Get-Content -LiteralPath "$lists\added-files.txt")
+$updated = @(Get-Content -LiteralPath "$lists\updated-files.txt")
+if ($added.Count -ne 0) { throw 'Это дополнение не предусматривает новых файлов' }
+$actualChanges = @(git diff --name-only | Sort-Object)
+if (@(Compare-Object @($updated | Sort-Object) $actualChanges).Count -ne 0) { throw 'Diff отличается от перечня замен' }
+if (@(git diff --name-only --diff-filter=D).Count -ne 0) { throw 'Удаления не предусмотрены' }
+if (@(git ls-files --others --exclude-standard).Count -ne 0) { throw 'Обнаружены незапланированные новые файлы' }
+if (@(git diff --cached --name-only).Count -ne 0) { throw 'Перед первым блоком индекс должен быть пуст' }
+$qaPaths = @(Get-Content -LiteralPath "$lists\03-qa.txt")
+$docPaths = @(Get-Content -LiteralPath "$lists\04-docs.txt")
+$expectedQa = @($updated | Where-Object { $_ -in $qaPaths } | Sort-Object)
+$expectedDocs = @($updated | Where-Object { $_ -in $docPaths } | Sort-Object)
+if ($expectedQa.Count -eq 0 -or $expectedDocs.Count -eq 0 -or $expectedQa.Count + $expectedDocs.Count -ne $updated.Count) { throw 'Замены не разделены между QA и документацией' }
+git diff --stat
+Write-Output "Проверено файлов: $($paths.Count); замен: $($updated.Count)"
 ```
 
-## Коммит 2. Сервис и исходники учебного стенда
+Пять входов Judge входят в проверку хэшей, но их diff должен отсутствовать. Перечни читаются из подготовленного клона, сохраняя единый состав отправки. Перед коммитом просмотрите staged diff; ожидаются только M. Команды git add ., git add -A, git rm и force push для этого дополнения не нужны.
 
-```powershell
-git --literal-pathspecs add --pathspec-from-file="$lists\02-service.txt"
-git diff --cached --name-status
-git diff --cached --stat
-git commit -m "feat(aml): добавить сервис расследований и стенд PostgreSQL, Swagger и Kafka"
-```
-
-Здесь сделайте только коммит. Следом добавьте проверки именно этой версии сервиса.
-
-## Коммит 3 и push 2. Тесты и CI
+## 4. Коммит 1 и push 1: проверки сценариев окружения
 
 ```powershell
 git --literal-pathspecs add --pathspec-from-file="$lists\03-qa.txt"
-git --literal-pathspecs add -f --pathspec-from-file="$lists\03-judge-fixtures.txt"
-git rm -- tests/pytest.ini
+$stagedQa = @(git diff --cached --name-only | Sort-Object)
+if (@(Compare-Object $expectedQa $stagedQa).Count -ne 0) { throw 'В QA-коммите неожиданные пути' }
+if (@(git diff --cached --name-only --diff-filter=AD).Count -ne 0) { throw 'Новые файлы и удаления не предусмотрены' }
 git diff --cached --name-status
 git diff --cached --stat
-git diff --cached --name-only -- verification
-git commit -m "test(qa): добавить Playwright, проверки моделей, Dark Factory и Windows CI"
+git diff --cached
+git commit -m "test(qa): усилить проверку trace сценариев окружения" -m "Проверка порядка операций, подтверждений и инвариантов, регрессионные тесты; помощник копирования привязан к опубликованной базе main."
+git show --stat --oneline HEAD
 git push origin main
 ```
 
-В выводе по `verification` ожидаются ровно пять путей из списка. Проверяйте каждый файл перед отправкой. В GitHub откройте вкладку **Actions** и дождитесь результата заданий `hermetic-windows` и `browser-smoke-windows` для верхнего коммита.
+После push откройте [GitHub Actions](https://github.com/slim2115/aml-ai-agent-system-design/actions) и дождитесь hermetic-windows и browser-smoke-windows для нового SHA. При падении сохраните ссылку на запуск и разберите причину до следующего push. Локальная проверка не заменяет удалённый CI. Deployment автоматически не выполняется.
 
-При падении задания сохраните URL запуска и разберите причину до следующего push. Успешная локальная репетиция не заменяет этот результат. Автоматический deployment не настроен.
-
-## Коммит 4 и push 3. Инструкции
+## 5. Коммит 2 и push 2: инструкции и перечни
 
 ```powershell
+if (@(git diff --cached --name-only).Count -ne 0) { throw 'Перед следующим блоком индекс должен быть пуст' }
 git --literal-pathspecs add --pathspec-from-file="$lists\04-docs.txt"
+$stagedDocs = @(git diff --cached --name-only | Sort-Object)
+if (@(Compare-Object $expectedDocs $stagedDocs).Count -ne 0) { throw 'В коммите документации неожиданные пути' }
+if (@(git diff --cached --name-only --diff-filter=AD).Count -ne 0) { throw 'Новые файлы и удаления не предусмотрены' }
 git diff --cached --name-status
 git diff --cached --stat
-git commit -m "docs: описать развёртывание, работу оператора и публикацию по блокам"
+git commit -m "docs: актуализировать публикацию дополнения Dark Factory" -m "Инкрементальный порядок двух коммитов и двух push, новая база main, раздел 11 эксплуатации и точные перечни изменяемых файлов. Личное состояние учебного стенда остаётся локально."
+git show --stat --oneline HEAD
 git push origin main
-git fetch origin main
-git rev-parse HEAD origin/main
-git status --short --branch
-git log -4 --oneline
 ```
 
-Два хэша в выводе `rev-parse` должны совпасть, рабочая копия должна быть чистой. Откройте README на GitHub, проверьте ссылку на [сквозное руководство](operator/service-and-lab.md) и результат Actions для последнего коммита. Если push отклонён из-за новых удалённых изменений, остановитесь и сравните истории перед повтором.
+## 6. Итоговая проверка
+
+```powershell
+git fetch origin main
+$localHead = git rev-parse HEAD
+$remoteHead = git rev-parse origin/main
+if ($localHead -ne $remoteHead) { throw 'Локальная и удалённая вершины различаются' }
+git status --short --branch
+git log -2 --oneline
+git diff --name-status $base HEAD
+$expectedTree = @($paths + 'reports/iteration_log.md' | Sort-Object)
+$actualTree = @(git ls-tree -r --name-only HEAD | Sort-Object)
+if (@(Compare-Object $expectedTree $actualTree).Count -ne 0) { throw 'Git-дерево не совпадает с согласованной поставкой' }
+if (@(git status --porcelain).Count -ne 0) { throw 'Остались незакоммиченные файлы' }
+Write-Output "Опубликовано: $localHead; файлов: $($actualTree.Count)"
+```
+
+Ожидаются два новых коммита, 634 файла в конечном дереве, чистая рабочая копия и совпадающие HEAD/origin/main. Проверьте README, ссылки на [руководство эксплуатации](operator/service-and-lab.md) и Actions для последнего SHA. Результаты удалённого CI фиксируются после отправки владельцем.
+
+## Как продолжить после остановки
+
+- До commit: изучите git status --short и git diff --cached; выясните причину, сохраняя предыдущую попытку.
+- Commit создан, push не прошёл: после устранения причины повторите push. Такой же коммит повторно создавать не нужно. При расхождении историй сравните их перед продолжением.
+- Терминал закрыт: восстановите настройки и переменные раздела 1, перейдите в $pub, задайте $lists = Join-Path $pub 'docs\publication'. Из раздела 3 прочитайте переменные $groups, $paths, $updated, $qaPaths, $docPaths, $expectedQa, $expectedDocs; проверки первоначального diff после частичного коммита повторять не надо. По git log -2 --oneline и staged diff определите следующий блок.
+- Если защита main отклоняет push, нужен согласованный владельцем процесс публикации. Не обходите защиту force push; созданные локальные коммиты сохраняются.
