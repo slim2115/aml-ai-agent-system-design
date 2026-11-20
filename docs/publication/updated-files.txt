@@ -1,8 +1,11 @@
+README.md
+docs/operator/dark-factory-qa-quickstart.md
 docs/operator/service-and-lab.md
 docs/publication.md
+docs/publication/03-qa.txt
 docs/publication/added-files.txt
 docs/publication/updated-files.txt
 docs/publication/what-to-update.md
-qa/environments/runner.py
+qa/README.md
+qa/impact/map-v1.json
 scripts/release/publication_files.py
-tests/dark_factory/test_environment_runner.py
