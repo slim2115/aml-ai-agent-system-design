@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from package_release import DATA_FILES, EXACT_FILES, ROOT, _regular, valid_path
 
 LISTS = ("01-git", "02-service", "03-qa", "03-judge-fixtures", "04-docs")
-BASE = "97d8e07c990186bd9e6b7621a9e06224316ad65d"
+BASE = "eb84b1651e32a5a88871b3ba3cdc92295fafd712"
 ORIGIN = "https://github.com/slim2115/aml-ai-agent-system-design.git"
 PILOT = "verification/qa-step-07-2026-10-20/pilot-first/"
 FIXTURES = {PILOT + name for name in (

@@ -105,7 +105,15 @@ def test_refusal_exposes_reason_and_cannot_be_approved_or_exported(page, qa_api,
     job = ui.terminal(job_id, 'Отчёт не сформирован')
     assert job['status'] == 'refused'
     assert job['result']['reason_code'] == scenario.case.expected_reason_code
-    expect(page.get_by_text('Код: NO_APPLICABLE_RULE', exact=True)).to_be_visible()
+    # A Streamlit rerun can briefly retain the previous reason caption. Read
+    # the settled review for this incident, including its operator-facing reason.
+    review = page.locator('[data-testid="stApp"][data-test-script-state="notRunning"]').get_by_test_id(
+        'stMain').filter(has=page.get_by_role(
+            'heading', name=job['incident_id'] + ' · Отчёт не сформирован', exact=True))
+    expect(review.get_by_text(job['result']['reason'], exact=True)).to_be_visible()
+    code = review.get_by_test_id('stCaptionContainer').get_by_text(
+        'Код: ' + scenario.case.expected_reason_code, exact=True)
+    expect(code).to_be_visible()
     ui.stage(4)
     expect(page.get_by_text('Решение недоступно: готового отчёта нет.', exact=True)).to_be_visible()
     expect(page.get_by_role('button', name='Сохранить учебное решение', exact=True)).to_have_count(0)

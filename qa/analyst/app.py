@@ -51,6 +51,11 @@ def main():
     st.caption('Локальные свидетельства Dark Factory · просмотр без запуска тестов и моделей')
     st.info('Продуктовая приёмка: INCOMPLETE. Допуск кандидата: NOT_EVALUATED. '
             'Этот экран не одобряет AML-решения и релизы.')
+    mode = st.sidebar.radio('Раздел', ['Результаты проверок', 'Учебные расследования'])
+    if mode == 'Учебные расследования':
+        from qa.investigations.ui import render
+        render()
+        return
     with st.sidebar:
         st.header('Выбор проверки')
         kind = st.selectbox('Тип проверки', list(LABELS), format_func=LABELS.get)
