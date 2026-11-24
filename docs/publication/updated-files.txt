@@ -1,5 +1,5 @@
 README.md
-docs/operator/dark-factory-qa-quickstart.md
+docs/operator/qa-workshop.md
 docs/operator/service-and-lab.md
 docs/publication.md
 docs/publication/03-qa.txt
@@ -7,5 +7,8 @@ docs/publication/added-files.txt
 docs/publication/updated-files.txt
 docs/publication/what-to-update.md
 qa/README.md
+qa/analyst/README.md
+qa/analyst/app.py
+qa/e2e/test_operator.py
 qa/impact/map-v1.json
 scripts/release/publication_files.py

@@ -206,6 +206,14 @@ qa/impact/map-v1.json
 qa/impact/planner.py
 qa/impact/runner.py
 qa/integration/test_environment.py
+qa/investigations/README.md
+qa/investigations/__init__.py
+qa/investigations/catalog-v1.json
+qa/investigations/core.py
+qa/investigations/observations.py
+qa/investigations/runner.py
+qa/investigations/storage.py
+qa/investigations/ui.py
 qa/judge/README.md
 qa/judge/__init__.py
 qa/judge/contracts.py
@@ -258,9 +266,11 @@ qa/tools/browser_cache_install.py
 qa/tools/browser_server.py
 qa/tools/browser_stand.py
 qa/tools/browser_tooling.py
+qa/tools/build_investigations.py
 qa/tools/build_qa_report.py
 qa/tools/capture_baseline.py
 qa/tools/check_analyst_browser.py
+qa/tools/check_investigations_browser.py
 qa/tools/check_requirements.py
 qa/tools/check_scenarios.py
 qa/tools/environment.py
@@ -334,6 +344,10 @@ tests/dark_factory/test_execution_runner.py
 tests/dark_factory/test_gate_cross.py
 tests/dark_factory/test_impact.py
 tests/dark_factory/test_impact_runner.py
+tests/dark_factory/test_investigations_build.py
+tests/dark_factory/test_investigations_core.py
+tests/dark_factory/test_investigations_observations.py
+tests/dark_factory/test_investigations_ui.py
 tests/dark_factory/test_judge_audit.py
 tests/dark_factory/test_policy_pair_report.py
 tests/dark_factory/test_qualification_controls.py

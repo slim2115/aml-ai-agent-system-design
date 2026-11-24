@@ -1,17 +1,17 @@
-# Как опубликовать этапы 6–8 Dark Factory в main
+# Как опубликовать этап 9 Dark Factory в main
 
-**Актуально на 20 ноября 2026 года.** Основная версия сервиса, исходники учебного стенда и этап 5 уже опубликованы. База сравнения — 97d8e07c990186bd9e6b7621a9e06224316ad65d. Следующая отправка состоит из **двух коммитов и двух push**: статистика, бюджет, ограниченный цикл ответа и интерфейс аналитика QA, затем инструкции. Этапы 6 и 7 ещё не опубликованы, поэтому дополнение включает этапы 6–8 вместе. Commit и push выполняет владелец после завершения локальных проверок текущей версии.
+**Актуально на 23 ноября 2026 года.** Этапы 6–8 уже опубликованы. Состав обновления сверен с сохранённым деревом main для коммита `eb84b1651e32a5a88871b3ba3cdc92295fafd712`. После локальных проверок владелец отправляет два коммита. Первый содержит учебные расследования и изменения QA, второй — инструкции.
 
-План первой публикации из четырёх коммитов и дополнение этапа 5 уже выполнены. Повторный коммит runtime, добавление пяти входов Judge и удаление tests/pytest.ini не требуются.
+Первичная публикация и этапы 5–8 уже выполнены. Повторно переносить неизменённые компоненты не требуется.
 
 ## Состав обновления
 
 | Коммит | Что обновляем | Источник путей |
 | --- | --- | --- |
-| 1. QA и подготовка публикации | Пакеты статистики, бюджета, ограниченного исправления кандидатов и интерфейс аналитика QA; пересчёт сохранённых LLM-результатов, локальный proposer, CLI, тесты, карта влияния и описание QA | Новые и изменившиеся файлы из [03-qa.txt](publication/03-qa.txt) |
-| 2. Инструкции | README сервиса, эксплуатация этапов 6–8, порядок отправки и перечни добавлений/замен | Новые и изменившиеся файлы из [04-docs.txt](publication/04-docs.txt) |
+| 1. QA и подготовка публикации (20 файлов) | Практикум из шести расследований, генератор свидетельств, проверка целостности и версии, формы UI, CLI, тесты, включая браузерный сценарий оператора, карта влияния и проверка базы публикации | Новые и изменившиеся файлы из [03-qa.txt](publication/03-qa.txt) |
+| 2. Инструкции (8 файлов) | README сервиса, эксплуатация этапа 9, порядок отправки и перечни добавлений и замен | Новые и изменившиеся файлы из [04-docs.txt](publication/04-docs.txt) |
 
-Точный состав: [что добавить и заменить](publication/what-to-update.md), [добавления](publication/added-files.txt), [замены](publication/updated-files.txt). Полные пять списков содержат **667 файлов**; они описывают всю поставку, а не размер очередного diff. С сохранённым reports/iteration_log.md итоговое Git-дерево содержит **668 файлов**. Добавляются 34 QA-файла: 12 из этапа 6, 14 из этапа 7 и 8 из этапа 8. Удалений и изменений пяти входов Judge нет.
+В обновлении **14 новых и 14 изменённых файлов**. Все пять списков вместе содержат **681 файл**. С сохранённым `reports/iteration_log.md` итоговое дерево содержит **682 файла**. Удалений и изменений пяти входов Judge нет. [Состав по коммитам](publication/what-to-update.md), [добавления](publication/added-files.txt), [замены](publication/updated-files.txt).
 
 Локально остаются var/, рабочие PostgreSQL/SQLite, сообщения Kafka и Docker volumes, DBeaver workspace, модели/индексы, окружения Python, секреты, .env, логи и результаты занятий. Из verification/ в Git уже входят только пять явно перечисленных синтетических входов Judge; новые результаты проверок не публикуются. Из .rebuild/ публикуются только origin.json и release-version.json. Личный файл портфолио и незакоммиченные изменения исходного checkout автоматически не включаются.
 
@@ -24,8 +24,8 @@ if ($PSVersionTable.PSVersion -lt [version]'7.3') { throw 'Нужен PowerShell
 $ErrorActionPreference = 'Stop'
 $PSNativeCommandUseErrorActionPreference = $true
 $src = 'D:\work\aml-ai-agent-system-rebuild'
-$pub = 'D:\work\publication-stage8\aml-ai-agent-system-publish'
-$base = '97d8e07c990186bd9e6b7621a9e06224316ad65d'
+$pub = 'D:\work\publication-stage9\aml-ai-agent-system-publish'
+$base = 'eb84b1651e32a5a88871b3ba3cdc92295fafd712'
 $python = Join-Path $src '.venv\Scripts\python.exe'
 if (-not (Test-Path -LiteralPath $python)) { throw 'Не найден Python стенда' }
 function Assert-PathSet {
@@ -38,7 +38,7 @@ git config --get user.name
 git config --get user.email
 ```
 
-check проверяет допустимость полных перечней и наличие файлов. user.name и user.email станут автором коммитов; при отсутствии настройте свои значения до продолжения. Выбран новый каталог внутри publication-stage8; существующий клон и учебный стенд сохраняются.
+check проверяет допустимость полных перечней и наличие файлов. user.name и user.email станут автором коммитов; при отсутствии настройте свои значения до продолжения. Выбран новый каталог внутри publication-stage9; существующий клон и учебный стенд сохраняются.
 
 ## 2. Создать чистый клон и скопировать поставку
 
@@ -58,14 +58,14 @@ $lists = Join-Path $pub 'docs\publication'
 git status --short
 ```
 
-Помощник проверяет имя каталога, origin, ветку main, чистоту клона и оба базовых SHA, затем копирует только согласованные пути и сверяет байты. Он не удаляет файлы и не создаёт коммиты. Если main продвинулся после проверки 20 ноября, сначала сопоставьте новую базу с rebuild. После частичного копирования сохраните каталог для разбора; не повторяйте copy-to поверх грязного клона.
+Помощник проверяет имя каталога, origin, ветку main, чистоту клона и оба базовых SHA, затем копирует только согласованные пути и сверяет байты. Он не удаляет файлы и не создаёт коммиты. Если main продвинулся относительно сохранённой базы, сначала сопоставьте новую базу с rebuild. После частичного копирования сохраните каталог для разбора; не повторяйте copy-to поверх грязного клона.
 
 ## 3. Проверить полноту переноса и состав diff
 
 ```powershell
 $groups = @('01-git', '02-service', '03-qa', '03-judge-fixtures', '04-docs')
 $paths = @($groups | ForEach-Object { Get-Content -LiteralPath (Join-Path $lists "$_.txt") })
-if ($paths.Count -ne 667 -or @($paths | Sort-Object -Unique).Count -ne $paths.Count) { throw 'Неверный состав полных перечней' }
+if ($paths.Count -ne 681 -or @($paths | Sort-Object -Unique).Count -ne $paths.Count) { throw 'Неверный состав полных перечней' }
 foreach ($relative in $paths) {
     $sourceFile = Join-Path $src $relative
     $copiedFile = Join-Path $pub $relative
@@ -77,7 +77,7 @@ foreach ($relative in $paths) {
 $added = @(Get-Content -LiteralPath "$lists\added-files.txt")
 $updated = @(Get-Content -LiteralPath "$lists\updated-files.txt")
 $changes = @($added + $updated)
-if ($added.Count -ne 34 -or @($changes | Sort-Object -Unique).Count -ne $changes.Count) { throw 'Неверный состав добавлений и замен' }
+if ($added.Count -ne 14 -or $updated.Count -ne 14 -or @($changes | Sort-Object -Unique).Count -ne $changes.Count) { throw 'Неверный состав добавлений и замен' }
 if (@($changes | Where-Object { $_ -notin $paths }).Count -ne 0) { throw 'Изменения вне полной поставки' }
 Assert-PathSet $updated @(git diff --name-only --no-renames) 'Diff отличается от перечня замен'
 Assert-PathSet $updated @(git diff --name-only --no-renames --diff-filter=M) 'Ожидались только изменения существующих файлов'
@@ -90,14 +90,14 @@ $qaPaths = @(Get-Content -LiteralPath "$lists\03-qa.txt")
 $docPaths = @(Get-Content -LiteralPath "$lists\04-docs.txt")
 $expectedQa = @($changes | Where-Object { $_ -in $qaPaths } | Sort-Object)
 $expectedDocs = @($changes | Where-Object { $_ -in $docPaths } | Sort-Object)
-if ($expectedQa.Count -eq 0 -or $expectedDocs.Count -eq 0 -or $expectedQa.Count + $expectedDocs.Count -ne $changes.Count) { throw 'Изменения не разделены между QA и документацией' }
+if ($expectedQa.Count -ne 20 -or $expectedDocs.Count -ne 8 -or $expectedQa.Count + $expectedDocs.Count -ne $changes.Count) { throw 'Ожидалось 20 изменений QA и 8 изменений документации' }
 git diff --stat
 Write-Output "Проверено файлов: $($paths.Count); добавлений: $($added.Count); замен: $($updated.Count)"
 ```
 
 Пять входов Judge входят в проверку хэшей, но их diff должен отсутствовать. Перечни читаются из подготовленного клона, сохраняя единый состав отправки. Перед коммитом просмотрите staged diff; ожидаются A для новых файлов и M для замен. Команды git add ., git add -A, git rm и force push для этого дополнения не нужны.
 
-## 4. Коммит 1 и push 1: статистика, бюджет и ограниченный цикл QA
+## 4. Коммит 1 и push 1: учебные расследования QA
 
 ```powershell
 git --literal-pathspecs add --pathspec-from-file="$lists\03-qa.txt"
@@ -108,7 +108,7 @@ if (@(git diff --cached --name-only --no-renames --diff-filter=D).Count -ne 0) {
 git diff --cached --name-status
 git diff --cached --stat
 git diff --cached
-git commit -m "test(qa): добавить статистику, бюджет, цикл ответа и UI аналитика Dark Factory" -m "Этапы 6–8: статистика повторов и сохранённых LLM-результатов, резервирование бюджета перед каждым вызовом, проверка и ограниченное исправление JSON-кандидатов ответа. Добавлены локальный Ollama proposer, журнал попыток, управляемый worker, UI аналитика, проверка свидетельств и актуальности исходников, браузерный smoke, CLI и тесты; обновлены карта влияния и описание QA."
+git commit -m "test(qa): добавить учебные расследования качества Dark Factory" -m "Этап 9: шесть расследований на исполняемых синтетических контролях, проверка фактов и целостности пакетов, открытая рубрика, формы аналитика и экспорт учебного ответа. Добавлены CLI, тесты и браузерная проверка; обновлены карта влияния и базовый SHA помощника публикации. Приёмка продукта и практика человека остаются отдельными."
 git show --stat --oneline HEAD
 git push origin main
 ```
@@ -127,7 +127,7 @@ if (@(git diff --cached --name-only --no-renames --diff-filter=D).Count -ne 0) {
 git diff --cached --name-status
 git diff --cached --stat
 git diff --cached
-git commit -m "docs: описать этапы 6–8 Dark Factory и их публикацию" -m "README и эксплуатация статистики, бюджета и ограниченного цикла ответа: учебные контроли, исторический пересчёт и локальная Ollama, журнал, остановки, интерфейс QA на 8502, браузерная проверка и границы приёмки. Добавлены 34 QA-пути в полные перечни; актуализированы точные списки добавлений/замен и два commit/push относительно опубликованного этапа 5."
+git commit -m "docs: описать практикум расследований Dark Factory и его публикацию" -m "Обновлены README, руководство эксплуатации и QA-практикум: создание пакета, шесть упражнений, ограничения оценивания и диагностика. Пересчитаны точные списки добавлений и замен относительно текущего main; локальные базы, ответы и свидетельства не публикуются."
 git show --stat --oneline HEAD
 git push origin main
 ```
@@ -152,7 +152,7 @@ if (@(git status --porcelain).Count -ne 0) { throw 'Остались незак�
 Write-Output "Опубликовано: $localHead; файлов: $($actualTree.Count)"
 ```
 
-Ожидаются два новых коммита, 668 файлов в конечном дереве, чистая рабочая копия и совпадающие HEAD/origin/main. Проверьте README, ссылки на [руководство эксплуатации](operator/service-and-lab.md) и Actions для последнего SHA. Результаты удалённого CI фиксируются после отправки владельцем.
+Ожидаются два новых коммита, 682 файла в конечном дереве, чистая рабочая копия и совпадающие HEAD/origin/main. Проверьте README, ссылки на [руководство эксплуатации](operator/service-and-lab.md) и Actions для последнего SHA. Результаты удалённого CI фиксируются после отправки владельцем.
 
 ## Как продолжить после остановки
 
